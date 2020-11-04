@@ -18,7 +18,7 @@ import ckan.logic as logic
 import ckan.lib.dictization.model_dictize as model_dictize
 from ckan.views.user import set_repoze_user
 from ckan.logic.action.create import _get_random_username_from_email
-from ckan.common import _, c, g, request
+from ckan.common import _, config, g, request
 
 from ckanext.saml2auth.views.saml2acs import saml2acs
 
@@ -87,6 +87,24 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IAuthenticator)
     plugins.implements(plugins.IBlueprint)
+    plugins.implements(plugins.IConfigurable)
+
+    # IConfigurable
+
+    def configure(self, config):
+        # Certain config options must exists for the plugin to work. Raise an
+        # exception if they're missing.
+        missing_config = "{0} is not configured. Please amend your .ini file."
+        config_options = (
+            'ckanext.saml2auth.user_firstname',
+            'ckanext.saml2auth.user_lastname',
+            'ckanext.saml2auth.user_email'
+        )
+        for option in config_options:
+            if not config.get(option, None):
+                raise RuntimeError(missing_config.format(option))
+
+    # IBlueprint
 
     def get_blueprint(self):
         return [saml2acs]
@@ -98,6 +116,8 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         toolkit.add_public_directory(config_, 'public')
         toolkit.add_resource('fanstatic',
             'saml2auth')
+
+    # IAuthenticator
 
     def identify(self):
         u'''Called to identify the user.
@@ -126,9 +146,9 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             user_info = auth_response.get_subject()
 
             saml_id = user_info.text
-            email = auth_response.ava['email'][0]
-            name = auth_response.ava['name'][0]
-            lastname = auth_response.ava['lastname'][0]
+            email = auth_response.ava[config.get('ckanext.saml2auth.user_email')][0]
+            firstname = auth_response.ava[config.get('ckanext.saml2auth.user_firstname')][0]
+            lastname = auth_response.ava[config.get('ckanext.saml2auth.user_lastname')][0]
 
             user = model.Session.query(model.User)\
                 .filter(model.User.plugin_extras[('saml2auth', 'saml_id')].astext == saml_id)\
@@ -137,7 +157,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             if not user:
 
                 data_dict = {'name': _get_random_username_from_email(email),
-                             'fullname': name + ' ' + lastname,
+                             'fullname': firstname + ' ' + lastname,
                              'email': email,
                              'password': 'somestrongpass',
                              'plugin_extras': {
@@ -152,11 +172,11 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
                 model_dictize.user_dictize(user, context)
 
                 if email != user.email \
-                        or name != user.fullname.split(' ')[0] \
+                        or firstname != user.fullname.split(' ')[0] \
                         or lastname != user.fullname.split(' ')[1]:
 
                     data_dict = {'id': user.id,
-                                 'fullname': name + ' ' + lastname,
+                                 'fullname': firstname + ' ' + lastname,
                                  'email': email
                                  }
                     logic.get_action(u'user_update')(context, data_dict)
