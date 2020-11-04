@@ -1,13 +1,6 @@
-import os
-import ckan.plugins as plugins
-import ckan.plugins.toolkit as toolkit
-import ckan.model as model
-import ckan.logic as logic
-import ckan.lib.dictization.model_dictize as model_dictize
-from ckan.views.user import set_repoze_user
-from ckan.logic.action.create import _get_random_username_from_email
+# encoding: utf-8
 
-from ckan.common import _, c, g, request
+import os
 
 from saml2 import (
     BINDING_HTTP_POST,
@@ -18,11 +11,21 @@ from saml2.saml import NAME_FORMAT_URI
 from saml2.client import Saml2Client
 from saml2.config import Config as Saml2Config
 
+import ckan.plugins as plugins
+import ckan.plugins.toolkit as toolkit
+import ckan.model as model
+import ckan.logic as logic
+import ckan.lib.dictization.model_dictize as model_dictize
+from ckan.views.user import set_repoze_user
+from ckan.logic.action.create import _get_random_username_from_email
+from ckan.common import _, c, g, request
+
 from ckanext.saml2auth.views.saml2acs import saml2acs
 
 CONFIG_PATH = os.path.dirname(__file__)
 
 BASE = 'http://localhost:5000/'
+
 
 #TODO move into separate config file
 def saml_client():
@@ -109,6 +112,12 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         g.userobj = None
 
         if request.form.get('SAMLResponse', None):
+
+            context = {
+                u'ignore_auth': True,
+                u'model': model
+            }
+
             client = saml_client()
             auth_response = client.parse_authn_request_response(
                 request.form.get('SAMLResponse', None),
@@ -116,30 +125,46 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             auth_response.get_identity()
             user_info = auth_response.get_subject()
 
-            context = {
-                u'ignore_auth': True,
-                u'model': model
-            }
-            data_dict = {
-                'name': _get_random_username_from_email(user_info.text),
-                'fullname': auth_response.ava['name'][0] + ' ' + auth_response.ava['lastname'][0],
-                'email': auth_response.ava['email'][0],
-                # TODO generate strong password
-                'password': 'somestrongpass'
-            }
+            saml_id = user_info.text
+            email = auth_response.ava['email'][0]
+            name = auth_response.ava['name'][0]
+            lastname = auth_response.ava['lastname'][0]
 
-            user = model.User.by_email(auth_response.ava['email'][0])
+            user = model.Session.query(model.User)\
+                .filter(model.User.plugin_extras[('saml2auth', 'saml_id')].astext == saml_id)\
+                .first()
+
             if not user:
+
+                data_dict = {'name': _get_random_username_from_email(email),
+                             'fullname': name + ' ' + lastname,
+                             'email': email,
+                             'password': 'somestrongpass',
+                             'plugin_extras': {
+                                 'saml2auth': {
+                                     'saml_id': saml_id
+                                 }
+                             }}
                 g.user = logic.get_action(u'user_create')(context, data_dict)['name']
+
             else:
-                model_dictize.user_dictize(user[0], context)
-                data_dict['id'] = user[0].id
-                data_dict['name'] = user[0].name
-                g.user = logic.get_action(u'user_update')(context, data_dict)['name']
-            print('----------------------------------------------g.user', g.user)
-            g.userobj = model.User.by_name(g.user)
+
+                model_dictize.user_dictize(user, context)
+
+                if email != user.email \
+                        or name != user.fullname.split(' ')[0] \
+                        or lastname != user.fullname.split(' ')[1]:
+
+                    data_dict = {'id': user.id,
+                                 'fullname': name + ' ' + lastname,
+                                 'email': email
+                                 }
+                    logic.get_action(u'user_update')(context, data_dict)
+                g.user = user.name
+
+            # g.userobj = model.User.by_name(g.user)
             resp = toolkit.redirect_to(u'user.me')
-            set_repoze_user(data_dict[u'name'], resp)
+            set_repoze_user(g.user, resp)
             return resp
 
     def login(self):
