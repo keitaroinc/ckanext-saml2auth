@@ -103,7 +103,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             if not user:
 
                 data_dict = {'name': _get_random_username_from_email(email),
-                             'fullname': firstname + ' ' + lastname,
+                             'fullname': '{0} {1}'.format(firstname, lastname),
                              'email': email,
                              'password': generate_password(),
                              'plugin_extras': {
@@ -120,12 +120,13 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
                 model_dictize.user_dictize(user, context)
                 # Update the existing CKAN user only if
                 # SAML user name or SAML user email are changed
+                # in the identity provider
                 if email != user.email \
                         or firstname != user.fullname.split(' ')[0] \
                         or lastname != user.fullname.split(' ')[1]:
 
                     data_dict = {'id': user.id,
-                                 'fullname': firstname + ' ' + lastname,
+                                 'fullname': '{0} {1}'.format(firstname, lastname),
                                  'email': email
                                  }
                     logic.get_action(u'user_update')(context, data_dict)
