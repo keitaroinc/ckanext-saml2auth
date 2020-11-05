@@ -1,15 +1,7 @@
 # encoding: utf-8
+import logging
 
-import os
-
-from saml2 import (
-    BINDING_HTTP_POST,
-    BINDING_HTTP_REDIRECT,
-    entity
-)
-from saml2.saml import NAME_FORMAT_URI
-from saml2.client import Saml2Client
-from saml2.config import Config as Saml2Config
+from saml2 import entity
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
@@ -21,66 +13,9 @@ from ckan.logic.action.create import _get_random_username_from_email
 from ckan.common import _, config, g, request
 
 from ckanext.saml2auth.views.saml2acs import saml2acs
+from ckanext.saml2auth.spconfig import saml_client
 
-CONFIG_PATH = os.path.dirname(__file__)
-
-BASE = 'http://localhost:5000/'
-
-
-#TODO move into separate config file
-def saml_client():
-
-    settings = {
-        'entityid': 'urn:mace:umu.se:saml:ckan:sp',
-        'description': 'CKAN saml2 authorizer',
-        'service': {
-            'sp': {
-                'name': 'CKAN SP',
-                'endpoints': {
-                    'assertion_consumer_service': [BASE + 'acs'],
-                    'single_logout_service': [(BASE + 'slo',
-                                               BINDING_HTTP_REDIRECT)],
-                },
-                'required_attributes': [
-                    'uid',
-                    'name',
-                    'mail',
-                    'status',
-                    'field_display_name',
-                    'realname',
-                    'field_unique_id',
-                ],
-                'allow_unsolicited': True,
-                'optional_attributes': [],
-                'idp': ['urn:mace:umu.se:saml:ckan:idp'],
-            }
-        },
-        'debug': 0,
-        'metadata': {
-            'local': [CONFIG_PATH + '/idp.xml'],
-        },
-        'contact_person': [{
-            'given_name': 'John',
-            'sur_name': 'Smith',
-            'email_address': ['john.smith@example.com'],
-            'contact_type': 'technical',
-        },
-        ],
-        'name_form': NAME_FORMAT_URI,
-        'logger': {
-            'rotating': {
-                'filename': '/tmp/sp.log',
-                'maxBytes': 100000,
-                'backupCount': 5,
-            },
-            'loglevel': 'error',
-        }
-    }
-    spConfig = Saml2Config()
-    spConfig.load(settings)
-    spConfig.allow_unknown_attributes = True
-    saml_client = Saml2Client(config=spConfig)
-    return saml_client
+log = logging.getLogger(__name__)
 
 
 class Saml2AuthPlugin(plugins.SingletonPlugin):
@@ -131,6 +66,8 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         g.user = None
         g.userobj = None
 
+        # Check for user identification only if there is a SAML
+        # response which means only when SAML login is initiated
         if request.form.get('SAMLResponse', None):
 
             context = {
@@ -145,11 +82,14 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             auth_response.get_identity()
             user_info = auth_response.get_subject()
 
+            # SAML username - unique
             saml_id = user_info.text
+            # Required user attributes for user creation
             email = auth_response.ava[config.get('ckanext.saml2auth.user_email')][0]
             firstname = auth_response.ava[config.get('ckanext.saml2auth.user_firstname')][0]
             lastname = auth_response.ava[config.get('ckanext.saml2auth.user_lastname')][0]
 
+            # Check if CKAN user exists for the current SAML login
             user = model.Session.query(model.User)\
                 .filter(model.User.plugin_extras[('saml2auth', 'saml_id')].astext == saml_id)\
                 .first()
@@ -170,7 +110,8 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             else:
 
                 model_dictize.user_dictize(user, context)
-
+                # Update the existing CKAN user only if
+                # SAML user name or SAML user email are changed
                 if email != user.email \
                         or firstname != user.fullname.split(' ')[0] \
                         or lastname != user.fullname.split(' ')[1]:
@@ -182,7 +123,11 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
                     logic.get_action(u'user_update')(context, data_dict)
                 g.user = user.name
 
+            # Guess we don't need to set g.userobj because
+            # CKAN will set it if it's missing in the original identify_user() function
             # g.userobj = model.User.by_name(g.user)
+
+            # log the user in programmatically
             resp = toolkit.redirect_to(u'user.me')
             set_repoze_user(g.user, resp)
             return resp
