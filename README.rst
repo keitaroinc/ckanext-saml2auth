@@ -90,6 +90,12 @@ Required::
      ckanext.saml2auth.user_email = email
 
 
+Optional::
+
+     # Configuration setting that enables CKAN's default register/login functionality as well
+     # Default: False
+     ckanext.saml2auth.enable_default_login = True
+
 
 ----------------------
 Developer installation
