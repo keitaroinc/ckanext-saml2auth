@@ -24,9 +24,9 @@
     :target: https://pypi.org/project/ckanext-saml2auth/
     :alt: License
 
-=============
+==================
 ckanext-saml2auth
-=============
+==================
 
 .. Put a description of your extension here:
    What does it do? What features does it have?
@@ -51,19 +51,24 @@ Installation
 
 To install ckanext-saml2auth:
 
-1. Activate your CKAN virtual environment, for example::
+1. Install the required packages::
+
+     sudo apt install xmlsec1
+
+
+2. Activate your CKAN virtual environment, for example::
 
      . /usr/lib/ckan/default/bin/activate
 
-2. Install the ckanext-saml2auth Python package into your virtual environment::
+3. Install the ckanext-saml2auth Python package into your virtual environment::
 
      pip install ckanext-saml2auth
 
-3. Add ``saml2auth`` to the ``ckan.plugins`` setting in your CKAN
+4. Add ``saml2auth`` to the ``ckan.plugins`` setting in your CKAN
    config file (by default the config file is located at
    ``/etc/ckan/default/ckan.ini``).
 
-4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
+5. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
 
      sudo service apache2 reload
 
@@ -72,13 +77,18 @@ To install ckanext-saml2auth:
 Config settings
 ---------------
 
-None at present
+Required::
 
-.. Document any optional config settings here. For example::
 
-.. # The minimum number of hours to wait before re-checking a resource
-   # (optional, default: 24).
-   ckanext.saml2auth.some_setting = some_default_value
+     # Corresponding SAML user field for firstname
+     ckanext.saml2auth.user_firstname = firstname
+
+     # Corresponding SAML user field for lastname
+     ckanext.saml2auth.user_lastname = lastname
+
+     # Corresponding SAML user field for email
+     ckanext.saml2auth.user_email = email
+
 
 
 ----------------------
@@ -88,6 +98,8 @@ Developer installation
 To install ckanext-saml2auth for development, activate your CKAN virtualenv and
 do::
 
+
+    sudo apt install xmlsec1
     git clone https://github.com/duskobogdanovski/ckanext-saml2auth.git
     cd ckanext-saml2auth
     python setup.py develop
@@ -108,9 +120,9 @@ To run the tests and produce a coverage report, first make sure you have
     pytest --ckan-ini=test.ini  --cov=ckanext.saml2auth
 
 
-----------------------------------------
+--------------------------------------------
 Releasing a new version of ckanext-saml2auth
-----------------------------------------
+--------------------------------------------
 
 ckanext-saml2auth should be available on PyPI as https://pypi.org/project/ckanext-saml2auth.
 To publish a new version to PyPI follow these steps:
