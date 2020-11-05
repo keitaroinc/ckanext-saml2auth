@@ -47,7 +47,6 @@ settings = {
 
 
 def saml_client():
-
     sp_config = Saml2Config()
     sp_config.load(settings)
     sp_config.allow_unknown_attributes = True

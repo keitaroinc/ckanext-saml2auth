@@ -14,6 +14,7 @@ from ckan.common import _, config, g, request
 
 from ckanext.saml2auth.views.saml2acs import saml2acs
 from ckanext.saml2auth.spconfig import saml_client
+from ckanext.saml2auth.helpers import generate_password
 
 log = logging.getLogger(__name__)
 
@@ -38,6 +39,11 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         for option in config_options:
             if not config.get(option, None):
                 raise RuntimeError(missing_config.format(option))
+
+        self.firstname = config.get('ckanext.saml2auth.user_firstname')
+        self.lastname = config.get('ckanext.saml2auth.user_lastname')
+        self.email = config.get('ckanext.saml2auth.user_email')
+
 
     # IBlueprint
 
@@ -85,9 +91,9 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             # SAML username - unique
             saml_id = user_info.text
             # Required user attributes for user creation
-            email = auth_response.ava[config.get('ckanext.saml2auth.user_email')][0]
-            firstname = auth_response.ava[config.get('ckanext.saml2auth.user_firstname')][0]
-            lastname = auth_response.ava[config.get('ckanext.saml2auth.user_lastname')][0]
+            email = auth_response.ava[self.email][0]
+            firstname = auth_response.ava[self.firstname][0]
+            lastname = auth_response.ava[self.lastname][0]
 
             # Check if CKAN user exists for the current SAML login
             user = model.Session.query(model.User)\
@@ -99,9 +105,11 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
                 data_dict = {'name': _get_random_username_from_email(email),
                              'fullname': firstname + ' ' + lastname,
                              'email': email,
-                             'password': 'somestrongpass',
+                             'password': generate_password(),
                              'plugin_extras': {
                                  'saml2auth': {
+                                     # Store the saml username
+                                     # in the corresponding CKAN user
                                      'saml_id': saml_id
                                  }
                              }}
