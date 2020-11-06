@@ -27,6 +27,7 @@ def acs():
 
     context = {
         u'ignore_auth': True,
+        u'keep_email': True,
         u'model': model
     }
 
@@ -68,21 +69,27 @@ def acs():
                              u'saml_id': saml_id
                          }
                      }}
-        g.user = logic.get_action(u'user_create')(context, data_dict)[u'name']
+        try:
+            g.user = logic.get_action(u'user_create')(context, data_dict)[u'name']
+        except logic.ValidationError as e:
+            error_message = (e.error_summary or e.message or e.error_dict)
+            base.abort(400, error_message)
+
     else:
-        model_dictize.user_dictize(user, context)
+        user_dict = model_dictize.user_dictize(user, context)
         # Update the existing CKAN user only if
         # SAML user name or SAML user email are changed
         # in the identity provider
-        if email != user.email \
-                or firstname != user.fullname.split(' ')[0] \
-                or lastname != user.fullname.split(' ')[1]:
-            data_dict = {u'id': user.id,
-                         u'fullname': u'{0} {1}'.format(firstname, lastname),
-                         u'email': email
-                         }
-            logic.get_action(u'user_update')(context, data_dict)
-        g.user = user.name
+        if email != user_dict['email'] \
+                or u'{0} {1}'.format(firstname, lastname) != user_dict['fullname']:
+            user_dict['email'] = email
+            user_dict['fullname'] = u'{0} {1}'.format(firstname, lastname)
+            try:
+                user_dict = logic.get_action(u'user_update')(context, user_dict)
+            except logic.ValidationError as e:
+                error_message = (e.error_summary or e.message or e.error_dict)
+                base.abort(400, error_message)
+        g.user = user_dict['name']
 
     g.userobj = model.User.by_name(g.user)
     # log the user in programmatically
@@ -110,7 +117,9 @@ def disable_default_login_register():
     override and disable default Register/Login routes
     '''
     extra_vars = {u'code': [403], u'content': u'This resource is forbidden '
-                                              u'by the system administrator.'}
+                                              u'by the system administrator. '
+                                              u'Only SSO through SAML2 authorization'
+                                              u' is available at this moment.'}
     return base.render(u'error_document_template.html', extra_vars), 403
 
 
