@@ -96,6 +96,9 @@ Optional::
      # Default: False
      ckanext.saml2auth.enable_ckan_internal_login = True
 
+     # List of email addresses from users that should be created as sysadmins (system administrators)
+     ckanext.saml2auth.sysadmins_list = mail@domain.com mail2@domain.com mail3@domain.com
+
 
 ----------------------
 Developer installation
