@@ -92,9 +92,9 @@ Required::
 
 Optional::
 
-     # Configuration setting that enables CKAN's default register/login functionality as well
+     # Configuration setting that enables CKAN's internal register/login functionality as well
      # Default: False
-     ckanext.saml2auth.enable_default_login = True
+     ckanext.saml2auth.enable_ckan_internal_login = True
 
 
 ----------------------
