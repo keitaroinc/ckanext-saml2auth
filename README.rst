@@ -79,6 +79,21 @@ Config settings
 
 Required::
 
+     # Specifies the metadata location type
+     # Options: local or remote
+     ckanext.saml2auth.idp_metadata.location = remote
+
+     # Path to a local file accessible on the server the service runs on
+     # Ignore this config if the idp metadata location is set to: remote
+     ckanext.saml2auth.idp_metadata.local_path = /opt/metadata/idp.xml
+
+     # A remote URL serving aggregate metadata
+     # Ignore this config if the idp metadata location is set to: local
+     ckanext.saml2auth.idp_metadata.remote_url = https://kalmar2.org/simplesaml/module.php/aggregator/?id=kalmarcentral2&set=saml2
+
+     # Path to a local file accessible on the server the service runs on
+     # Ignore this config if the idp metadata location is set to: local
+     ckanext.saml2auth.idp_metadata.remote_cert = /opt/metadata/kalmar2.cert
 
      # Corresponding SAML user field for firstname
      ckanext.saml2auth.user_firstname = firstname
@@ -98,6 +113,15 @@ Optional::
 
      # List of email addresses from users that should be created as sysadmins (system administrators)
      ckanext.saml2auth.sysadmins_list = mail@domain.com mail2@domain.com mail3@domain.com
+
+     # Indicates that attributes that are not recognized (they are not configured in attribute-mapping),
+     # will not be discarded.
+     # Default: False
+     ckanext.saml2auth.allow_unknown_attributes = True
+
+     # A list of string values that will be used to set the <NameIDFormat> element of the metadata of an entity.
+     # Default: urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+     ckanext.saml2auth.sp.name_id_format = urn:oasis:names:tc:SAML:2.0:nameid-format:persistent urn:oasis:names:tc:SAML:2.0:nameid-format:transient
 
 
 ----------------------
