@@ -1,4 +1,5 @@
 # encoding: utf-8
+import logging
 import string
 import secrets
 from six import text_type
@@ -6,6 +7,8 @@ from six import text_type
 import ckan.model as model
 import ckan.authz as authz
 from ckan.common import config, asbool, aslist
+
+log = logging.getLogger(__name__)
 
 
 def generate_password():
@@ -34,3 +37,12 @@ def update_user_sysadmin_status(username, email):
         user.sysadmin = True
         model.Session.add(user)
         model.Session.commit()
+
+
+def activate_user_if_deleted(userobj):
+    u'''Reactivates deleted user.'''
+    if userobj.is_deleted():
+        userobj.activate()
+        userobj.commit()
+        log.info(u'User {} reactivated'.format(userobj.name))
+
