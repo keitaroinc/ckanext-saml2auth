@@ -37,8 +37,7 @@ ckanext-saml2auth
 Requirements
 ------------
 
-For example, you might want to mention here which versions of CKAN this
-extension works with.
+This extension works with CKAN 2.9+.
 
 
 ------------

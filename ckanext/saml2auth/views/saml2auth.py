@@ -11,7 +11,7 @@ from ckan.views.user import set_repoze_user
 from ckan.logic.action.create import _get_random_username_from_email
 from ckan.common import _, config, g, request, asbool
 
-from ckanext.saml2auth.spconfig import saml_client
+from ckanext.saml2auth.spconfig import config as sp_config
 from ckanext.saml2auth import helpers as h
 
 
@@ -38,7 +38,7 @@ def acs():
     saml_user_email = \
         config.get(u'ckanext.saml2auth.user_email')
 
-    client = saml_client()
+    client = h.saml_client(sp_config)
     auth_response = client.parse_authn_request_response(
         request.form.get(u'SAMLResponse', None),
         entity.BINDING_HTTP_POST)
@@ -67,7 +67,7 @@ def acs():
         if ckan_user:
             # If account exists and is deleted, reactivate it.
             h.activate_user_if_deleted(ckan_user)
-            
+
             ckan_user_dict = model_dictize.user_dictize(ckan_user, context)
             try:
                 ckan_user_dict[u'password'] = h.generate_password()
@@ -134,7 +134,7 @@ def saml2login():
     u'''Redirects the user to the
      configured identity provider for authentication
     '''
-    client = saml_client()
+    client = h.saml_client(sp_config)
     reqid, info = client.prepare_for_authenticate()
 
     redirect_url = None
