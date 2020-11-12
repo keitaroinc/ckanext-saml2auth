@@ -7,12 +7,12 @@ from ckan import model
 from ckan.lib.helpers import url_for
 
 
-@pytest.mark.usefixtures('clean_db', 'clean_index')
-@pytest.mark.ckan_config('ckan.plugins', 'saml2auth')
+@pytest.mark.usefixtures(u'clean_db', u'clean_index')
+@pytest.mark.ckan_config(u'ckan.plugins', u'saml2auth')
 class TestBlueprint(object):
 
     def test_user_register_disabled_by_default(self, app):
-        url = url_for("user.register")
+        url = url_for(u'user.register')
         response = app.get(url=url)
         assert 403 == response.status_code
 
@@ -22,7 +22,7 @@ class TestBlueprint(object):
                u'is available at this moment.' in response
 
     def test_internal_user_login_disabled_by_deafult(self, app):
-        url = url_for("user.login")
+        url = url_for(u'user.login')
         response = app.get(url=url)
         assert 403 == response.status_code
 

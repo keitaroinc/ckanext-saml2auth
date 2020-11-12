@@ -19,65 +19,65 @@ def test_default_login_disabled_by_default():
     assert not h.is_default_login_enabled()
 
 
-@pytest.mark.ckan_config('ckanext.saml2auth.enable_ckan_internal_login', True)
+@pytest.mark.ckan_config(u'ckanext.saml2auth.enable_ckan_internal_login', True)
 def test_default_login_enabled():
     assert h.is_default_login_enabled()
 
 
-@pytest.mark.usefixtures('clean_db', 'clean_index')
-@pytest.mark.ckan_config('ckanext.saml2auth.sysadmins_list', '')
+@pytest.mark.usefixtures(u'clean_db', u'clean_index')
+@pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list', '')
 def test_00_update_user_sysadmin_status_continue_as_regular():
 
-    user = factories.User(email='useroneemail@example.com')
-    h.update_user_sysadmin_status(user['name'], user['email'])
-    user_show = helpers.call_action("user_show", id=user["id"])
-    is_sysadmin = authz.is_sysadmin(user_show['name'])
+    user = factories.User(email=u'useroneemail@example.com')
+    h.update_user_sysadmin_status(user[u'name'], user[u'email'])
+    user_show = helpers.call_action(u'user_show', id=user['id'])
+    is_sysadmin = authz.is_sysadmin(user_show[u'name'])
 
     assert not is_sysadmin
 
 
-@pytest.mark.usefixtures('clean_db', 'clean_index')
-@pytest.mark.ckan_config('ckanext.saml2auth.sysadmins_list',
-                         'useroneemail@example.com')
+@pytest.mark.usefixtures(u'clean_db', u'clean_index')
+@pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list',
+                         u'useroneemail@example.com')
 def test_01_update_user_sysadmin_status_make_sysadmin():
 
-    user = factories.User(email='useroneemail@example.com')
-    h.update_user_sysadmin_status(user['name'], user['email'])
-    user_show = helpers.call_action("user_show", id=user["id"])
-    is_sysadmin = authz.is_sysadmin(user_show['name'])
+    user = factories.User(email=u'useroneemail@example.com')
+    h.update_user_sysadmin_status(user[u'name'], user[u'email'])
+    user_show = helpers.call_action(u'user_show', id=user[u'id'])
+    is_sysadmin = authz.is_sysadmin(user_show[u'name'])
 
     assert is_sysadmin
 
 
-@pytest.mark.usefixtures('clean_db', 'clean_index')
-@pytest.mark.ckan_config('ckanext.saml2auth.sysadmins_list', '')
+@pytest.mark.usefixtures(u'clean_db', u'clean_index')
+@pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list', '')
 def test_02_update_user_sysadmin_status_remove_sysadmin_role():
 
-    user = factories.Sysadmin(email='useroneemail@example.com')
-    h.update_user_sysadmin_status(user['name'], user['email'])
-    user_show = helpers.call_action("user_show", id=user["id"])
-    is_sysadmin = authz.is_sysadmin(user_show['name'])
+    user = factories.Sysadmin(email=u'useroneemail@example.com')
+    h.update_user_sysadmin_status(user[u'name'], user[u'email'])
+    user_show = helpers.call_action(u'user_show', id=user[u'id'])
+    is_sysadmin = authz.is_sysadmin(user_show[u'name'])
 
     assert not is_sysadmin
 
 
-@pytest.mark.usefixtures('clean_db', 'clean_index')
-@pytest.mark.ckan_config('ckanext.saml2auth.sysadmins_list',
-                         'useroneemail@example.com')
+@pytest.mark.usefixtures(u'clean_db', u'clean_index')
+@pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list',
+                         u'useroneemail@example.com')
 def test_03_update_user_sysadmin_status_continue_as_sysadmin():
 
-    user = factories.Sysadmin(email='useroneemail@example.com')
-    h.update_user_sysadmin_status(user['name'], user['email'])
-    user_show = helpers.call_action("user_show", id=user["id"])
-    is_sysadmin = authz.is_sysadmin(user_show['name'])
+    user = factories.Sysadmin(email=u'useroneemail@example.com')
+    h.update_user_sysadmin_status(user[u'name'], user[u'email'])
+    user_show = helpers.call_action(u'user_show', id=user[u'id'])
+    is_sysadmin = authz.is_sysadmin(user_show[u'name'])
 
     assert is_sysadmin
 
 
-@pytest.mark.usefixtures('clean_db', 'clean_index')
+@pytest.mark.usefixtures(u'clean_db', u'clean_index')
 def test_activate_user_if_deleted():
     user = factories.User()
-    user = model.User.get(user["name"])
+    user = model.User.get(user[u'name'])
     user.delete()
     h.activate_user_if_deleted(user)
     assert not user.is_deleted()
