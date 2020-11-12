@@ -115,8 +115,8 @@ Optional::
 
      # Indicates that attributes that are not recognized (they are not configured in attribute-mapping),
      # will not be discarded.
-     # Default: False
-     ckanext.saml2auth.allow_unknown_attributes = True
+     # Default: True
+     ckanext.saml2auth.allow_unknown_attributes = False
 
      # A list of string values that will be used to set the <NameIDFormat> element of the metadata of an entity.
      # Default: urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
