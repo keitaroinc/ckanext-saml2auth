@@ -9,7 +9,7 @@ import ckan.lib.dictization.model_dictize as model_dictize
 from ckan.lib import base
 from ckan.views.user import set_repoze_user
 from ckan.logic.action.create import _get_random_username_from_email
-from ckan.common import _, config, g, request, asbool
+from ckan.common import config, g, request
 
 from ckanext.saml2auth.spconfig import config as sp_config
 from ckanext.saml2auth import helpers as h
@@ -139,7 +139,7 @@ def saml2login():
 
     redirect_url = None
     for key, value in info[u'headers']:
-        if key is u'Location':
+        if key == u'Location':
             redirect_url = value
     return toolkit.redirect_to(redirect_url)
 

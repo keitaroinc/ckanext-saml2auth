@@ -2,27 +2,14 @@
    these badges work. The necessary Travis and Coverage config files have been
    generated for you.
 
-.. image:: https://travis-ci.org/duskobogdanovski/ckanext-saml2auth.svg?branch=master
-    :target: https://travis-ci.org/duskobogdanovski/ckanext-saml2auth
+.. image:: https://travis-ci.com/keitaroinc/ckanext-saml2auth.svg?branch=initial-implementation
+    :target: https://travis-ci.com/keitaroinc/ckanext-saml2auth
 
-.. image:: https://coveralls.io/repos/duskobogdanovski/ckanext-saml2auth/badge.svg
-  :target: https://coveralls.io/r/duskobogdanovski/ckanext-saml2auth
+.. image:: https://coveralls.io/repos/github/keitaroinc/ckanext-saml2auth/badge.svg?branch=initial-implementation
+    :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=initial-implementation
 
-.. image:: https://img.shields.io/pypi/v/ckanext-saml2auth.svg
-    :target: https://pypi.org/project/ckanext-saml2auth/
-    :alt: Latest Version
 
-.. image:: https://img.shields.io/pypi/pyversions/ckanext-saml2auth.svg
-    :target: https://pypi.org/project/ckanext-saml2auth/
-    :alt: Supported Python versions
 
-.. image:: https://img.shields.io/pypi/status/ckanext-saml2auth.svg
-    :target: https://pypi.org/project/ckanext-saml2auth/
-    :alt: Development Status
-
-.. image:: https://img.shields.io/pypi/l/ckanext-saml2auth.svg
-    :target: https://pypi.org/project/ckanext-saml2auth/
-    :alt: License
 
 ==================
 ckanext-saml2auth

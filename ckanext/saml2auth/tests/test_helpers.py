@@ -81,9 +81,3 @@ def test_activate_user_if_deleted():
     user.delete()
     h.activate_user_if_deleted(user)
     assert not user.is_deleted()
-
-
-
-
-
-

@@ -1,9 +1,6 @@
 # encoding: utf-8
 import pytest
 
-import ckan.tests.factories as factories
-import ckan.tests.helpers as helpers
-from ckan import model
 from ckan.lib.helpers import url_for
 
 

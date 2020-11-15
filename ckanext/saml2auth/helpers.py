@@ -55,4 +55,3 @@ def activate_user_if_deleted(userobj):
         userobj.activate()
         userobj.commit()
         log.info(u'User {} reactivated'.format(userobj.name))
-
