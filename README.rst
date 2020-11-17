@@ -8,6 +8,9 @@
 .. image:: https://coveralls.io/repos/github/keitaroinc/ckanext-saml2auth/badge.svg?branch=initial-implementation
     :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=initial-implementation
 
+.. image:: https://img.shields.io/badge/python-3.8-blue.svg
+    :target: https://www.python.org/downloads/release/python-384/
+
 
 
 
