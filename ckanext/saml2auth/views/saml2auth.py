@@ -63,12 +63,12 @@ def acs():
         # user with the same email as the current login,
         # make that user a SAML-CKAN user and change
         # it's pass so the user can use only SSO
-        ckan_user = model.User.by_email(email)[0]
+        ckan_user = model.User.by_email(email)
         if ckan_user:
             # If account exists and is deleted, reactivate it.
-            h.activate_user_if_deleted(ckan_user)
+            h.activate_user_if_deleted(ckan_user[0])
 
-            ckan_user_dict = model_dictize.user_dictize(ckan_user, context)
+            ckan_user_dict = model_dictize.user_dictize(ckan_user[0], context)
             try:
                 ckan_user_dict[u'password'] = h.generate_password()
                 ckan_user_dict[u'plugin_extras'] = {

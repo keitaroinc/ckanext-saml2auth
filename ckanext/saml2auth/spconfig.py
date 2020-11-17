@@ -40,8 +40,8 @@ config = {
                 u'assertion_consumer_service': [BASE + u'/acs']
             },
             u'allow_unsolicited': True,
-            u"name_id_policy_format": NAME_ID_FORMAT,
-            u"name_id_format": NAME_ID_FORMAT,
+            u'name_id_policy_format': NAME_ID_FORMAT,
+            u'name_id_format': NAME_ID_FORMAT
         }
     },
     u'metadata': {},

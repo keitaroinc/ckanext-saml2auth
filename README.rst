@@ -50,11 +50,16 @@ To install ckanext-saml2auth:
 
      pip install ckanext-saml2auth
 
-4. Add ``saml2auth`` to the ``ckan.plugins`` setting in your CKAN
+
+4. Install the python modules required by the extension (adjusting the path according to where ckanext-saml2auth was installed in the previous step)::
+
+     pip install -r requirements.txt
+
+5. Add ``saml2auth`` to the ``ckan.plugins`` setting in your CKAN
    config file (by default the config file is located at
    ``/etc/ckan/default/ckan.ini``).
 
-5. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
+6. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
 
      sudo service apache2 reload
 
