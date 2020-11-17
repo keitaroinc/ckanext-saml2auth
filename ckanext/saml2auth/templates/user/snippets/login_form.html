@@ -1,0 +1,5 @@
+{% ckan_extends %}
+{% block login_button %}
+  <button class="btn btn-primary" type="submit">{{ _('Login') }}</button>
+  <a class="btn btn-default" href="{{ h.url_for('saml2auth.saml2login') }}">{{ _('SSO') }}</a>
+{% endblock %}

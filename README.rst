@@ -2,31 +2,18 @@
    these badges work. The necessary Travis and Coverage config files have been
    generated for you.
 
-.. image:: https://travis-ci.org/duskobogdanovski/ckanext-saml2auth.svg?branch=master
-    :target: https://travis-ci.org/duskobogdanovski/ckanext-saml2auth
+.. image:: https://travis-ci.com/keitaroinc/ckanext-saml2auth.svg?branch=initial-implementation
+    :target: https://travis-ci.com/keitaroinc/ckanext-saml2auth
 
-.. image:: https://coveralls.io/repos/duskobogdanovski/ckanext-saml2auth/badge.svg
-  :target: https://coveralls.io/r/duskobogdanovski/ckanext-saml2auth
+.. image:: https://coveralls.io/repos/github/keitaroinc/ckanext-saml2auth/badge.svg?branch=initial-implementation
+    :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=initial-implementation
 
-.. image:: https://img.shields.io/pypi/v/ckanext-saml2auth.svg
-    :target: https://pypi.org/project/ckanext-saml2auth/
-    :alt: Latest Version
 
-.. image:: https://img.shields.io/pypi/pyversions/ckanext-saml2auth.svg
-    :target: https://pypi.org/project/ckanext-saml2auth/
-    :alt: Supported Python versions
 
-.. image:: https://img.shields.io/pypi/status/ckanext-saml2auth.svg
-    :target: https://pypi.org/project/ckanext-saml2auth/
-    :alt: Development Status
 
-.. image:: https://img.shields.io/pypi/l/ckanext-saml2auth.svg
-    :target: https://pypi.org/project/ckanext-saml2auth/
-    :alt: License
-
-=============
+==================
 ckanext-saml2auth
-=============
+==================
 
 .. Put a description of your extension here:
    What does it do? What features does it have?
@@ -37,8 +24,7 @@ ckanext-saml2auth
 Requirements
 ------------
 
-For example, you might want to mention here which versions of CKAN this
-extension works with.
+This extension works with CKAN 2.9+.
 
 
 ------------
@@ -51,19 +37,29 @@ Installation
 
 To install ckanext-saml2auth:
 
-1. Activate your CKAN virtual environment, for example::
+1. Install the required packages::
+
+     sudo apt install xmlsec1
+
+
+2. Activate your CKAN virtual environment, for example::
 
      . /usr/lib/ckan/default/bin/activate
 
-2. Install the ckanext-saml2auth Python package into your virtual environment::
+3. Install the ckanext-saml2auth Python package into your virtual environment::
 
      pip install ckanext-saml2auth
 
-3. Add ``saml2auth`` to the ``ckan.plugins`` setting in your CKAN
+
+4. Install the python modules required by the extension (adjusting the path according to where ckanext-saml2auth was installed in the previous step)::
+
+     pip install -r requirements.txt
+
+5. Add ``saml2auth`` to the ``ckan.plugins`` setting in your CKAN
    config file (by default the config file is located at
    ``/etc/ckan/default/ckan.ini``).
 
-4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
+6. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
 
      sudo service apache2 reload
 
@@ -72,13 +68,51 @@ To install ckanext-saml2auth:
 Config settings
 ---------------
 
-None at present
+Required::
 
-.. Document any optional config settings here. For example::
+     # Specifies the metadata location type
+     # Options: local or remote
+     ckanext.saml2auth.idp_metadata.location = remote
 
-.. # The minimum number of hours to wait before re-checking a resource
-   # (optional, default: 24).
-   ckanext.saml2auth.some_setting = some_default_value
+     # Path to a local file accessible on the server the service runs on
+     # Ignore this config if the idp metadata location is set to: remote
+     ckanext.saml2auth.idp_metadata.local_path = /opt/metadata/idp.xml
+
+     # A remote URL serving aggregate metadata
+     # Ignore this config if the idp metadata location is set to: local
+     ckanext.saml2auth.idp_metadata.remote_url = https://kalmar2.org/simplesaml/module.php/aggregator/?id=kalmarcentral2&set=saml2
+
+     # Path to a local file accessible on the server the service runs on
+     # Ignore this config if the idp metadata location is set to: local
+     ckanext.saml2auth.idp_metadata.remote_cert = /opt/metadata/kalmar2.cert
+
+     # Corresponding SAML user field for firstname
+     ckanext.saml2auth.user_firstname = firstname
+
+     # Corresponding SAML user field for lastname
+     ckanext.saml2auth.user_lastname = lastname
+
+     # Corresponding SAML user field for email
+     ckanext.saml2auth.user_email = email
+
+
+Optional::
+
+     # Configuration setting that enables CKAN's internal register/login functionality as well
+     # Default: False
+     ckanext.saml2auth.enable_ckan_internal_login = True
+
+     # List of email addresses from users that should be created as sysadmins (system administrators)
+     ckanext.saml2auth.sysadmins_list = mail@domain.com mail2@domain.com mail3@domain.com
+
+     # Indicates that attributes that are not recognized (they are not configured in attribute-mapping),
+     # will not be discarded.
+     # Default: True
+     ckanext.saml2auth.allow_unknown_attributes = False
+
+     # A list of string values that will be used to set the <NameIDFormat> element of the metadata of an entity.
+     # Default: urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+     ckanext.saml2auth.sp.name_id_format = urn:oasis:names:tc:SAML:2.0:nameid-format:persistent urn:oasis:names:tc:SAML:2.0:nameid-format:transient
 
 
 ----------------------
@@ -88,6 +122,8 @@ Developer installation
 To install ckanext-saml2auth for development, activate your CKAN virtualenv and
 do::
 
+
+    sudo apt install xmlsec1
     git clone https://github.com/duskobogdanovski/ckanext-saml2auth.git
     cd ckanext-saml2auth
     python setup.py develop
@@ -108,9 +144,9 @@ To run the tests and produce a coverage report, first make sure you have
     pytest --ckan-ini=test.ini  --cov=ckanext.saml2auth
 
 
-----------------------------------------
+--------------------------------------------
 Releasing a new version of ckanext-saml2auth
-----------------------------------------
+--------------------------------------------
 
 ckanext-saml2auth should be available on PyPI as https://pypi.org/project/ckanext-saml2auth.
 To publish a new version to PyPI follow these steps:
