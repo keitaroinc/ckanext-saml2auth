@@ -28,6 +28,7 @@ class TestBlueprint(object):
                u'Only SSO through SAML2 authorization ' \
                u'is available at this moment.' in response
 
+    # TODO write tests will all different config variations and test ACS service with mock IDP
     # @pytest.mark.ckan_config(u'ckanext.saml2auth.enable_ckan_internal_login', 'true')
     # def test_user_register_enabled(self, monkeypatch, make_app, ckan_config):
     #     monkeypatch.setitem(ckan_config, u'ckanext.saml2auth.enable_ckan_internal_login', True)
