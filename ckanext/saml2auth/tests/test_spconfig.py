@@ -28,3 +28,10 @@ def test_read_metadata_remote_url():
     remote = get_config()[u'metadata'][u'remote'][0]
     assert remote[u'url'] == u'https://metadata.com'
     assert remote[u'cert'] == u'/path/to/local.cert'
+
+
+@pytest.mark.ckan_config(u'ckanext.saml2auth.issuer', u'some:issuer')
+def test_read_issuer():
+
+    issuer = get_config()[u'entityid']
+    assert issuer == u'some:issuer'

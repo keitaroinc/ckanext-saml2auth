@@ -24,7 +24,7 @@ def get_config():
         ckan_config.get(u'ckanext.saml2auth.idp_metadata.remote_cert')
 
     issuer = ckan_config.get(u'ckanext.saml2auth.issuer', u'urn:mace:umu.se:saml:ckan:sp')
-    
+
     config = {
         u'entityid': issuer,
         u'description': u'CKAN saml2 Service Provider',
