@@ -49,8 +49,9 @@ def acs():
     saml_id = user_info.text
     # Required user attributes for user creation
     email = auth_response.ava[saml_user_email][0]
-    firstname = auth_response.ava[saml_user_firstname][0]
-    lastname = auth_response.ava[saml_user_lastname][0]
+
+    firstname = auth_response.ava.get(saml_user_firstname, [email.split('@')[0]])[0]
+    lastname = auth_response.ava.get(saml_user_lastname, [email.split('@')[1]])[0]
 
     # Check if CKAN-SAML user exists for the current SAML login
     saml_user = model.Session.query(model.User) \

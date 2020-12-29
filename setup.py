@@ -23,12 +23,11 @@ setup(
     long_description_content_type='text/x-rst',
 
     # The project's main homepage.
-    url='https://github.com/duskobogdanovski/'\
-            'ckanext-saml2auth',
+    url='https://github.com/datopian/ckanext-saml2auth',
 
     # Author details
-    author='''Keitaro''',
-    author_email='''dusko.bogdanovski@keitaro.com''',
+    author='''Keitaro (CKAN 2.9), Datopian (CKAN 2.8 backport)''',
+    author_email='''dusko.bogdanovski@keitaro.com, andres.vazquez@datopian.com''',
 
     # Choose your license
     license='AGPL',
