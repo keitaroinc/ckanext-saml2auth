@@ -43,3 +43,7 @@ docs/_build/
 
 # Saml2 config
 idp.xml
+
+# Custom IDE files
+.vscode/
+

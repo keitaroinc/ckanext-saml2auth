@@ -117,7 +117,10 @@ Optional::
      # Default: urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
      ckanext.saml2auth.sp.name_id_format = urn:oasis:names:tc:SAML:2.0:nameid-format:persistent urn:oasis:names:tc:SAML:2.0:nameid-format:transient
 
-
+    # Issuer
+    # Define the issuer. Default is urn:mace:umu.se:saml:ckan:sp 
+    ckanext.saml2auth.issuer = urn:gov:gsa:SAML:2.0.profiles:sp:sso:gsa:catalog-dev
+    
 ----------------------
 Developer installation
 ----------------------

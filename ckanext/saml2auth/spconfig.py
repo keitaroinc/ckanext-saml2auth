@@ -23,8 +23,10 @@ def get_config():
     remote_cert = \
         ckan_config.get(u'ckanext.saml2auth.idp_metadata.remote_cert')
 
+    issuer = ckan_config.get(u'ckanext.saml2auth.issuer', u'urn:mace:umu.se:saml:ckan:sp')
+    
     config = {
-        u'entityid': u'urn:mace:umu.se:saml:ckan:sp',
+        u'entityid': issuer,
         u'description': u'CKAN saml2 Service Provider',
         # Set True if eg.Azure or Microsoft Idp used
         u'allow_unknown_attributes': allow_unknown_attributes,
