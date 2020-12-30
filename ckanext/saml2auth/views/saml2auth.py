@@ -54,9 +54,14 @@ def acs():
     lastname = auth_response.ava.get(saml_user_lastname, [email.split('@')[1]])[0]
 
     # Check if CKAN-SAML user exists for the current SAML login
-    saml_user = model.Session.query(model.User) \
-        .filter(model.User.plugin_extras[(u'saml2auth', u'saml_id')].astext == saml_id) \
-        .first()
+
+    if hasattr(model.User, 'plugin_extras'):
+        # CKAN 2.9
+        saml_user = model.Session.query(model.User) \
+            .filter(model.User.plugin_extras[(u'saml2auth', u'saml_id')].astext == saml_id) \
+            .first()
+    else:
+        saml_user = None
 
     # First we check if there is a SAML-CKAN user
     if not saml_user:
