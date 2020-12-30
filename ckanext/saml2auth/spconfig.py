@@ -9,7 +9,7 @@ def get_config():
     """ Get the config
         Read: https://pysaml2.readthedocs.io/en/latest/howto/config.html
         """
-    
+
     base = ckan_config.get('ckan.site_url')
     debug = asbool(ckan_config.get('debug'))
     allow_unknown_attributes = \
@@ -27,7 +27,7 @@ def get_config():
     remote_cert = \
         ckan_config.get(u'ckanext.saml2auth.idp_metadata.remote_cert')
 
-    issuer = ckan_config.get(u'ckanext.saml2auth.issuer', u'urn:mace:umu.se:saml:ckan:sp')
+    entity_id = ckan_config.get(u'ckanext.saml2auth.entity_id', u'urn:mace:umu.se:saml:ckan:sp')
     response_signed = asbool(ckan_config.get(u'ckanext.saml2auth.want_response_signed', True))
     assertion_signed = asbool(ckan_config.get(u'ckanext.saml2auth.want_assertions_signed', False))
     any_signed = asbool(ckan_config.get(u'ckanext.saml2auth.want_assertions_or_response_signed', False))
@@ -36,7 +36,7 @@ def get_config():
     attribute_map_dir = ckan_config.get(u'ckanext.saml2auth.attribute_map_dir', None)
 
     config = {
-        u'entityid': issuer,
+        u'entityid': entity_id,
         u'description': u'CKAN saml2 Service Provider',
         # Set True if eg.Azure or Microsoft Idp used
         u'allow_unknown_attributes': allow_unknown_attributes,
@@ -62,7 +62,7 @@ def get_config():
     if key_file is not None and cert_file is not None:
         config[u'key_file'] = key_file
         config[u'cert_file'] = cert_file
-        config['encryption_keypairs'] = [{u'key_file': key_file, u'cert_file': cert_file}]
+        config[u'encryption_keypairs'] = [{u'key_file': key_file, u'cert_file': cert_file}]
 
     if attribute_map_dir is not None:
         config[u'attribute_map_dir'] = attribute_map_dir
