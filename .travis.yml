@@ -1,12 +1,19 @@
 language: python
 sudo: required
-python:
-    - "3.8"
-env: CKANVERSION=2.9
 services:
     - postgresql
     - redis
     - docker
+jobs:
+    include:
+        - python: "2.7"
+          env: 
+            - CKANVERSION=2.8
+            - TEST_FOLDER=test_py2_ckan28
+        - python: "3.8"
+          env:
+            - CKANVERSION=2.9
+            - TEST_FOLDER=test_py3_ckan29
 install:
     - bash bin/travis-build.bash
     - pip install coveralls

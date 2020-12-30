@@ -56,7 +56,7 @@ To install ckanext-saml2auth:
 4. Install the python modules required by the extension (adjusting the path according to where ckanext-saml2auth was installed in the previous step)::
 
     For Python 3 and CKAN 2.9:
-     pip install -r requirements.txt
+     pip install -r requirements-python3.txt
     
     For Python 2 and CKAN 2.8
      pip install -r requirements-python2.txt

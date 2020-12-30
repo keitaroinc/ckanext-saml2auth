@@ -25,12 +25,6 @@ then
     pip install -r requirement-setuptools.txt
 fi
 
-if [ $CKANVERSION == '2.7' ]
-then
-    echo "Installing setuptools"
-    pip install setuptools==39.0.1
-fi
-
 python setup.py develop
 pip install -r requirements.txt
 pip install -r dev-requirements.txt
@@ -44,13 +38,29 @@ echo "Setting up Solr..."
 docker run --name ckan-solr -p 8983:8983 -d openknowledge/ckan-solr-dev:$CKANVERSION
 
 echo "Initialising the database..."
+
 cd ckan
-ckan -c test-core.ini db init
+if [ $CKANVERSION == '2.9' ]
+then
+    ckan -c test-core.ini db init
+elif [ $CKANVERSION == '2.8' ]
+then
+    paster --plugin=ckan db init -c test-core.ini
+fi
 cd -
 
 echo "Installing ckanext-saml2auth and its requirements..."
-python setup.py develop
+
+if [ $CKANVERSION == '2.9' ]
+then
+    pip install -r requirements-python3.txt
+elif [ $CKANVERSION == '2.8' ]
+then
+    pip install -r requirements-python2.txt
+fi
+
 pip install -r dev-requirements.txt
+python setup.py develop
 
 echo "Moving test.ini into a subdir..."
 mkdir subdir

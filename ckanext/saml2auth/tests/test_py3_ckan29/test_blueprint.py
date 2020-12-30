@@ -5,7 +5,6 @@ from ckan.lib.helpers import url_for
 
 
 @pytest.mark.usefixtures(u'clean_db', u'clean_index')
-@pytest.mark.ckan_config(u'ckan.plugins', u'saml2auth')
 class TestBlueprint(object):
 
     def test_user_register_disabled_by_default(self, app):

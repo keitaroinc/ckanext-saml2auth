@@ -23,7 +23,7 @@ setup(
     long_description_content_type='text/x-rst',
 
     # The project's main homepage.
-    url='https://github.com/datopian/ckanext-saml2auth',
+    url='https://github.com/keitaroinc/ckanext-saml2auth',
 
     # Author details
     author='''Keitaro (CKAN 2.9), Datopian (CKAN 2.8 backport)''',
@@ -44,9 +44,8 @@ setup(
         'License :: OSI Approved :: GNU Affero General Public License v3 or'\
         'later (AGPLv3+)',
 
-        # Specify the Python versions you support here. In particular, ensure
-        # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.8',
     ],
 
 
@@ -58,7 +57,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     namespace_packages=['ckanext'],
 
-    install_requires=['pysaml2<=4.9.0'],
+    install_requires=[],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
