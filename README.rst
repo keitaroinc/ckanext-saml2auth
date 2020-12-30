@@ -117,6 +117,22 @@ Optional::
      # Default: urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
      ckanext.saml2auth.sp.name_id_format = urn:oasis:names:tc:SAML:2.0:nameid-format:persistent urn:oasis:names:tc:SAML:2.0:nameid-format:transient
 
+    # Entity ID (also know as Issuer)
+    # Define the entity ID. Default is urn:mace:umu.se:saml:ckan:sp 
+    ckanext.saml2auth.entity_id = urn:gov:gsa:SAML:2.0.profiles:sp:sso:gsa:catalog-dev
+
+    # Signed responses and assertions 
+    ckanext.saml2auth.want_response_signed = False
+    ckanext.saml2auth.want_assertions_signed = False
+    ckanext.saml2auth.want_assertions_or_response_signed = True
+    
+    # Cert & key files
+    ckanext.saml2auth.key_file_path = /path/to/mykey.pem
+    ckanext.saml2auth.cert_file_path = /path/to/mycert.pem
+    
+    # Attribute map directory
+    ckanext.saml2auth.attribute_map_dir = /path/to/dir/attributemaps
+
 
 ----------------------
 Developer installation
