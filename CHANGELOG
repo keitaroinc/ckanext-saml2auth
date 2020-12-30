@@ -1,0 +1,8 @@
+# Changelog
+
+
+## [0.0.2] 2020-12-30
+
+### Added
+- CKAN 2.8 and Python 2 compatibility
+- New settings values to improve saml2 config
