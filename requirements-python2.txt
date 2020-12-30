@@ -1,0 +1,4 @@
+pysaml2
+
+# python secrets was implemented in python 3.6
+python2-secrets==1.0.5

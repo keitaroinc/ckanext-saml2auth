@@ -2,7 +2,13 @@
 from saml2.saml import NAME_FORMAT_URI
 
 from ckan.common import config as ckan_config
-from ckan.common import asbool, aslist
+
+try:
+    # CKAN 2.9
+    from ckan.common import asbool, aslist
+except ImportError:
+    # CKAN 2.8
+    from ckan.plugins.toolkit import asbool, aslist
 
 
 def get_config():
