@@ -70,6 +70,17 @@ To install ckanext-saml2auth:
      sudo service apache2 reload
 
 
+------------------
+CKAN vs SAML users
+------------------
+
+| This extension will connect users from external source with local CKAN users using the email.
+
+| If the user does not exist locally, it will be created.
+
+| If the user changes email (in CKAN or external source), this connection will be lost for CKAN 2.8. 
+  In CKAN 2.9 the connection will be maintained.
+
 ---------------
 Config settings
 ---------------
