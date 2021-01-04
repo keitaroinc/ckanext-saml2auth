@@ -33,7 +33,7 @@ def generate_password():
 def is_default_login_enabled():
     return asbool(
         config.get('ckanext.saml2auth.enable_ckan_internal_login',
-                   False))
+                   'false'))
 
 
 def update_user_sysadmin_status(username, email):
