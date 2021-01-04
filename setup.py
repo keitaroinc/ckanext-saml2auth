@@ -16,19 +16,18 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.0.1',
+    version='0.0.2',
 
     description='''An extension to enable Single Sign On(SSO) for CKAN data portals via SAML2 Authentication.''',
     long_description=long_description,
     long_description_content_type='text/x-rst',
 
     # The project's main homepage.
-    url='https://github.com/duskobogdanovski/'\
-            'ckanext-saml2auth',
+    url='https://github.com/keitaroinc/ckanext-saml2auth',
 
     # Author details
-    author='''Keitaro''',
-    author_email='''dusko.bogdanovski@keitaro.com''',
+    author='''Keitaro (CKAN 2.9), Datopian (CKAN 2.8 backport)''',
+    author_email='''dusko.bogdanovski@keitaro.com, andres.vazquez@datopian.com''',
 
     # Choose your license
     license='AGPL',
@@ -45,9 +44,8 @@ setup(
         'License :: OSI Approved :: GNU Affero General Public License v3 or'\
         'later (AGPLv3+)',
 
-        # Specify the Python versions you support here. In particular, ensure
-        # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.8',
     ],
 
 
@@ -59,7 +57,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     namespace_packages=['ckanext'],
 
-    install_requires=['pysaml2>=6.3.0'],
+    install_requires=[],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these

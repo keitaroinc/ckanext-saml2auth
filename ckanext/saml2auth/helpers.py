@@ -9,7 +9,10 @@ from saml2.config import Config as Saml2Config
 
 import ckan.model as model
 import ckan.authz as authz
-from ckan.common import config, asbool, aslist
+
+from ckan.plugins.toolkit import asbool, aslist
+from ckan.common import config
+
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +33,7 @@ def generate_password():
 def is_default_login_enabled():
     return asbool(
         config.get('ckanext.saml2auth.enable_ckan_internal_login',
-                   False))
+                   'false'))
 
 
 def update_user_sysadmin_status(username, email):

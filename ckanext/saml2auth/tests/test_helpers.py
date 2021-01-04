@@ -1,7 +1,6 @@
 # encoding: utf-8
-import pytest
-
 import ckan.authz as authz
+import ckan.lib.search as search
 import ckan.model as model
 import ckan.tests.factories as factories
 import ckan.tests.helpers as helpers
@@ -19,14 +18,15 @@ def test_default_login_disabled_by_default():
     assert not h.is_default_login_enabled()
 
 
-@pytest.mark.ckan_config(u'ckanext.saml2auth.enable_ckan_internal_login', True)
+@helpers.change_config(u'ckanext.saml2auth.enable_ckan_internal_login', True)
 def test_default_login_enabled():
     assert h.is_default_login_enabled()
 
 
-@pytest.mark.usefixtures(u'clean_db', u'clean_index')
-@pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list', '')
+@helpers.change_config(u'ckanext.saml2auth.sysadmins_list', '')
 def test_00_update_user_sysadmin_status_continue_as_regular():
+    helpers.reset_db()
+    search.clear_all()
 
     user = factories.User(email=u'useroneemail@example.com')
     h.update_user_sysadmin_status(user[u'name'], user[u'email'])
@@ -36,10 +36,11 @@ def test_00_update_user_sysadmin_status_continue_as_regular():
     assert not is_sysadmin
 
 
-@pytest.mark.usefixtures(u'clean_db', u'clean_index')
-@pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list',
-                         u'useroneemail@example.com')
+@helpers.change_config(u'ckanext.saml2auth.sysadmins_list',
+                       u'useroneemail@example.com')
 def test_01_update_user_sysadmin_status_make_sysadmin():
+    helpers.reset_db()
+    search.clear_all()
 
     user = factories.User(email=u'useroneemail@example.com')
     h.update_user_sysadmin_status(user[u'name'], user[u'email'])
@@ -49,9 +50,11 @@ def test_01_update_user_sysadmin_status_make_sysadmin():
     assert is_sysadmin
 
 
-@pytest.mark.usefixtures(u'clean_db', u'clean_index')
-@pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list', '')
+@helpers.change_config(u'ckanext.saml2auth.sysadmins_list', '')
 def test_02_update_user_sysadmin_status_remove_sysadmin_role():
+
+    helpers.reset_db()
+    search.clear_all()
 
     user = factories.Sysadmin(email=u'useroneemail@example.com')
     h.update_user_sysadmin_status(user[u'name'], user[u'email'])
@@ -61,10 +64,12 @@ def test_02_update_user_sysadmin_status_remove_sysadmin_role():
     assert not is_sysadmin
 
 
-@pytest.mark.usefixtures(u'clean_db', u'clean_index')
-@pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list',
-                         u'useroneemail@example.com')
+@helpers.change_config(u'ckanext.saml2auth.sysadmins_list',
+                       u'useroneemail@example.com')
 def test_03_update_user_sysadmin_status_continue_as_sysadmin():
+
+    helpers.reset_db()
+    search.clear_all()
 
     user = factories.Sysadmin(email=u'useroneemail@example.com')
     h.update_user_sysadmin_status(user[u'name'], user[u'email'])
@@ -74,8 +79,11 @@ def test_03_update_user_sysadmin_status_continue_as_sysadmin():
     assert is_sysadmin
 
 
-@pytest.mark.usefixtures(u'clean_db', u'clean_index')
 def test_activate_user_if_deleted():
+
+    helpers.reset_db()
+    search.clear_all()
+
     user = factories.User()
     user = model.User.get(user[u'name'])
     user.delete()

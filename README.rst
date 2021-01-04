@@ -27,8 +27,8 @@ ckanext-saml2auth
 Requirements
 ------------
 
-This extension works with CKAN 2.9+.
-
+This extension was developed for Python 3 and CKAN 2.9 and then backported to Python 2 + CKAN 2.8.
+This branch is about CKAN 2.8 with Python 2.
 
 ------------
 Installation
@@ -56,7 +56,7 @@ To install ckanext-saml2auth:
 
 4. Install the python modules required by the extension (adjusting the path according to where ckanext-saml2auth was installed in the previous step)::
 
-     pip install -r requirements.txt
+    pip install -r requirements.txt
 
 5. Add ``saml2auth`` to the ``ckan.plugins`` setting in your CKAN
    config file (by default the config file is located at
@@ -66,6 +66,17 @@ To install ckanext-saml2auth:
 
      sudo service apache2 reload
 
+
+------------------
+CKAN vs SAML users
+------------------
+
+| This extension will connect users from external source with local CKAN users using the email.
+
+| If the user does not exist locally, it will be created.
+
+| If the user changes email (in CKAN or external source), this connection will be lost for CKAN 2.8. 
+  In CKAN 2.9 the connection will be maintained.
 
 ---------------
 Config settings
@@ -143,7 +154,7 @@ do::
 
 
     sudo apt install xmlsec1
-    git clone https://github.com/duskobogdanovski/ckanext-saml2auth.git
+    git clone https://github.com/keitaroinc/ckanext-saml2auth.git
     cd ckanext-saml2auth
     python setup.py develop
     pip install -r dev-requirements.txt
@@ -155,13 +166,7 @@ Tests
 
 To run the tests, do::
 
-    pytest --ckan-ini=test.ini
-
-To run the tests and produce a coverage report, first make sure you have
-``pytest-cov`` installed in your virtualenv (``pip install pytest-cov``) then run::
-
-    pytest --ckan-ini=test.ini  --cov=ckanext.saml2auth
-
+    nosetests --ckan --with-pylons=subdir/test.ini ckanext/saml2auth/tests
 
 --------------------------------------------
 Releasing a new version of ckanext-saml2auth

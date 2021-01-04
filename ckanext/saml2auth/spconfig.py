@@ -1,8 +1,12 @@
 # encoding: utf-8
+import logging
 from saml2.saml import NAME_FORMAT_URI
 
 from ckan.common import config as ckan_config
-from ckan.common import asbool, aslist
+from ckan.plugins.toolkit import asbool, aslist
+
+
+log = logging.getLogger(__name__)
 
 
 def get_config():
@@ -76,4 +80,5 @@ def get_config():
             }]
         config[u'metadata'][u'remote'] = remote
 
+    log.info('Config sent {}'.format(config))
     return config
