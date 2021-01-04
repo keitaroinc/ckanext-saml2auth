@@ -10,13 +10,7 @@ from saml2.config import Config as Saml2Config
 import ckan.model as model
 import ckan.authz as authz
 
-try:
-    # CKAN 2.9
-    from ckan.common import asbool, aslist
-except ImportError:
-    # CKAN 2.8
-    from ckan.plugins.toolkit import asbool, aslist
-
+from ckan.plugins.toolkit import asbool, aslist
 from ckan.common import config
 
 

@@ -1,23 +1,14 @@
 language: python
 sudo: required
 services:
-    - postgresql
-    - redis
-    - docker
-jobs:
-    include:
-        - python: "2.7"
-          env: 
-            - CKANVERSION=2.8
-            - TEST_FOLDER=test_py2_ckan28
-        - python: "3.8"
-          env:
-            - CKANVERSION=2.9
-            - TEST_FOLDER=test_py3_ckan29
+  - postgresql
+  - redis
+  - docker
+python: "2.7"
 install:
-    - bash bin/travis-build.bash
-    - pip install coveralls
-    - pip freeze
+  - bash bin/travis-build.bash
+  - pip install coveralls
+  - pip freeze
 script: sh bin/travis-run.sh
 after_success:
-    - coveralls
+  - coveralls
