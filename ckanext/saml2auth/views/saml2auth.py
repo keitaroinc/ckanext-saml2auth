@@ -130,9 +130,8 @@ def disable_default_login_register():
 
 
 saml2auth.add_url_rule(u'/acs', view_func=acs, methods=[u'GET', u'POST'])
-saml2auth.add_url_rule(u'/user/saml2login', view_func=saml2login)
+
 if not h.is_default_login_enabled():
-    saml2auth.add_url_rule(
-        u'/user/login', view_func=disable_default_login_register)
+    saml2auth.add_url_rule(u'/user/login', view_func=saml2login)
     saml2auth.add_url_rule(
         u'/user/register', view_func=disable_default_login_register)
