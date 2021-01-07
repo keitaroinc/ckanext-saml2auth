@@ -1,0 +1,31 @@
+<samlp:Response xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+    xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Version="2.0" ID="11111111-1111-1111-1111-111111111111" IssueInstant="2021-01-15T19:17:47Z" Destination="http://test.ckan.net/acs" InResponseTo="22222222-2222-2222-2222-222222222222">
+    <saml:Issuer>urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity</saml:Issuer>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </samlp:Status>
+    <saml:Assertion Version="2.0" ID="33333333-3333-3333-3333-333333333333" IssueInstant="2021-01-15T19:17:47Z">
+        <saml:Issuer>https://organization.com/saml</saml:Issuer>
+        <saml:Subject>
+            <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">44444444-4444-4444-4444-444444444444</saml:NameID>
+            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                <saml:SubjectConfirmationData NotOnOrAfter="2021-01-15T20:17:47Z" Recipient="http://test.ckan.net/acs" InResponseTo="22222222-2222-2222-2222-222222222222"/>
+            </saml:SubjectConfirmation>
+        </saml:Subject>
+        <saml:Conditions NotBefore="2021-01-15T18:17:47Z" NotOnOrAfter="2021-01-15T20:17:47Z">
+            <saml:AudienceRestriction>
+                <saml:Audience>urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity</saml:Audience>
+            </saml:AudienceRestriction>
+        </saml:Conditions>
+        <saml:AuthnStatement AuthnInstant="2021-01-15T19:17:47Z" SessionIndex="33333333-3333-3333-3333-333333333333">
+            <saml:AuthnContext>
+                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
+            </saml:AuthnContext>
+        </saml:AuthnStatement>
+        <saml:AttributeStatement>
+            <saml:Attribute Name="email">
+                <saml:AttributeValue>example@email.com</saml:AttributeValue>
+            </saml:Attribute>
+        </saml:AttributeStatement>
+    </saml:Assertion>
+</samlp:Response>

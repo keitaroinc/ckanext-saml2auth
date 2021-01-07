@@ -1,0 +1,59 @@
+<ns0:Assertion xmlns:ns0="urn:oasis:names:tc:SAML:2.0:assertion"
+    xmlns:ns1="http://www.w3.org/2000/09/xmldsig#"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    ID="_s3ss10n_index" 
+    IssueInstant="{{ issue_instant }}" 
+    Version="2.0">
+
+    <ns0:Issuer>{{ issuer_url }}</ns0:Issuer>
+    <ns1:Signature>
+        <ns1:SignedInfo>
+            <ns1:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+            <ns1:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" />
+            <ns1:Reference URI="#_s3ss10n_index">
+                <ns1:Transforms>
+                    <ns1:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+                    <ns1:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+                </ns1:Transforms>
+                <ns1:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+                <ns1:DigestValue>{{ digest_value }}</ns1:DigestValue>
+            </ns1:Reference>
+        </ns1:SignedInfo>
+        <ns1:SignatureValue>{{ signature_value }}</ns1:SignatureValue>
+        <ns1:KeyInfo>
+            <ns1:X509Data>
+                <ns1:X509Certificate>{{ certificate }}</ns1:X509Certificate>
+            </ns1:X509Data>
+        </ns1:KeyInfo>
+    </ns1:Signature>
+    <ns0:Subject>
+        <ns0:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent">87e16614-a9b9-45d0-a9dd-545cec0bd855</ns0:NameID>
+        <ns0:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+            <ns0:SubjectConfirmationData InResponseTo="id-ttfFz8PP3jqx4PggC" NotOnOrAfter="2031-01-11T16:42:54Z" Recipient="{{ destination }}" />
+        </ns0:SubjectConfirmation>
+    </ns0:Subject>
+    <ns0:Conditions NotBefore="2021-01-11T16:39:49Z" NotOnOrAfter="2031-01-11T17:39:54Z">
+        <ns0:AudienceRestriction>
+            <ns0:Audience>{{ entity_id }}</ns0:Audience>
+        </ns0:AudienceRestriction>
+    </ns0:Conditions>
+    <ns0:AuthnStatement AuthnInstant="{{ issue_instant }}" SessionIndex="{{ entity_session_id }}">
+        <ns0:AuthnContext>
+            <ns0:AuthnContextClassRef>urn:gov:gsa:ac:classes:sp:PasswordProtectedTransport:duo</ns0:AuthnContextClassRef>
+        </ns0:AuthnContext>
+    </ns0:AuthnStatement>
+    <ns0:AttributeStatement>
+        <ns0:Attribute FriendlyName="uuid" Name="uuid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+            <ns0:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">87e16614-a9b9-45d0-a9dd-545cec0bd855</ns0:AttributeValue>
+        </ns0:Attribute>
+        <ns0:Attribute FriendlyName="email" Name="email" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+            <ns0:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">{{ user_email }}</ns0:AttributeValue>
+        </ns0:Attribute>
+        <ns0:Attribute FriendlyName="aal" Name="aal" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+            <ns0:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">urn:gov:gsa:ac:classes:sp:PasswordProtectedTransport:duo</ns0:AttributeValue>
+        </ns0:Attribute>
+        <ns0:Attribute FriendlyName="ial" Name="ial" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+            <ns0:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">http://idmanagement.gov/ns/assurance/ial/1</ns0:AttributeValue>
+        </ns0:Attribute>
+    </ns0:AttributeStatement>
+</ns0:Assertion>
