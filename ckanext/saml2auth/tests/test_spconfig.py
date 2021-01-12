@@ -59,7 +59,7 @@ def test_paths():
 def test_name_id_policy_format_is_a_string():
 
     name_id_policy_format = get_config()[u'service'][u'sp'][u'name_id_policy_format']
-    assert name_id_policy_format  == NAME_ID_FORMAT.split(' ')[0]
+    assert name_id_policy_format == NAME_ID_FORMAT.split(' ')[0]
 
 
 @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'some:entity_id')
