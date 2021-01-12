@@ -38,6 +38,7 @@ def get_config():
     key_file = ckan_config.get(u'ckanext.saml2auth.key_file_path', None)
     cert_file = ckan_config.get(u'ckanext.saml2auth.cert_file_path', None)
     attribute_map_dir = ckan_config.get(u'ckanext.saml2auth.attribute_map_dir', None)
+    acs_endpoint = ckan_config.get('ckanext.saml2auth.acs_endpoint', '/acs')
 
     config = {
         u'entityid': entity_id,
@@ -48,7 +49,7 @@ def get_config():
             u'sp': {
                 u'name': u'CKAN SP',
                 u'endpoints': {
-                    u'assertion_consumer_service': [base + u'/acs']
+                    u'assertion_consumer_service': [base + acs_endpoint]
                 },
                 u'allow_unsolicited': True,
                 u'name_id_policy_format': name_id_format,
