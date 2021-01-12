@@ -42,7 +42,6 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         if acs_endpoint and not acs_endpoint.startswith('/'):
             raise RuntimeError('ckanext.saml2auth.acs_endpoint should start with a slash ("/")')
 
-
     # IBlueprint
 
     def get_blueprint(self):
