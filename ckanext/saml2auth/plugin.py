@@ -38,6 +38,10 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             if not config.get(option, None):
                 raise RuntimeError(missing_config.format(option))
 
+        acs_endpoint = config.get('ckanext.saml2auth.acs_endpoint')
+        if acs_endpoint and not acs_endpoint.startswith('/'):
+            raise RuntimeError('ckanext.saml2auth.acs_endpoint should start with a slash ("/")')
+
     # IBlueprint
 
     def get_blueprint(self):

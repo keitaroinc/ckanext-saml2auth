@@ -129,7 +129,8 @@ def disable_default_login_register():
     return base.render(u'error_document_template.html', extra_vars), 403
 
 
-saml2auth.add_url_rule(u'/acs', view_func=acs, methods=[u'GET', u'POST'])
+acs_endpoint = config.get('ckanext.saml2auth.acs_endpoint', '/acs')
+saml2auth.add_url_rule(acs_endpoint, view_func=acs, methods=[u'GET', u'POST'])
 saml2auth.add_url_rule(u'/user/saml2login', view_func=saml2login)
 if not h.is_default_login_enabled():
     saml2auth.add_url_rule(
