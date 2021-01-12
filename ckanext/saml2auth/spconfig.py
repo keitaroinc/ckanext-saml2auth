@@ -47,7 +47,7 @@ def get_config():
                     u'assertion_consumer_service': [base + u'/acs']
                 },
                 u'allow_unsolicited': True,
-                u'name_id_policy_format': name_id_format,
+                u'name_id_policy_format': name_id_format[0],
                 u'name_id_format': name_id_format,
                 u'want_response_signed': response_signed,
                 u'want_assertions_signed': assertion_signed,
