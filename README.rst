@@ -101,6 +101,10 @@ Required::
 
 Optional::
 
+     # URL route of the endpoint where the SAML assertion is sent, also known as Assertion Consumer Service (ACS).
+     # Default: /acs
+     ckanext.saml2auth.acs_endpoint = /sso/post
+
      # Configuration setting that enables CKAN's internal register/login functionality as well
      # Default: False
      ckanext.saml2auth.enable_ckan_internal_login = True
