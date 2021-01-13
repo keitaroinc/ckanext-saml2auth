@@ -54,6 +54,17 @@ def test_paths():
     assert cfg[u'attribute_map_dir'] == '/path/to/attribute_map_dir'
 
 
+def test_name_id_policy_format_default_not_set():
+    assert 'name_id_policy_format' not in get_config()[u'service'][u'sp']
+
+
+@helpers.change_config(u'ckanext.saml2auth.sp.name_id_policy_format', 'some_policy_format')
+def test_name_id_policy_format_set_in_config():
+
+    name_id_policy_format = get_config()[u'service'][u'sp'][u'name_id_policy_format']
+    assert name_id_policy_format == 'some_policy_format'
+
+
 @helpers.change_config(u'ckanext.saml2auth.entity_id', u'some:entity_id')
 def test_read_entity_id():
 
