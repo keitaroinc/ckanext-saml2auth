@@ -17,6 +17,8 @@ def get_config():
     name_id_format = \
         aslist(ckan_config.get(u'ckanext.saml2auth.sp.name_id_format',
                                "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"))
+    name_id_policy_format = ckan_config.get(u'ckanext.saml2auth.sp.name_id_policy_format')
+
     location = \
         ckan_config.get(u'ckanext.saml2auth.idp_metadata.location')
     local_path = \
@@ -48,7 +50,6 @@ def get_config():
                     u'assertion_consumer_service': [base + acs_endpoint]
                 },
                 u'allow_unsolicited': True,
-                u'name_id_policy_format': name_id_format[0],
                 u'name_id_format': name_id_format,
                 u'want_response_signed': response_signed,
                 u'want_assertions_signed': assertion_signed,
@@ -59,6 +60,9 @@ def get_config():
         u'debug': 1 if debug else 0,
         u'name_form': NAME_FORMAT_URI
         }
+
+    if name_id_policy_format:
+        config[u'service'][u'sp'][u'name_id_policy_format'] = name_id_policy_format
 
     if key_file is not None and cert_file is not None:
         config[u'key_file'] = key_file

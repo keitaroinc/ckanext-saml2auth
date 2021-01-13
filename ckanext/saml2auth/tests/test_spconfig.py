@@ -3,8 +3,6 @@ import pytest
 
 from ckanext.saml2auth.spconfig import get_config
 
-NAME_ID_FORMAT = u'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
-
 
 @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
 @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', '/path/to/idp.xml')
@@ -55,11 +53,15 @@ def test_paths():
     assert cfg[u'attribute_map_dir'] == '/path/to/attribute_map_dir'
 
 
-@pytest.mark.ckan_config(u'ckanext.saml2auth.name_id_format', NAME_ID_FORMAT)
-def test_name_id_policy_format_is_a_string():
+def test_name_id_policy_format_default_not_set():
+    assert 'name_id_policy_format' not in get_config()[u'service'][u'sp']
+
+
+@pytest.mark.ckan_config(u'ckanext.saml2auth.sp.name_id_policy_format', 'some_policy_format')
+def test_name_id_policy_format_set_in_config():
 
     name_id_policy_format = get_config()[u'service'][u'sp'][u'name_id_policy_format']
-    assert name_id_policy_format == NAME_ID_FORMAT.split(' ')[0]
+    assert name_id_policy_format == 'some_policy_format'
 
 
 @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'some:entity_id')
