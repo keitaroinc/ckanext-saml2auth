@@ -132,6 +132,10 @@ Optional::
      # Default: urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
      ckanext.saml2auth.sp.name_id_format = urn:oasis:names:tc:SAML:2.0:nameid-format:persistent urn:oasis:names:tc:SAML:2.0:nameid-format:transient
 
+     # A string value that will be used to set the Format attribute of the <NameIDPolicy> element of the metadata of an entity.
+     # Default: <Not set>
+     ckanext.saml2auth.sp.name_id_policy_format = urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+
     # Entity ID (also know as Issuer)
     # Define the entity ID. Default is urn:mace:umu.se:saml:ckan:sp 
     ckanext.saml2auth.entity_id = urn:gov:gsa:SAML:2.0.profiles:sp:sso:gsa:catalog-dev
