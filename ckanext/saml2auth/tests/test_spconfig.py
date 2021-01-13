@@ -67,3 +67,10 @@ def test_read_entity_id():
 
     entity_id = get_config()[u'entityid']
     assert entity_id == u'some:entity_id'
+
+
+@pytest.mark.ckan_config(u'ckanext.saml2auth.acs_endpoint', u'/my/acs/endpoint')
+def test_read_acs_endpoint():
+
+    acs_endpoint = get_config()[u'service'][u'sp'][u'endpoints'][u'assertion_consumer_service'][0]
+    assert acs_endpoint.endswith('/my/acs/endpoint')
