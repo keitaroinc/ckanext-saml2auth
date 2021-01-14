@@ -119,9 +119,11 @@ def acs():
                 base.abort(400, error_message)
         g.user = user_dict['name']
 
-    # If user email is in given list of emails
-    # make that user sysadmin and opposite
-    h.update_user_sysadmin_status(g.user, email)
+    # If ckanext.saml2auth.sysadmins_list is set 
+    # Check if the authenticated user email is in given list of emails
+    # and make that user sysadmin and opposite
+    if config.get('ckanext.saml2auth.sysadmins_list'):
+        h.update_user_sysadmin_status(g.user, email)
 
     g.userobj = model.User.by_name(g.user)
     # log the user in programmatically
