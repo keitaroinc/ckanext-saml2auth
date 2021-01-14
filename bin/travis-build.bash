@@ -41,7 +41,7 @@ sudo -u postgres psql -c "CREATE USER ckan_default WITH PASSWORD 'pass';"
 sudo -u postgres psql -c 'CREATE DATABASE ckan_test WITH OWNER ckan_default;'
 
 echo "Setting up Solr..."
-docker run --name ckan-solr -p 8983:8983 -d openknowledge/ckan-solr-dev:$CKANVERSION
+docker run --name ckan-solr -p 8983:8983 -d ghcr.io/keitaroinc/ckan-solr-dev:$CKANVERSION
 
 echo "Initialising the database..."
 cd ckan
