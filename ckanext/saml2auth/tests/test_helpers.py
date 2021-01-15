@@ -50,7 +50,7 @@ def test_01_update_user_sysadmin_status_make_sysadmin():
 
 
 @pytest.mark.usefixtures(u'clean_db', u'clean_index')
-@pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list', '')
+@pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list', 'differentuser@example.com')
 def test_02_update_user_sysadmin_status_remove_sysadmin_role():
 
     user = factories.Sysadmin(email=u'useroneemail@example.com')
