@@ -50,7 +50,8 @@ def test_01_update_user_sysadmin_status_make_sysadmin():
     assert is_sysadmin
 
 
-@helpers.change_config(u'ckanext.saml2auth.sysadmins_list', '')
+@helpers.change_config(u'ckanext.saml2auth.sysadmins_list',
+                       'differentuser@example.com')
 def test_02_update_user_sysadmin_status_remove_sysadmin_role():
 
     helpers.reset_db()
