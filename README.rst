@@ -121,6 +121,9 @@ Optional::
      ckanext.saml2auth.enable_ckan_internal_login = True
 
      # List of email addresses from users that should be created as sysadmins (system administrators)
+     # Note that this means that CKAN sysadmins will _only_ be managed based on this config option and will override existing user permissions in the CKAN database
+     # If not set then it is ignored and CKAN sysadmins are managed through normal means
+     # Default: <Not set>
      ckanext.saml2auth.sysadmins_list = mail@domain.com mail2@domain.com mail3@domain.com
 
      # Indicates that attributes that are not recognized (they are not configured in attribute-mapping),
