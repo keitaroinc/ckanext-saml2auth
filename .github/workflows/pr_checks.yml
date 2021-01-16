@@ -84,6 +84,5 @@ jobs:
           pytest --ckan-ini=subdir/test.ini --cov=ckanext.saml2auth --disable-warnings ckanext/saml2auth/tests
 
       - name: Report coverage to Coveralls
-        uses: coverallsapp/github-action@v1.1.2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          coveralls
