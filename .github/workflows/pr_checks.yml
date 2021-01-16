@@ -1,6 +1,8 @@
-name: PR Checks
+name: CI
 
 on:
+  push:
+    branches: main
   pull_request:
     branches: main
 
@@ -68,10 +70,10 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Install pytest and coveralls
+      - name: Install pytest
         run: |
           python -m pip install --upgrade pip
-          pip install pytest coveralls
+          pip install pytest
 
       - name: Setup CKAN
         env:
@@ -83,6 +85,5 @@ jobs:
         run: |
           pytest --ckan-ini=subdir/test.ini --cov=ckanext.saml2auth --disable-warnings ckanext/saml2auth/tests
 
-      - name: Report coverage to Coveralls
-        run: |
-          coveralls
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
