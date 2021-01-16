@@ -74,6 +74,8 @@ jobs:
           pip install pytest coveralls
 
       - name: Setup CKAN
+        env:
+          PGPASSWORD: postgres
         run: |
           bash bin/setup-ckan.bash
 
