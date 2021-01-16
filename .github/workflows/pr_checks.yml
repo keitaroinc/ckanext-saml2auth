@@ -33,12 +33,26 @@ jobs:
     services:
       postgresql:
         image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - 5432:5432
+
       redis:
         image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - 6379:6379
+
       ckan-solr:
         # Workflow level env variables are not addressable on job level, only on steps level
         # image: ghcr.io/keitaroinc/ckan-solr-dev:{{ env.CKANVERSION }}
