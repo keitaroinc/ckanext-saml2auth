@@ -1,0 +1,73 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: main
+
+env:
+  CKANVERSION: 2.9
+      
+jobs:
+  code_quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install flake8
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --max-complexity=10 --max-line-length=127 --statistics --exclude ckan,ckanext-saml2auth
+
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgresql:
+        image: postgres
+        ports:
+          - 5432:5432
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+      ckan-solr:
+        # Workflow level env variables are not addressable on job level, only on steps level
+        # image: ghcr.io/keitaroinc/ckan-solr-dev:{{ env.CKANVERSION }}
+        image: ghcr.io/keitaroinc/ckan-solr-dev:2.9
+        ports:
+          - 8983:8983
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install pytest and coveralls
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest coveralls
+
+      - name: Setup CKAN
+        run: |
+          bash bin/setup-ckan.bash
+
+      - name: Test with pytest
+        run: |
+          pytest --ckan-ini=subdir/test.ini --cov=ckanext.saml2auth --disable-warnings ckanext/saml2auth/tests
+
+      - name: Report coverage to Coveralls
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
