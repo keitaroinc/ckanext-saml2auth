@@ -1,0 +1,31 @@
+<EntityDescriptor 
+    ID="{{ entity_session_id }}" 
+    xmlns="urn:oasis:names:tc:SAML:2.0:metadata" 
+    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" 
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#" 
+    entityID="{{ entity_id }}">
+    
+    <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress</NameIDFormat>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="{{ redirect_login_url }}"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="{{ redirect_login_url }}"/>
+    </IDPSSODescriptor>
+    <AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <Organization>
+            <OrganizationName xml:lang="en">{{ org_name }}</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">{{ org_name }}</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">{{ org_url }}</OrganizationURL>
+        </Organization>
+        <ContactPerson contactType="technical"></ContactPerson>
+        <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="{{ attributes_url }}"/>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress</NameIDFormat>
+    </AttributeAuthorityDescriptor>
+    <Organization>
+        <OrganizationName xml:lang="en">{{ org_name }}</OrganizationName>
+        <OrganizationDisplayName xml:lang="en">{{ org_name }}</OrganizationDisplayName>
+        <OrganizationURL xml:lang="en">{{ org_url }}</OrganizationURL>
+    </Organization>
+    <ContactPerson contactType="technical"></ContactPerson>
+</EntityDescriptor>

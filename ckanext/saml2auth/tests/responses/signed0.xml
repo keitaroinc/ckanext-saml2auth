@@ -1,0 +1,16 @@
+<samlp:Response 
+  ID="_0bd05870-3312-0139-ccc4-06873149d16f" 
+  Version="2.0" 
+  IssueInstant="{{ issue_instant }}" 
+  Destination="{{ destination }}" 
+  Consent="urn:oasis:names:tc:SAML:2.0:consent:unspecified" 
+  InResponseTo="id-8cnRyb30jsZhGATGI" 
+  xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
+  
+  <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">{{ issuer_url }}</Issuer>
+  <samlp:Status>
+    <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status>
+    <EncryptedAssertion xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+      {{ encrypted_data }}
+    </EncryptedAssertion>
+</samlp:Response>

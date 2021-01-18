@@ -1,4 +1,5 @@
 # encoding: utf-8
+import logging
 from flask import Blueprint
 from saml2 import BINDING_HTTP_POST
 
@@ -16,6 +17,7 @@ from ckanext.saml2auth import helpers as h
 
 
 saml2auth = Blueprint(u'saml2auth', __name__)
+log = logging.getLogger(__name__)
 
 
 def get_ckan_user(email):
@@ -25,7 +27,9 @@ def get_ckan_user(email):
     ckan_users = model.User.by_email(email)
     if len(ckan_users) > 0:
         ckan_user = ckan_users[0]
+        log.debug('CKAN user found: {} for {}'.format(ckan_user, email))
         return ckan_user
+    log.debug('CKAN user not found for {}'.format(email))
 
 
 def create_user(context, email, firstname, lastname):
@@ -39,8 +43,10 @@ def create_user(context, email, firstname, lastname):
 
     try:
         return logic.get_action(u'user_create')(context, data_dict)
+        log.info('CKAN user created: {}'.format(data_dict['name']))
     except logic.ValidationError as e:
         error_message = (e.error_summary or e.message or e.error_dict)
+        log.error(error_message)
         base.abort(400, error_message)
 
 
@@ -48,6 +54,7 @@ def acs():
     u'''The location where the SAML assertion is sent with a HTTP POST.
     This is often referred to as the SAML Assertion Consumer Service (ACS) URL.
     '''
+    log.debug('Getting an external redirection')
     g.user = None
     g.userobj = None
 
@@ -64,16 +71,31 @@ def acs():
     saml_user_email = \
         config.get(u'ckanext.saml2auth.user_email')
 
-    client = h.saml_client(sp_config())
-    auth_response = client.parse_authn_request_response(
-        request.form.get(u'SAMLResponse', None),
-        BINDING_HTTP_POST)
-    auth_response.get_identity()
+    config_sp = sp_config()
+    saml_response = request.form.get(u'SAMLResponse', None)
+    log.debug('Validating user with config {} for response {} ...'.format(config_sp, saml_response[:30]))
+    client = h.saml_client(config_sp)
+    try:
+        auth_response = client.parse_authn_request_response(
+            saml_response,
+            BINDING_HTTP_POST)
+    except Exception as e:
+        error = 'Bad login request: {}'.format(e)
+        log.error(error)
+        extra_vars = {u'code': [400], u'content': error}
+        return base.render(u'error_document_template.html', extra_vars), 400
 
+    if auth_response is None:
+        log.error('Empty login request')
+        extra_vars = {u'code': [400], u'content': u'Empty login request.'}
+        return base.render(u'error_document_template.html', extra_vars), 400
+
+    auth_response.get_identity()
     # SAML username - unique
     # TODO use to connect CKAN user and SAML user
-    # user_info = auth_response.get_subject()
-    # saml_id = user_info.text
+    user_info = auth_response.get_subject()
+    saml_id = user_info.text
+    log.debug('User info {} SAML id {}'.format(user_info, saml_id))
 
     # Required user attributes for user creation
     email = auth_response.ava[saml_user_email][0]
@@ -101,6 +123,8 @@ def acs():
     # log the user in programmatically
     resp = toolkit.redirect_to(u'user.me')
     set_repoze_user(g.user, resp)
+    log.debug('User {} OK, redirecting'.format(g.user))
+
     return resp
 
 

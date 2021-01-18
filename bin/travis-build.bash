@@ -5,6 +5,7 @@ echo "This is travis-build.bash..."
 
 echo "Installing the packages that CKAN requires..."
 sudo apt-get update -qq
+sudo apt-get install xmlsec1 libxmlsec1-dev
 
 echo "Installing CKAN and its Python dependencies..."
 git clone https://github.com/ckan/ckan
