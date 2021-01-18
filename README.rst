@@ -2,13 +2,13 @@
    these badges work. The necessary Travis and Coverage config files have been
    generated for you.
 
-.. image:: https://travis-ci.com/keitaroinc/ckanext-saml2auth.svg?branch=initial-implementation
+.. image:: https://travis-ci.com/keitaroinc/ckanext-saml2auth.svg?branch=ckan-2.8
     :target: https://travis-ci.com/keitaroinc/ckanext-saml2auth
 
-.. image:: https://coveralls.io/repos/github/keitaroinc/ckanext-saml2auth/badge.svg?branch=initial-implementation
-    :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=initial-implementation
+.. image:: https://coveralls.io/repos/github/keitaroinc/ckanext-saml2auth/badge.svg?branch=ckan-2.8
+    :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=ckan-2.8
 
-.. image:: https://img.shields.io/badge/python-3.8-blue.svg
+.. image:: https://img.shields.io/badge/python-2.7-blue.svg
     :target: https://www.python.org/downloads/release/python-384/
 
 
