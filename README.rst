@@ -155,6 +155,12 @@ Optional::
     # Attribute map directory
     ckanext.saml2auth.attribute_map_dir = /path/to/dir/attributemaps
 
+    # Authentication context request before redirect to login
+    # e.g. to ask for a PIV card with login.gov provider (https://developers.login.gov/oidc/#aal-values) use:
+    ckanext.saml2auth.requested_authn_context = http://idmanagement.gov/ns/assurance/aal/3?hspd12=true
+    # You can use multiple context separated by spaces
+    ckanext.saml2auth.requested_authn_context = req1 req2
+
 
 ----------------------
 Developer installation
