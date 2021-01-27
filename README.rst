@@ -123,22 +123,31 @@ Optional::
      # Default: <Not set>
      ckanext.saml2auth.sp.name_id_policy_format = urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
 
-    # Entity ID (also know as Issuer)
-    # Define the entity ID. Default is urn:mace:umu.se:saml:ckan:sp 
-    ckanext.saml2auth.entity_id = urn:gov:gsa:SAML:2.0.profiles:sp:sso:gsa:catalog-dev
+     # Entity ID (also know as Issuer)
+     # Define the entity ID. Default is urn:mace:umu.se:saml:ckan:sp
+     ckanext.saml2auth.entity_id = urn:gov:gsa:SAML:2.0.profiles:sp:sso:gsa:catalog-dev
 
-    # Signed responses and assertions 
-    ckanext.saml2auth.want_response_signed = False
-    ckanext.saml2auth.want_assertions_signed = False
-    ckanext.saml2auth.want_assertions_or_response_signed = True
+     # Signed responses and assertions
+     ckanext.saml2auth.want_response_signed = False
+     ckanext.saml2auth.want_assertions_signed = False
+     ckanext.saml2auth.want_assertions_or_response_signed = True
     
-    # Cert & key files
-    ckanext.saml2auth.key_file_path = /path/to/mykey.pem
-    ckanext.saml2auth.cert_file_path = /path/to/mycert.pem
+     # Cert & key files
+     ckanext.saml2auth.key_file_path = /path/to/mykey.pem
+     ckanext.saml2auth.cert_file_path = /path/to/mycert.pem
     
-    # Attribute map directory
-    ckanext.saml2auth.attribute_map_dir = /path/to/dir/attributemaps
+     # Attribute map directory
+     ckanext.saml2auth.attribute_map_dir = /path/to/dir/attributemaps
 
+     # Authentication context request before redirect to login
+     # e.g. to ask for a PIV card with login.gov provider (https://developers.login.gov/oidc/#aal-values) use:
+     ckanext.saml2auth.requested_authn_context = http://idmanagement.gov/ns/assurance/aal/3?hspd12=true
+     # You can use multiple context separated by spaces
+     ckanext.saml2auth.requested_authn_context = req1 req2
+
+     # Define the comparison value for RequestedAuthnContext
+     # Comparison could be one of this: exact, minimum, maximum or better
+     ckanext.saml2auth.requested_authn_context_comparison = exact
 
 ----------------------
 Developer installation
