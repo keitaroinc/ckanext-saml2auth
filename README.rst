@@ -161,6 +161,10 @@ Optional::
     # You can use multiple context separated by spaces
     ckanext.saml2auth.requested_authn_context = req1 req2
 
+    # Define the comparison value for RequestedAuthnContext
+    # Comparison could be one of this: exact, minimum, maximum or better
+    ckanext.saml2auth.requested_authn_context_comparison = exact
+
 
 ----------------------
 Developer installation

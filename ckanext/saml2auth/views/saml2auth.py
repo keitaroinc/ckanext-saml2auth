@@ -143,11 +143,14 @@ def saml2login():
      configured identity provider for authentication
     '''
     client = h.saml_client(sp_config())
-    requested_authn_context = None
     requested_authn_contexts = get_requested_authn_contexts()
 
     if len(requested_authn_contexts) > 0:
-        requested_authn_context = RequestedAuthnContext()
+        comparison = config.get('ckanext.saml2auth.requested_authn_context_comparison', 'exact')
+        if comparison not in ['exact', 'minimum', 'maximum', 'better']:
+            error = 'Unexpected comparison value {}'.format(comparison)
+            raise ValueError(error)
+        requested_authn_context = RequestedAuthnContext(comparison=comparison)
 
         for item in requested_authn_contexts:
             context_class_ref = AuthnContextClassRef()
