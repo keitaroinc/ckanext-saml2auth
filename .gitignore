@@ -47,3 +47,5 @@ idp.xml
 # Custom IDE files
 .vscode/
 
+.flake8
+.pre-commit-config.yaml

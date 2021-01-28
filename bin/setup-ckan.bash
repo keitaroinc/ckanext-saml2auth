@@ -22,28 +22,21 @@ then
     pip install -r requirement-setuptools.txt
 fi
 
-python setup.py develop
 pip install -r requirements.txt
 pip install -r dev-requirements.txt
-cd -
+python setup.py develop
 
 echo "Creating the PostgreSQL user and database..."
-sudo -u postgres psql -c "CREATE USER ckan_default WITH PASSWORD 'pass';"
-sudo -u postgres psql -c 'CREATE DATABASE ckan_test WITH OWNER ckan_default;'
-
-echo "Setting up Solr..."
-docker run --name ckan-solr -p 8983:8983 -d ghcr.io/keitaroinc/ckan-solr-dev:2.8
+psql -h localhost -U postgres -c "CREATE USER ckan_default WITH PASSWORD 'pass';"
+psql -h localhost -U postgres -c 'CREATE DATABASE ckan_test WITH OWNER ckan_default;'
 
 echo "Initialising the database..."
-
-cd ckan
 paster --plugin=ckan db init -c test-core.ini
 
 cd -
 
 echo "Installing ckanext-saml2auth and its requirements..."
 pip install -r requirements.txt
-
 pip install -r dev-requirements.txt
 python setup.py develop
 

@@ -2,6 +2,7 @@
 import logging
 from flask import Blueprint
 from saml2 import BINDING_HTTP_POST
+from saml2.authn_context import requested_authn_context
 
 import ckan.plugins.toolkit as toolkit
 import ckan.model as model
@@ -128,12 +129,35 @@ def acs():
     return resp
 
 
+def get_requested_authn_contexts():
+    requested_authn_contexts = config.get('ckanext.saml2auth.requested_authn_context', None)
+    if requested_authn_contexts is None:
+        return []
+
+    return requested_authn_contexts.strip().split()
+
+
 def saml2login():
     u'''Redirects the user to the
      configured identity provider for authentication
     '''
     client = h.saml_client(sp_config())
-    reqid, info = client.prepare_for_authenticate()
+    requested_authn_contexts = get_requested_authn_contexts()
+
+    if len(requested_authn_contexts) > 0:
+        comparison = config.get('ckanext.saml2auth.requested_authn_context_comparison', 'minimum')
+        if comparison not in ['exact', 'minimum', 'maximum', 'better']:
+            error = 'Unexpected comparison value {}'.format(comparison)
+            raise ValueError(error)
+
+        final_context = requested_authn_context(
+            class_ref=requested_authn_contexts,
+            comparison=comparison
+        )
+
+        reqid, info = client.prepare_for_authenticate(requested_authn_context=final_context)
+    else:
+        reqid, info = client.prepare_for_authenticate()
 
     redirect_url = None
     for key, value in info[u'headers']:
