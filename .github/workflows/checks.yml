@@ -88,4 +88,4 @@ jobs:
           nosetests --ckan --with-pylons=subdir/test.ini --with-coverage --cover-package=ckanext ckanext/saml2auth/tests
 
       - name: Coveralls
-          uses: AndreMiras/coveralls-python-action@develop
+        uses: AndreMiras/coveralls-python-action@develop
