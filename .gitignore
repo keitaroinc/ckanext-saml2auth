@@ -49,3 +49,7 @@ idp.xml
 
 .flake8
 .pre-commit-config.yaml
+
+test-signed-encrypted.xml
+test-signed.xml
+*.pem
