@@ -177,7 +177,7 @@ def saml2login():
         if comparison not in ['exact', 'minimum', 'maximum', 'better']:
             error = 'Unexpected comparison value {}'.format(comparison)
             raise ValueError(error)
-        
+
         final_context = requested_authn_context(
             class_ref=requested_authn_contexts,
             comparison=comparison
