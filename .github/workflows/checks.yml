@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - '**'
+      - "ckan-2.8"
   pull_request:
     branches:
       - "ckan-2.8"
@@ -81,7 +81,7 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: |
-          bash bin/travis-build.bash
+          bash bin/setup-ckan.bash
 
       - name: Test
         run: |

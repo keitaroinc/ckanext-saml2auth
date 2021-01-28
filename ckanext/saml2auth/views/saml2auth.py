@@ -2,8 +2,7 @@
 import logging
 from flask import Blueprint
 from saml2 import BINDING_HTTP_POST
-from saml2.saml import AuthnContextClassRef
-from saml2.samlp import RequestedAuthnContext
+from saml2.authn_context import requested_authn_context
 
 import ckan.plugins.toolkit as toolkit
 import ckan.model as model
@@ -146,19 +145,17 @@ def saml2login():
     requested_authn_contexts = get_requested_authn_contexts()
 
     if len(requested_authn_contexts) > 0:
-        comparison = config.get('ckanext.saml2auth.requested_authn_context_comparison', 'exact')
+        comparison = config.get('ckanext.saml2auth.requested_authn_context_comparison', 'minimum')
         if comparison not in ['exact', 'minimum', 'maximum', 'better']:
             error = 'Unexpected comparison value {}'.format(comparison)
             raise ValueError(error)
-        requested_authn_context = RequestedAuthnContext(comparison=comparison)
 
-        for item in requested_authn_contexts:
-            context_class_ref = AuthnContextClassRef()
-            context_class_ref.text = item
-            log.debug('requested_authn_context added {}'.format(item))
-            requested_authn_context.authn_context_class_ref.append(context_class_ref)
+        final_context = requested_authn_context(
+            class_ref=requested_authn_contexts,
+            comparison=comparison
+        )
 
-        reqid, info = client.prepare_for_authenticate(requested_authn_context=requested_authn_context)
+        reqid, info = client.prepare_for_authenticate(requested_authn_context=final_context)
     else:
         reqid, info = client.prepare_for_authenticate()
 
