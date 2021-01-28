@@ -48,3 +48,7 @@ idp.xml
 .vscode/
 .pre-commit-config.yaml
 .flake8
+
+*.pem
+test-signed.xml
+test-signed-encrypted.xml
