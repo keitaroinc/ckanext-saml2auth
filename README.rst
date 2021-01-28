@@ -2,8 +2,8 @@
    these badges work. The necessary Travis and Coverage config files have been
    generated for you.
 
-.. image:: https://travis-ci.com/keitaroinc/ckanext-saml2auth.svg?branch=ckan-2.8
-    :target: https://travis-ci.com/keitaroinc/ckanext-saml2auth
+.. image:: https://github.com/keitaroinc/ckanext-saml2auth/workflows/CI-CKAN-2.8/badge.svg
+    :target: https://github.com/keitaroinc/ckanext-saml2auth/actions
 
 .. image:: https://coveralls.io/repos/github/keitaroinc/ckanext-saml2auth/badge.svg?branch=ckan-2.8
     :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=ckan-2.8

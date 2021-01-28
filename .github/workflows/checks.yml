@@ -1,4 +1,4 @@
-name: CI
+name: CI-CKAN-2.8
 
 on:
   push:
@@ -86,3 +86,6 @@ jobs:
       - name: Test
         run: |
           nosetests --ckan --with-pylons=subdir/test.ini --with-coverage --cover-package=ckanext ckanext/saml2auth/tests
+
+      - name: Coveralls
+          uses: AndreMiras/coveralls-python-action@develop
