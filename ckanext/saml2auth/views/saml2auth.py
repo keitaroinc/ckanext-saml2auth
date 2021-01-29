@@ -131,7 +131,7 @@ def acs():
 
 def get_requested_authn_contexts():
     requested_authn_contexts = config.get('ckanext.saml2auth.requested_authn_context', None)
-    if requested_authn_contexts is None:
+    if requested_authn_contexts is None or requested_authn_contexts == '':
         return []
 
     return requested_authn_contexts.strip().split()
