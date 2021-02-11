@@ -51,6 +51,8 @@ To install ckanext-saml2auth:
 
 4. Install the python modules required by the extension (adjusting the path according to where ckanext-saml2auth was installed in the previous step)::
 
+     # rustc and cargo are neeeded to build cryptography if no binary wheel exists
+     sudo apt install rustc cargo
      pip install -r requirements.txt
 
 5. Add ``saml2auth`` to the ``ckan.plugins`` setting in your CKAN
