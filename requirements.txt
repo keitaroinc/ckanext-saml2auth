@@ -1,1 +1,2 @@
 pysaml2
+cryptography==3.3
