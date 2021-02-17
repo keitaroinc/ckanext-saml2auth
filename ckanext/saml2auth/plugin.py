@@ -44,7 +44,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
 
         if not first_and_last_name and not full_name:
             raise RuntimeError('''
-            You need to provide both ckanext.saml2auth.user_firstname + 
+            You need to provide both ckanext.saml2auth.user_firstname +
             ckanext.saml2auth.user_lastname or ckanext.saml2auth.user_fullname'''.strip())
 
         acs_endpoint = config.get('ckanext.saml2auth.acs_endpoint')
