@@ -27,7 +27,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         # exception if they're missing.
         missing_config = "{0} is not configured. Please amend your .ini file."
         config_options = (
-            'ckanext.saml2auth.user_email'
+            'ckanext.saml2auth.user_email',
         )
         if not config.get('ckanext.saml2auth.idp_metadata.local_path'):
             config_options += ('ckanext.saml2auth.idp_metadata.remote_url',
