@@ -1,6 +1,8 @@
 # encoding: utf-8
 import logging
 import string
+import re
+import random
 import secrets
 from six import text_type
 
@@ -59,3 +61,21 @@ def activate_user_if_deleted(userobj):
         userobj.activate()
         userobj.commit()
         log.info(u'User {} reactivated'.format(userobj.name))
+
+
+def ensure_unique_username_from_email(email):
+    localpart = email.split('@')[0]
+    cleaned_localpart = re.sub(r'[^\w]', '-', localpart).lower()
+
+    if not model.User.get(cleaned_localpart):
+        return cleaned_localpart
+
+    max_name_creation_attempts = 10
+
+    for i in range(max_name_creation_attempts):
+        random_number = random.SystemRandom().random() * 10000
+        name = '%s-%d' % (cleaned_localpart, random_number)
+        if not model.User.get(name):
+            return name
+
+    return cleaned_localpart

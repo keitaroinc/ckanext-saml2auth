@@ -90,3 +90,25 @@ def test_activate_user_if_deleted():
     user.delete()
     h.activate_user_if_deleted(user)
     assert not user.is_deleted()
+
+
+def test_ensure_unique_user_name_existing_user():
+
+    helpers.reset_db()
+    search.clear_all()
+
+    user = factories.User(
+        name='existing-user',
+        email=u'existing-user@example.com'
+    )
+
+    user_name = h.ensure_unique_username_from_email(user['email'])
+
+    assert user_name != user['email'].split('@')[0]
+    assert user_name.startswith(user['email'].split('@')[0])
+
+
+def test_ensure_unique_user_name_non_existing_user():
+
+    user_name = h.ensure_unique_username_from_email('non-existing-user@example.com')
+    assert user_name == 'non-existing-user'
