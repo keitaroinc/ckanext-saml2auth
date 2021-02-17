@@ -462,7 +462,7 @@ class TestGetRequest(FunctionalTestBase):
         t = Template(unsigned_response)
         final_response = t.render(**context)
 
-        encoded_response = self._b4_encode_string(final_response)
+        encoded_response = base64.b64encode(final_response)
 
         app = self._get_test_app()
         url = '/acs'
@@ -501,7 +501,7 @@ class TestGetRequest(FunctionalTestBase):
         t = Template(unsigned_response)
         final_response = t.render(**context)
 
-        encoded_response = self._b4_encode_string(final_response)
+        encoded_response = base64.b64encode(final_response)
 
         app = self._get_test_app()
         url = '/acs'
