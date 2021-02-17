@@ -27,9 +27,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         # exception if they're missing.
         missing_config = "{0} is not configured. Please amend your .ini file."
         config_options = (
-            'ckanext.saml2auth.user_firstname',
-            'ckanext.saml2auth.user_lastname',
-            'ckanext.saml2auth.user_email'
+            'ckanext.saml2auth.user_email',
         )
         if not config.get('ckanext.saml2auth.idp_metadata.local_path'):
             config_options += ('ckanext.saml2auth.idp_metadata.remote_url',
@@ -37,6 +35,17 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         for option in config_options:
             if not config.get(option, None):
                 raise RuntimeError(missing_config.format(option))
+
+        first_and_last_name = all((
+            config.get('ckanext.saml2auth.user_firstname'),
+            config.get('ckanext.saml2auth.user_lastname')
+        ))
+        full_name = config.get('ckanext.saml2auth.user_fullname')
+
+        if not first_and_last_name and not full_name:
+            raise RuntimeError('''
+            You need to provide both ckanext.saml2auth.user_firstname +
+            ckanext.saml2auth.user_lastname or ckanext.saml2auth.user_fullname'''.strip())
 
         acs_endpoint = config.get('ckanext.saml2auth.acs_endpoint')
         if acs_endpoint and not acs_endpoint.startswith('/'):

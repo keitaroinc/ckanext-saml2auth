@@ -32,22 +32,24 @@ def get_ckan_user(email):
     log.debug('CKAN user not found for {}'.format(email))
 
 
-def create_user(context, email, firstname, lastname):
+def create_user(context, email, full_name):
     """ Create a new CKAN user from saml """
     data_dict = {
         u'name': h.ensure_unique_username_from_email(email),
-        u'fullname': u'{0} {1}'.format(firstname, lastname),
+        u'fullname': full_name,
         u'email': email,
         u'password': h.generate_password()
     }
 
     try:
-        return logic.get_action(u'user_create')(context, data_dict)
+        user_dict = logic.get_action(u'user_create')(context, data_dict)
         log.info('CKAN user created: {}'.format(data_dict['name']))
     except logic.ValidationError as e:
         error_message = (e.error_summary or e.message or e.error_dict)
         log.error(error_message)
         base.abort(400, error_message)
+
+    return user_dict
 
 
 def acs():
@@ -68,6 +70,8 @@ def acs():
         config.get(u'ckanext.saml2auth.user_firstname')
     saml_user_lastname = \
         config.get(u'ckanext.saml2auth.user_lastname')
+    saml_user_fullname = \
+        config.get(u'ckanext.saml2auth.user_fullname')
     saml_user_email = \
         config.get(u'ckanext.saml2auth.user_email')
 
@@ -100,14 +104,21 @@ def acs():
     # Required user attributes for user creation
     email = auth_response.ava[saml_user_email][0]
 
-    firstname = auth_response.ava.get(saml_user_firstname, [email.split('@')[0]])[0]
-    lastname = auth_response.ava.get(saml_user_lastname, [email.split('@')[1]])[0]
+    if saml_user_firstname and saml_user_lastname:
+        first_name = auth_response.ava.get(saml_user_firstname, [email.split('@')[0]])[0]
+        last_name = auth_response.ava.get(saml_user_lastname, [email.split('@')[1]])[0]
+        full_name = u'{} {}'.format(first_name, last_name)
+    else:
+        if saml_user_fullname in auth_response.ava:
+            full_name = auth_response.ava[saml_user_fullname][0]
+        else:
+            full_name = u'{} {}'.format(email.split('@')[0], email.split('@')[1])
 
     # Check if CKAN-SAML user exists for the current SAML login
     user = get_ckan_user(email)
 
     if not user:
-        user_dict = create_user(context, email, firstname, lastname)
+        user_dict = create_user(context, email, full_name)
     else:
         # If account exists and is deleted, reactivate it.
         h.activate_user_if_deleted(user)

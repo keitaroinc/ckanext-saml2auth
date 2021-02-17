@@ -106,6 +106,10 @@ Required::
      # Corresponding SAML user field for lastname
      ckanext.saml2auth.user_lastname = lastname
 
+     # Corresponding SAML user field for fullname
+     # (Optional: Can be used as an alternative to firstname + lastname)
+     ckanext.saml2auth.user_fullname = fullname
+
      # Corresponding SAML user field for email
      ckanext.saml2auth.user_email = email
 
