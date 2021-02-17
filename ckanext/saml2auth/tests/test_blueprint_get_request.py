@@ -471,6 +471,7 @@ class TestGetRequest(FunctionalTestBase):
             'SAMLResponse': encoded_response
         }
         response = app.post(url=url, params=data)
+        # we expect a redirection after login
         assert_equal(302, response.status_int)
 
         user = model.User.by_email('test@example.com')[0]
@@ -510,6 +511,7 @@ class TestGetRequest(FunctionalTestBase):
             'SAMLResponse': encoded_response
         }
         response = app.post(url=url, params=data)
+        # we expect a redirection after login
         assert_equal(302, response.status_int)
 
         user = model.User.by_email('test@example.com')[0]
