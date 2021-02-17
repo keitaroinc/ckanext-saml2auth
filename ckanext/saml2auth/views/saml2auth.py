@@ -10,7 +10,6 @@ import ckan.logic as logic
 import ckan.lib.dictization.model_dictize as model_dictize
 from ckan.lib import base
 from ckan.views.user import set_repoze_user
-from ckan.logic.action.create import _get_random_username_from_email
 from ckan.common import config, g, request
 
 from ckanext.saml2auth.spconfig import get_config as sp_config
@@ -36,7 +35,7 @@ def get_ckan_user(email):
 def create_user(context, email, firstname, lastname):
     """ Create a new CKAN user from saml """
     data_dict = {
-        u'name': _get_random_username_from_email(email),
+        u'name': h.ensure_unique_username_from_email(email),
         u'fullname': u'{0} {1}'.format(firstname, lastname),
         u'email': email,
         u'password': h.generate_password()
