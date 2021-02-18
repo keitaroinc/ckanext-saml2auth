@@ -2,9 +2,10 @@
 import base64
 from datetime import datetime
 from jinja2 import Template
-from nose.tools import assert_equal, assert_in
 import os
 import pytest
+
+from ckan import model
 
 from saml2.xmldsig import SIG_RSA_SHA256
 from saml2.xmldsig import DIGEST_SHA256
@@ -36,8 +37,8 @@ class TestGetRequest:
             'SAMLResponse': ''
         }
         response = app.post(url=url, status=400, params=data)
-        assert_equal(400, response.status_code)
-        assert_in(u'Empty login request', response)
+        assert 400 == response.status_code
+        assert u'Empty login request' in response
 
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
@@ -51,8 +52,8 @@ class TestGetRequest:
             'SAMLResponse': '<saml>'
         }
         response = app.post(url=url, status=400, params=data)
-        assert_equal(400, response.status_code)
-        assert_in(u'Bad login request', response)
+        assert 400 == response.status_code
+        assert u'Bad login request' in response
 
     def _b4_encode_string(self, message):
         message_bytes = message.encode('ascii')
@@ -87,7 +88,7 @@ class TestGetRequest:
             'SAMLResponse': encoded_response
         }
         response = app.post(url=url, params=data)
-        assert_equal(200, response.status_code)
+        assert 200 == response.status_code
 
     def render_file(self, path, context, save_as=None):
         """ open file and render contect values """
@@ -176,7 +177,7 @@ class TestGetRequest:
             'cert_file': cert_file,
             'encryption_keypairs': [
                 {'key_file': key_file, 'cert_file': cert_file}
-                ]
+            ]
         }
 
     def _generate_cert(self):
@@ -278,7 +279,7 @@ class TestGetRequest:
             'SAMLResponse': encoded_response
         }
         response = app.post(url=url, params=data)
-        assert_equal(200, response.status_code)
+        assert 200 == response.status_code
 
     @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
@@ -337,4 +338,75 @@ class TestGetRequest:
             'SAMLResponse': encoded_response
         }
         response = app.post(url=url, params=data)
-        assert_equal(200, response.status_code)
+        assert 200 == response.status_code
+
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
+    def test_user_fullname_using_first_last_name(self, app):
+
+        # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
+        unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
+        unsigned_response = open(unsigned_response_file).read()
+        # parse values
+        context = {
+            'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
+            'destination': 'http://test.ckan.net/acs',
+            'recipient': 'http://test.ckan.net/acs',
+            'issue_instant': datetime.now().isoformat()
+        }
+        t = Template(unsigned_response)
+        final_response = t.render(**context)
+
+        encoded_response = self._b4_encode_string(final_response)
+        url = '/acs'
+
+        data = {
+            'SAMLResponse': encoded_response
+        }
+        response = app.post(url=url, params=data)
+        assert 200 == response.status_code
+
+        user = model.User.by_email('test@example.com')[0]
+
+        assert user.fullname == 'John Smith'
+
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.user_fullname', u'fullname')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.user_firstname', None)
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.user_lastname', None)
+    def test_user_fullname_using_fullname(self, app):
+
+        # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
+        unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
+        unsigned_response = open(unsigned_response_file).read()
+        # parse values
+        context = {
+            'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
+            'destination': 'http://test.ckan.net/acs',
+            'recipient': 'http://test.ckan.net/acs',
+            'issue_instant': datetime.now().isoformat()
+        }
+        t = Template(unsigned_response)
+        final_response = t.render(**context)
+
+        encoded_response = self._b4_encode_string(final_response)
+        url = '/acs'
+
+        data = {
+            'SAMLResponse': encoded_response
+        }
+        response = app.post(url=url, params=data)
+        assert 200 == response.status_code
+
+        user = model.User.by_email('test@example.com')[0]
+
+        assert user.fullname == 'John Smith (Operations)'

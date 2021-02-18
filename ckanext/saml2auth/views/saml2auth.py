@@ -29,7 +29,7 @@ def _get_requested_authn_contexts():
     return requested_authn_contexts.strip().split()
 
 
-def process_user(email, saml_id, firstname, lastname):
+def process_user(email, saml_id, full_name):
     """ Check if CKAN-SAML user exists for the current SAML login """
 
     context = {
@@ -52,9 +52,9 @@ def process_user(email, saml_id, firstname, lastname):
         # SAML user name or SAML user email are changed
         # in the identity provider
         if email != user_dict['email'] \
-                or u'{0} {1}'.format(firstname, lastname) != user_dict['fullname']:
+                or full_name != user_dict['fullname']:
             user_dict['email'] = email
-            user_dict['fullname'] = u'{0} {1}'.format(firstname, lastname)
+            user_dict['fullname'] = full_name
             try:
                 user_dict = logic.get_action(u'user_update')(context, user_dict)
             except logic.ValidationError as e:
@@ -88,7 +88,7 @@ def process_user(email, saml_id, firstname, lastname):
 
     data_dict = {
         u'name': h.ensure_unique_username_from_email(email),
-        u'fullname': u'{0} {1}'.format(firstname, lastname),
+        u'fullname': full_name,
         u'email': email,
         u'password': h.generate_password(),
         u'plugin_extras': {
@@ -117,6 +117,8 @@ def acs():
         config.get(u'ckanext.saml2auth.user_firstname')
     saml_user_lastname = \
         config.get(u'ckanext.saml2auth.user_lastname')
+    saml_user_fullname = \
+        config.get(u'ckanext.saml2auth.user_fullname')
     saml_user_email = \
         config.get(u'ckanext.saml2auth.user_email')
 
@@ -147,10 +149,17 @@ def acs():
     # Required user attributes for user creation
     email = auth_response.ava[saml_user_email][0]
 
-    firstname = auth_response.ava.get(saml_user_firstname, [email.split('@')[0]])[0]
-    lastname = auth_response.ava.get(saml_user_lastname, [email.split('@')[1]])[0]
+    if saml_user_firstname and saml_user_lastname:
+        first_name = auth_response.ava.get(saml_user_firstname, [email.split('@')[0]])[0]
+        last_name = auth_response.ava.get(saml_user_lastname, [email.split('@')[1]])[0]
+        full_name = u'{} {}'.format(first_name, last_name)
+    else:
+        if saml_user_fullname in auth_response.ava:
+            full_name = auth_response.ava[saml_user_fullname][0]
+        else:
+            full_name = u'{} {}'.format(email.split('@')[0], email.split('@')[1])
 
-    g.user = process_user(email, saml_id, firstname, lastname)
+    g.user = process_user(email, saml_id, full_name)
 
     # Check if the authenticated user email is in given list of emails
     # and make that user sysadmin and opposite
