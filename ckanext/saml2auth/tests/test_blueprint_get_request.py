@@ -524,7 +524,7 @@ class TestGetRequest(FunctionalTestBase):
     @change_config(u'ckanext.saml2auth.want_response_signed', u'False')
     @change_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
     @change_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
-    def test_relay_state_redirects_to_local_page(self, app):
+    def test_relay_state_redirects_to_local_page(self):
 
         # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
         unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
@@ -540,12 +540,14 @@ class TestGetRequest(FunctionalTestBase):
         final_response = t.render(**context)
 
         encoded_response = base64.b64encode(final_response)
+
+        app = self._get_test_app()
         url = '/acs'
 
         data = {
             'SAMLResponse': encoded_response,
             'RelayState': '/dataset/my-dataset'
         }
-        response = app.post(url=url, params=data, follow_redirects=False)
+        response = app.post(url=url, params=data, status=302)
 
         assert_equal(response.headers['Location'], 'http://test.ckan.net/dataset/my-dataset')

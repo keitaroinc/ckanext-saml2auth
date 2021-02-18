@@ -40,5 +40,5 @@ class TestBlueprint(FunctionalTestBase):
         app = self._get_test_app()
         url = url_for('saml2auth.saml2login', came_from='/dataset/my-dataset')
 
-        response = app.get(url=url, follow_redirects=False)
+        response = app.get(url=url, status=302)
         assert 'RelayState=%2Fdataset%2Fmy-dataset' in response.headers['Location']
