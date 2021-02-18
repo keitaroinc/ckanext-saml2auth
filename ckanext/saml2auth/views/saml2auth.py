@@ -166,8 +166,14 @@ def acs():
     h.update_user_sysadmin_status(g.user, email)
 
     g.userobj = model.User.by_name(g.user)
+
+    relay_state = request.form.get('RelayState')
+    redirect_target = toolkit.url_for(
+        relay_state, _external=True) if relay_state else u'user.me'
+
+    resp = toolkit.redirect_to(redirect_target)
+
     # log the user in programmatically
-    resp = toolkit.redirect_to(u'user.me')
     set_repoze_user(g.user, resp)
     return resp
 
@@ -178,6 +184,7 @@ def saml2login():
     '''
     client = h.saml_client(sp_config())
     requested_authn_contexts = _get_requested_authn_contexts()
+    relay_state = toolkit.request.args.get('came_from', '')
 
     if len(requested_authn_contexts) > 0:
         comparison = config.get('ckanext.saml2auth.requested_authn_context_comparison',
@@ -191,9 +198,9 @@ def saml2login():
             comparison=comparison
         )
 
-        reqid, info = client.prepare_for_authenticate(requested_authn_context=final_context)
+        reqid, info = client.prepare_for_authenticate(requested_authn_context=final_context, relay_state=relay_state)
     else:
-        reqid, info = client.prepare_for_authenticate()
+        reqid, info = client.prepare_for_authenticate(relay_state=relay_state)
 
     redirect_url = None
     for key, value in info[u'headers']:
