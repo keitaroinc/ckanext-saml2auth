@@ -13,6 +13,7 @@ extras_folder = os.path.join(here, 'extras')
 @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
 @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path',
                          os.path.join(extras_folder, 'provider0', 'idp.xml'))
+@pytest.mark.usefixtures(u'with_request_context')
 def test_empty_comparison():
     with pytest.raises(ValueError) as e:
         saml2login()
