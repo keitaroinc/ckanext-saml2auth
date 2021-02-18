@@ -410,3 +410,35 @@ class TestGetRequest:
         user = model.User.by_email('test@example.com')[0]
 
         assert user.fullname == 'John Smith (Operations)'
+
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
+    def test_relay_state_redirects_to_local_page(self, app):
+
+        # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
+        unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
+        unsigned_response = open(unsigned_response_file).read()
+        # parse values
+        context = {
+            'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
+            'destination': 'http://test.ckan.net/acs',
+            'recipient': 'http://test.ckan.net/acs',
+            'issue_instant': datetime.now().isoformat()
+        }
+        t = Template(unsigned_response)
+        final_response = t.render(**context)
+
+        encoded_response = self._b4_encode_string(final_response)
+        url = '/acs'
+
+        data = {
+            'SAMLResponse': encoded_response,
+            'RelayState': '/dataset/my-dataset'
+        }
+        response = app.post(url=url, params=data, follow_redirects=False)
+
+        assert response.headers['Location'] == 'http://test.ckan.net/dataset/my-dataset'
