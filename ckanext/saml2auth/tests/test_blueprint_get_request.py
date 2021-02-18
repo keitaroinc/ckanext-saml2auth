@@ -517,3 +517,37 @@ class TestGetRequest(FunctionalTestBase):
         user = model.User.by_email('test@example.com')[0]
 
         assert_equal(user.fullname, 'John Smith (Operations)')
+
+    @change_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
+    @change_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @change_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
+    @change_config(u'ckanext.saml2auth.want_response_signed', u'False')
+    @change_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
+    @change_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
+    def test_relay_state_redirects_to_local_page(self):
+
+        # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
+        unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
+        unsigned_response = open(unsigned_response_file).read()
+        # parse values
+        context = {
+            'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
+            'destination': 'http://test.ckan.net/acs',
+            'recipient': 'http://test.ckan.net/acs',
+            'issue_instant': datetime.now().isoformat()
+        }
+        t = Template(unsigned_response)
+        final_response = t.render(**context)
+
+        encoded_response = base64.b64encode(final_response)
+
+        app = self._get_test_app()
+        url = '/acs'
+
+        data = {
+            'SAMLResponse': encoded_response,
+            'RelayState': '/dataset/my-dataset'
+        }
+        response = app.post(url=url, params=data, status=302)
+
+        assert_equal(response.headers['Location'], 'http://test.ckan.net/dataset/my-dataset')

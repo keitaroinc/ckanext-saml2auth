@@ -1,0 +1,45 @@
+<EntityDescriptor
+    ID="_session_ID_1234"
+    xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+    entityID="urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity">
+
+    <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <KeyDescriptor use="signing">
+            <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                <X509Data>
+                    <X509Certificate>MIICQTCCAaoCAQEwDQYJKoZIhvcNAQELBQAwaTELMAkGA1UEBhMCc2UxCzAJBgNVBAgMAmFjMQ0wCwYDVQQHDAR1bWVhMRgwFgYDVQQKDA9UZXN0IFVuaXZlcnNpdHkxDTALBgNVBAsMBERlY2ExFTATBgNVBAMMDGxvY2FsaG9zdC5jYTAeFw0yMTAyMTgxMTQ0MTNaFw0yMTAyMTgxMTQ0MTRaMGkxCzAJBgNVBAYTAnNlMQswCQYDVQQIDAJhYzENMAsGA1UEBwwEdW1lYTEYMBYGA1UECgwPVGVzdCBVbml2ZXJzaXR5MQ0wCwYDVQQLDAREZWNhMRUwEwYDVQQDDAxsb2NhbGhvc3QuY2EwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKuoGUe4UbPS0uH2GA0v0L0zvZGf8LdePzRQtmJF2KCnaUEM/oTLQ6TrX7rjyv4qQpgtWpef5UcRgHoIJsjxAnYy+oaAu2/rXlCcVTGgoB2qe6dWMnCmSb2g7vS+DFQHPC5h+q5g+rtyO7HECs8uizpuOuBHCF8X2MkAKsyA7LtLAgMBAAEwDQYJKoZIhvcNAQELBQADgYEAqWwqti53HvC0r9p8q/6FYfZeffLJKxz1koofLhTuA2rhVda9P6tHdjESg/++A2bw+QawEE2SMvl3MIWnEx/izkYQUD4soP0zYtR54TxyhiIIZbaEJkqKCWDwYGZBpHC1HkxRmBR05vtl7yFzLwTqn6UPzK5a1e5CUgnR6837u/I=</X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </KeyDescriptor>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress</NameIDFormat>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://idp.organization.com/auth"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp.organization.com/auth"/>
+    </IDPSSODescriptor>
+    <AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <KeyDescriptor use="signing">
+            <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                <X509Data>
+                    <X509Certificate>MIICQTCCAaoCAQEwDQYJKoZIhvcNAQELBQAwaTELMAkGA1UEBhMCc2UxCzAJBgNVBAgMAmFjMQ0wCwYDVQQHDAR1bWVhMRgwFgYDVQQKDA9UZXN0IFVuaXZlcnNpdHkxDTALBgNVBAsMBERlY2ExFTATBgNVBAMMDGxvY2FsaG9zdC5jYTAeFw0yMTAyMTgxMTQ0MTNaFw0yMTAyMTgxMTQ0MTRaMGkxCzAJBgNVBAYTAnNlMQswCQYDVQQIDAJhYzENMAsGA1UEBwwEdW1lYTEYMBYGA1UECgwPVGVzdCBVbml2ZXJzaXR5MQ0wCwYDVQQLDAREZWNhMRUwEwYDVQQDDAxsb2NhbGhvc3QuY2EwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKuoGUe4UbPS0uH2GA0v0L0zvZGf8LdePzRQtmJF2KCnaUEM/oTLQ6TrX7rjyv4qQpgtWpef5UcRgHoIJsjxAnYy+oaAu2/rXlCcVTGgoB2qe6dWMnCmSb2g7vS+DFQHPC5h+q5g+rtyO7HECs8uizpuOuBHCF8X2MkAKsyA7LtLAgMBAAEwDQYJKoZIhvcNAQELBQADgYEAqWwqti53HvC0r9p8q/6FYfZeffLJKxz1koofLhTuA2rhVda9P6tHdjESg/++A2bw+QawEE2SMvl3MIWnEx/izkYQUD4soP0zYtR54TxyhiIIZbaEJkqKCWDwYGZBpHC1HkxRmBR05vtl7yFzLwTqn6UPzK5a1e5CUgnR6837u/I=</X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </KeyDescriptor>
+        <Organization>
+            <OrganizationName xml:lang="en">IDP Organization</OrganizationName>
+            <OrganizationDisplayName xml:lang="en">IDP Organization</OrganizationDisplayName>
+            <OrganizationURL xml:lang="en">https://idp.organization.com</OrganizationURL>
+        </Organization>
+        <ContactPerson contactType="technical"></ContactPerson>
+        <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp.organization.com/attributes"/>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress</NameIDFormat>
+    </AttributeAuthorityDescriptor>
+    <Organization>
+        <OrganizationName xml:lang="en">IDP Organization</OrganizationName>
+        <OrganizationDisplayName xml:lang="en">IDP Organization</OrganizationDisplayName>
+        <OrganizationURL xml:lang="en">https://idp.organization.com</OrganizationURL>
+    </Organization>
+    <ContactPerson contactType="technical"></ContactPerson>
+</EntityDescriptor>

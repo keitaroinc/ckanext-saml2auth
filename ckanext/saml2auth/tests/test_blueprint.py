@@ -1,6 +1,11 @@
 # encoding: utf-8
-from ckan.lib.helpers import url_for
-from ckan.tests.helpers import FunctionalTestBase
+import os
+
+from ckan.plugins.toolkit import url_for
+from ckan.tests.helpers import FunctionalTestBase, change_config
+
+here = os.path.dirname(os.path.abspath(__file__))
+extras_folder = os.path.join(here, 'extras')
 
 
 class TestBlueprint(FunctionalTestBase):
@@ -26,3 +31,14 @@ class TestBlueprint(FunctionalTestBase):
                u' by the system administrator. ' \
                u'Only SSO through SAML2 authorization ' \
                u'is available at this moment.' in response
+
+    @change_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @change_config(u'ckanext.saml2auth.idp_metadata.local_path',
+                   os.path.join(extras_folder, 'provider2', 'idp.xml'))
+    def test_came_from_sent_as_relay_state(self):
+
+        app = self._get_test_app()
+        url = url_for('saml2auth.saml2login', came_from='/dataset/my-dataset')
+
+        response = app.get(url=url, status=302)
+        assert 'RelayState=%2Fdataset%2Fmy-dataset' in response.headers['Location']
