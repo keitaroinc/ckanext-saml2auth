@@ -42,7 +42,7 @@ coverage.xml
 docs/_build/
 
 # Saml2 config
-idp.xml
+# idp.xml
 
 # Custom IDE files
 .vscode/
