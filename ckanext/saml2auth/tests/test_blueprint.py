@@ -34,7 +34,7 @@ class TestBlueprint(object):
 
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path',
-                             os.path.join(extras_folder, 'provider1', 'idp_cert_template.xml'))
+                             os.path.join(extras_folder, 'provider2', 'idp.xml'))
     def test_came_from_sent_as_relay_state(self, app):
 
         url = url_for('saml2auth.saml2login', came_from='/dataset/my-dataset')
