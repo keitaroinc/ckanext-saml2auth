@@ -1,5 +1,6 @@
 # encoding: utf-8
 import logging
+import copy
 
 from flask import Blueprint
 from saml2 import entity
@@ -7,6 +8,7 @@ from saml2.authn_context import requested_authn_context
 
 import ckan.plugins.toolkit as toolkit
 import ckan.model as model
+import ckan.plugins as plugins
 import ckan.lib.dictization.model_dictize as model_dictize
 from ckan.lib import base
 from ckan.views.user import set_repoze_user
@@ -14,6 +16,7 @@ from ckan.common import config, g, request
 
 from ckanext.saml2auth.spconfig import get_config as sp_config
 from ckanext.saml2auth import helpers as h
+from ckanext.saml2auth.interfaces import ISaml2Auth
 
 
 log = logging.getLogger(__name__)
@@ -79,7 +82,7 @@ def _create_user(user_dict):
         base.abort(400, error_message)
 
 
-def process_user(email, saml_id, full_name):
+def process_user(email, saml_id, full_name, saml_attributes):
     u'''
     Check if a CKAN-SAML user exists for the current SAML login, if not create
     a new one
@@ -98,12 +101,19 @@ def process_user(email, saml_id, full_name):
     # First we check if there is a SAML-CKAN user
     if user_dict:
 
-        # Update the existing CKAN-SAML user only if the SAML user name or
-        # email are changed in the IdP, or if another plugin modified the
-        # user dict
+        current_user_dict = copy.deepcopy(user_dict)
+
         if email != user_dict['email'] or full_name != user_dict['fullname']:
             user_dict['email'] = email
             user_dict['fullname'] = full_name
+
+        for plugin in plugins.PluginImplementations(ISaml2Auth):
+            plugin.before_saml2_user_update(user_dict, saml_attributes)
+
+        # Update the existing CKAN-SAML user only if the SAML user name or
+        # email are changed in the IdP, or if another plugin modified the
+        # user dict
+        if current_user_dict != user_dict:
 
             user_dict = _update_user(user_dict)
 
@@ -126,6 +136,9 @@ def process_user(email, saml_id, full_name):
             }
         }
 
+        for plugin in plugins.PluginImplementations(ISaml2Auth):
+            plugin.before_saml2_user_update(user_dict, saml_attributes)
+
         user_dict = _update_user(user_dict)
 
         return user_dict['name']
@@ -146,6 +159,9 @@ def process_user(email, saml_id, full_name):
             }
         }
     }
+
+    for plugin in plugins.PluginImplementations(ISaml2Auth):
+        plugin.before_saml2_user_create(user_dict, saml_attributes)
 
     user_dict = _create_user(user_dict)
     return user_dict[u'name']
@@ -204,7 +220,7 @@ def acs():
         else:
             full_name = u'{} {}'.format(email.split('@')[0], email.split('@')[1])
 
-    g.user = process_user(email, saml_id, full_name)
+    g.user = process_user(email, saml_id, full_name, auth_response.ava)
 
     # Check if the authenticated user email is in given list of emails
     # and make that user sysadmin and opposite
@@ -214,6 +230,10 @@ def acs():
     # log the user in programmatically
     resp = toolkit.redirect_to(u'user.me')
     set_repoze_user(g.user, resp)
+
+    for plugin in plugins.PluginImplementations(ISaml2Auth):
+        plugin.after_saml2_login(resp, auth_response.ava)
+
     return resp
 
 
