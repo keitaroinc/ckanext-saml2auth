@@ -54,6 +54,8 @@ def update_user_sysadmin_status(username, email):
 
 def activate_user_if_deleted(userobj):
     u'''Reactivates deleted user.'''
+    if not userobj:
+        return
     if userobj.is_deleted():
         userobj.activate()
         userobj.commit()
