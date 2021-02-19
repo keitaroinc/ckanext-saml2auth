@@ -31,9 +31,12 @@ class ISaml2Auth(Interface):
         returning the request. The logged in user can be accessed using g.user
         or g.userobj
 
+        It should always return the provided response object (which can be of course
+        modified)
+
         :param resp: A Flask response object. Can be used to issue
             redirects, add headers, etc
         :param saml_attributes: A dict containing extra SAML attributes returned
             as part of the SAML Response
         '''
-        pass
+        return resp

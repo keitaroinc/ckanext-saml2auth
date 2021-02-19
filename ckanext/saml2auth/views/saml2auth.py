@@ -35,8 +35,14 @@ def _get_requested_authn_contexts():
 def _dictize_user(user_obj):
     context = {
         u'keep_email': True,
+        u'model': model,
     }
-    return model_dictize.user_dictize(user_obj, context)
+    user_dict = model_dictize.user_dictize(user_obj, context)
+    # Make sure plugin_extras are included or plugins might drop the saml_id one
+    # Make a copy so SQLAlchemy can track changes properly
+    user_dict['plugin_extras'] = copy.deepcopy(user_obj.plugin_extras)
+
+    return user_dict
 
 
 def _get_user_by_saml_id(saml_id):
@@ -52,6 +58,8 @@ def _get_user_by_saml_id(saml_id):
 def _get_user_by_email(email):
 
     user_obj = model.User.by_email(email)
+    if user_obj:
+        user_obj = user_obj[0]
 
     h.activate_user_if_deleted(user_obj)
 
@@ -238,7 +246,7 @@ def acs():
     set_repoze_user(g.user, resp)
 
     for plugin in plugins.PluginImplementations(ISaml2Auth):
-        plugin.after_saml2_login(resp, auth_response.ava)
+        resp = plugin.after_saml2_login(resp, auth_response.ava)
 
     return resp
 
