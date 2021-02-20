@@ -7,9 +7,11 @@
 .. image:: https://img.shields.io/pypi/v/ckanext-saml2auth
     :target: https://pypi.org/project/ckanext-saml2auth
 
-.. image:: https://img.shields.io/badge/python-3.8-blue.svg
-    :target: https://www.python.org/downloads/release/python-384/
+.. image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
+    :target: https://www.python.org
 
+.. image:: https://img.shields.io/badge/ckan-2.9-red
+    :target: https://www.ckan.org
 
 
 ==================
