@@ -2,7 +2,10 @@
     :target: https://github.com/keitaroinc/ckanext-saml2auth/actions
 
 .. image:: https://coveralls.io/repos/github/keitaroinc/ckanext-saml2auth/badge.svg?branch=main
-     :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=main
+    :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=main
+
+.. image:: https://img.shields.io/pypi/v/ckanext-saml2auth
+    :target: https://pypi.org/project/ckanext-saml2auth
 
 .. image:: https://img.shields.io/badge/python-3.8-blue.svg
     :target: https://www.python.org/downloads/release/python-384/

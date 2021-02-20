@@ -16,19 +16,19 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.0.1',
+    version='1.0.2',
 
     description='''An extension to enable Single Sign On(SSO) for CKAN data portals via SAML2 Authentication.''',
     long_description=long_description,
     long_description_content_type='text/x-rst',
 
     # The project's main homepage.
-    url='https://github.com/duskobogdanovski/'\
+    url='https://github.com/keitaroinc/'\
             'ckanext-saml2auth',
 
     # Author details
-    author='''Keitaro''',
-    author_email='''dusko.bogdanovski@keitaro.com''',
+    author='''Keitaro Inc''',
+    author_email='''info@keitaro.com''',
 
     # Choose your license
     license='AGPL',
@@ -39,20 +39,22 @@ setup(
         # 3 - Alpha
         # 4 - Beta
         # 5 - Production/Stable
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
 
         # Pick your license as you wish (should match "license" above)
-        'License :: OSI Approved :: GNU Affero General Public License v3 or'\
-        'later (AGPLv3+)',
+        'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
 
 
     # What does your project relate to?
-    keywords='''CKAN saml2 sso''',
+    keywords='''CKAN ckanext saml2 sso''',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
