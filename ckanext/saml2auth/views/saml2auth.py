@@ -2,6 +2,7 @@
 import logging
 from flask import Blueprint
 from saml2 import entity
+from saml2.authn_context import requested_authn_context
 
 import ckan.plugins.toolkit as toolkit
 import ckan.model as model
@@ -9,7 +10,6 @@ import ckan.logic as logic
 import ckan.lib.dictization.model_dictize as model_dictize
 from ckan.lib import base
 from ckan.views.user import set_repoze_user
-from ckan.logic.action.create import _get_random_username_from_email
 from ckan.common import config, g, request
 
 from ckanext.saml2auth.spconfig import get_config as sp_config
@@ -20,7 +20,16 @@ log = logging.getLogger(__name__)
 saml2auth = Blueprint(u'saml2auth', __name__)
 
 
-def process_user(email, saml_id, firstname, lastname):
+def _get_requested_authn_contexts():
+    requested_authn_contexts = config.get('ckanext.saml2auth.requested_authn_context',
+                                          None)
+    if requested_authn_contexts is None or requested_authn_contexts == '':
+        return []
+
+    return requested_authn_contexts.strip().split()
+
+
+def process_user(email, saml_id, full_name):
     """ Check if CKAN-SAML user exists for the current SAML login """
 
     context = {
@@ -43,9 +52,9 @@ def process_user(email, saml_id, firstname, lastname):
         # SAML user name or SAML user email are changed
         # in the identity provider
         if email != user_dict['email'] \
-                or u'{0} {1}'.format(firstname, lastname) != user_dict['fullname']:
+                or full_name != user_dict['fullname']:
             user_dict['email'] = email
-            user_dict['fullname'] = u'{0} {1}'.format(firstname, lastname)
+            user_dict['fullname'] = full_name
             try:
                 user_dict = logic.get_action(u'user_update')(context, user_dict)
             except logic.ValidationError as e:
@@ -78,8 +87,8 @@ def process_user(email, saml_id, firstname, lastname):
             base.abort(400, error_message)
 
     data_dict = {
-        u'name': _get_random_username_from_email(email),
-        u'fullname': u'{0} {1}'.format(firstname, lastname),
+        u'name': h.ensure_unique_username_from_email(email),
+        u'fullname': full_name,
         u'email': email,
         u'password': h.generate_password(),
         u'plugin_extras': {
@@ -108,6 +117,8 @@ def acs():
         config.get(u'ckanext.saml2auth.user_firstname')
     saml_user_lastname = \
         config.get(u'ckanext.saml2auth.user_lastname')
+    saml_user_fullname = \
+        config.get(u'ckanext.saml2auth.user_fullname')
     saml_user_email = \
         config.get(u'ckanext.saml2auth.user_email')
 
@@ -138,18 +149,31 @@ def acs():
     # Required user attributes for user creation
     email = auth_response.ava[saml_user_email][0]
 
-    firstname = auth_response.ava.get(saml_user_firstname, [email.split('@')[0]])[0]
-    lastname = auth_response.ava.get(saml_user_lastname, [email.split('@')[1]])[0]
+    if saml_user_firstname and saml_user_lastname:
+        first_name = auth_response.ava.get(saml_user_firstname, [email.split('@')[0]])[0]
+        last_name = auth_response.ava.get(saml_user_lastname, [email.split('@')[1]])[0]
+        full_name = u'{} {}'.format(first_name, last_name)
+    else:
+        if saml_user_fullname in auth_response.ava:
+            full_name = auth_response.ava[saml_user_fullname][0]
+        else:
+            full_name = u'{} {}'.format(email.split('@')[0], email.split('@')[1])
 
-    g.user = process_user(email, saml_id, firstname, lastname)
+    g.user = process_user(email, saml_id, full_name)
 
     # Check if the authenticated user email is in given list of emails
     # and make that user sysadmin and opposite
     h.update_user_sysadmin_status(g.user, email)
 
     g.userobj = model.User.by_name(g.user)
+
+    relay_state = request.form.get('RelayState')
+    redirect_target = toolkit.url_for(
+        relay_state, _external=True) if relay_state else u'user.me'
+
+    resp = toolkit.redirect_to(redirect_target)
+
     # log the user in programmatically
-    resp = toolkit.redirect_to(u'user.me')
     set_repoze_user(g.user, resp)
     return resp
 
@@ -159,7 +183,24 @@ def saml2login():
      configured identity provider for authentication
     '''
     client = h.saml_client(sp_config())
-    reqid, info = client.prepare_for_authenticate()
+    requested_authn_contexts = _get_requested_authn_contexts()
+    relay_state = toolkit.request.args.get('came_from', '')
+
+    if len(requested_authn_contexts) > 0:
+        comparison = config.get('ckanext.saml2auth.requested_authn_context_comparison',
+                                'minimum')
+        if comparison not in ['exact', 'minimum', 'maximum', 'better']:
+            error = 'Unexpected comparison value {}'.format(comparison)
+            raise ValueError(error)
+
+        final_context = requested_authn_context(
+            class_ref=requested_authn_contexts,
+            comparison=comparison
+        )
+
+        reqid, info = client.prepare_for_authenticate(requested_authn_context=final_context, relay_state=relay_state)
+    else:
+        reqid, info = client.prepare_for_authenticate(relay_state=relay_state)
 
     redirect_url = None
     for key, value in info[u'headers']:

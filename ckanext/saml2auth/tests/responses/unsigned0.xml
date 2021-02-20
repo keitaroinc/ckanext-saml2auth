@@ -39,6 +39,15 @@
       <saml:Attribute Name="email" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
         <saml:AttributeValue xsi:type="xs:string">test@example.com</saml:AttributeValue>
       </saml:Attribute>
+      <saml:Attribute Name="firstname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+        <saml:AttributeValue>John</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="lastname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+        <saml:AttributeValue>Smith</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="fullname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+        <saml:AttributeValue>John Smith (Operations)</saml:AttributeValue>
+      </saml:Attribute>
       <saml:Attribute Name="eduPersonAffiliation" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
         <saml:AttributeValue xsi:type="xs:string">users</saml:AttributeValue>
         <saml:AttributeValue xsi:type="xs:string">examplerole1</saml:AttributeValue>

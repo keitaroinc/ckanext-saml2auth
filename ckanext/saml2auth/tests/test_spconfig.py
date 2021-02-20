@@ -2,6 +2,7 @@
 import pytest
 
 from ckanext.saml2auth.spconfig import get_config
+from ckanext.saml2auth.views.saml2auth import _get_requested_authn_contexts
 
 
 @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
@@ -76,3 +77,25 @@ def test_read_acs_endpoint():
 
     acs_endpoint = get_config()[u'service'][u'sp'][u'endpoints'][u'assertion_consumer_service'][0]
     assert acs_endpoint.endswith('/my/acs/endpoint')
+
+
+@pytest.mark.ckan_config(u'ckanext.saml2auth.requested_authn_context', u'req1')
+def test_one_requested_authn_context():
+
+    contexts = _get_requested_authn_contexts()
+    assert contexts[0] == u'req1'
+
+
+@pytest.mark.ckan_config(u'ckanext.saml2auth.requested_authn_context', u'req1 req2')
+def test_two_requested_authn_context():
+
+    contexts = _get_requested_authn_contexts()
+    assert u'req1' in contexts
+    assert u'req2' in contexts
+
+
+@pytest.mark.ckan_config(u'ckanext.saml2auth.requested_authn_context', None)
+def test_empty_requested_authn_context():
+
+    contexts = _get_requested_authn_contexts()
+    assert contexts == []

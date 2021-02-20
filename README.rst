@@ -2,7 +2,10 @@
     :target: https://github.com/keitaroinc/ckanext-saml2auth/actions
 
 .. image:: https://coveralls.io/repos/github/keitaroinc/ckanext-saml2auth/badge.svg?branch=main
-     :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=main
+    :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=main
+
+.. image:: https://img.shields.io/pypi/v/ckanext-saml2auth
+    :target: https://pypi.org/project/ckanext-saml2auth
 
 .. image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue
     :target: https://www.python.org
@@ -51,6 +54,8 @@ To install ckanext-saml2auth:
 
 4. Install the python modules required by the extension (adjusting the path according to where ckanext-saml2auth was installed in the previous step)::
 
+     # rustc and cargo are neeeded to build cryptography if no binary wheel exists
+     sudo apt install rustc cargo
      pip install -r requirements.txt
 
 5. Add ``saml2auth`` to the ``ckan.plugins`` setting in your CKAN
@@ -90,6 +95,10 @@ Required::
      # Corresponding SAML user field for lastname
      ckanext.saml2auth.user_lastname = lastname
 
+     # Corresponding SAML user field for fullname
+     # (Optional: Can be used as an alternative to firstname + lastname)
+     ckanext.saml2auth.user_fullname = fullname
+
      # Corresponding SAML user field for email
      ckanext.saml2auth.user_email = email
 
@@ -123,22 +132,31 @@ Optional::
      # Default: <Not set>
      ckanext.saml2auth.sp.name_id_policy_format = urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
 
-    # Entity ID (also know as Issuer)
-    # Define the entity ID. Default is urn:mace:umu.se:saml:ckan:sp 
-    ckanext.saml2auth.entity_id = urn:gov:gsa:SAML:2.0.profiles:sp:sso:gsa:catalog-dev
+     # Entity ID (also know as Issuer)
+     # Define the entity ID. Default is urn:mace:umu.se:saml:ckan:sp
+     ckanext.saml2auth.entity_id = urn:gov:gsa:SAML:2.0.profiles:sp:sso:gsa:catalog-dev
 
-    # Signed responses and assertions 
-    ckanext.saml2auth.want_response_signed = False
-    ckanext.saml2auth.want_assertions_signed = False
-    ckanext.saml2auth.want_assertions_or_response_signed = True
+     # Signed responses and assertions
+     ckanext.saml2auth.want_response_signed = False
+     ckanext.saml2auth.want_assertions_signed = False
+     ckanext.saml2auth.want_assertions_or_response_signed = True
     
-    # Cert & key files
-    ckanext.saml2auth.key_file_path = /path/to/mykey.pem
-    ckanext.saml2auth.cert_file_path = /path/to/mycert.pem
+     # Cert & key files
+     ckanext.saml2auth.key_file_path = /path/to/mykey.pem
+     ckanext.saml2auth.cert_file_path = /path/to/mycert.pem
     
-    # Attribute map directory
-    ckanext.saml2auth.attribute_map_dir = /path/to/dir/attributemaps
+     # Attribute map directory
+     ckanext.saml2auth.attribute_map_dir = /path/to/dir/attributemaps
 
+     # Authentication context request before redirect to login
+     # e.g. to ask for a PIV card with login.gov provider (https://developers.login.gov/oidc/#aal-values) use:
+     ckanext.saml2auth.requested_authn_context = http://idmanagement.gov/ns/assurance/aal/3?hspd12=true
+     # You can use multiple context separated by spaces
+     ckanext.saml2auth.requested_authn_context = req1 req2
+
+     # Define the comparison value for RequestedAuthnContext
+     # Comparison could be one of this: exact, minimum, maximum or better
+     ckanext.saml2auth.requested_authn_context_comparison = exact
 
 ----------------------
 Developer installation
