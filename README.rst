@@ -10,6 +10,8 @@
 .. image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
     :target: https://www.python.org
 
+.. image:: https://img.shields.io/badge/ckan-2.9-red
+    :target: https://www.ckan.org
 
 
 ==================
