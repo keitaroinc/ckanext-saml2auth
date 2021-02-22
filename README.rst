@@ -97,7 +97,7 @@ Required::
      ckanext.saml2auth.idp_metadata.remote_url = https://kalmar2.org/simplesaml/module.php/aggregator/?id=kalmarcentral2&set=saml2
 
      # Path to a local file accessible on the server the service runs on
-     # Ignore this config if the idp metadata location is set to: local
+     # Ignore this config if the idp metadata location is set to: local and metadata is public
      ckanext.saml2auth.idp_metadata.remote_cert = /opt/metadata/kalmar2.cert
 
      # Corresponding SAML user field for firstname
