@@ -4,6 +4,9 @@
 .. image:: https://coveralls.io/repos/github/keitaroinc/ckanext-saml2auth/badge.svg?branch=main
     :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=main
 
+.. image:: https://badges.gitter.im/keitaroinc/ckan.svg)
+    :target: https://gitter.im/keitaroinc/ckan?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
+
 .. image:: https://img.shields.io/pypi/v/ckanext-saml2auth
     :target: https://pypi.org/project/ckanext-saml2auth
 
@@ -40,25 +43,22 @@ Installation
 
 To install ckanext-saml2auth:
 
-1. Install the required packages::
+1. Install the required system packages::
 
      sudo apt install xmlsec1
-
 
 2. Activate your CKAN virtual environment, for example::
 
      . /usr/lib/ckan/default/bin/activate
 
-3. Install the ckanext-saml2auth Python package into your virtual environment::
-
-     pip install ckanext-saml2auth
-
-
-4. Install the python modules required by the extension (adjusting the path according to where ckanext-saml2auth was installed in the previous step)::
+3. Install the required system packages to install the necessary python module dependencies::
 
      # rustc and cargo are neeeded to build cryptography if no binary wheel exists
      sudo apt install rustc cargo
-     pip install -r requirements.txt
+
+4. Install the ckanext-saml2auth Python package into your virtual environment::
+
+     pip install ckanext-saml2auth
 
 5. Add ``saml2auth`` to the ``ckan.plugins`` setting in your CKAN
    config file (by default the config file is located at
