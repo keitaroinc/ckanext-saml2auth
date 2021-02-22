@@ -1,12 +1,14 @@
 # encoding: utf-8
 import logging
+import copy
+
 from flask import Blueprint
 from saml2 import entity
 from saml2.authn_context import requested_authn_context
 
 import ckan.plugins.toolkit as toolkit
 import ckan.model as model
-import ckan.logic as logic
+import ckan.plugins as plugins
 import ckan.lib.dictization.model_dictize as model_dictize
 from ckan.lib import base
 from ckan.views.user import set_repoze_user
@@ -14,6 +16,7 @@ from ckan.common import config, g, request
 
 from ckanext.saml2auth.spconfig import get_config as sp_config
 from ckanext.saml2auth import helpers as h
+from ckanext.saml2auth.interfaces import ISaml2Auth
 
 
 log = logging.getLogger(__name__)
@@ -29,64 +32,129 @@ def _get_requested_authn_contexts():
     return requested_authn_contexts.strip().split()
 
 
-def process_user(email, saml_id, full_name):
-    """ Check if CKAN-SAML user exists for the current SAML login """
-
+def _dictize_user(user_obj):
     context = {
-        u'ignore_auth': True,
         u'keep_email': True,
-        u'model': model
+        u'model': model,
     }
+    user_dict = model_dictize.user_dictize(user_obj, context)
+    # Make sure plugin_extras are included or plugins might drop the saml_id one
+    # Make a copy so SQLAlchemy can track changes properly
+    user_dict['plugin_extras'] = copy.deepcopy(user_obj.plugin_extras)
 
-    saml_user = model.Session.query(model.User) \
+    return user_dict
+
+
+def _get_user_by_saml_id(saml_id):
+    user_obj = model.Session.query(model.User) \
         .filter(model.User.plugin_extras[(u'saml2auth', u'saml_id')].astext == saml_id) \
         .first()
 
-    # First we check if there is a SAML-CKAN user
-    if saml_user:
-        # If account exists and is deleted, reactivate it.
-        h.activate_user_if_deleted(saml_user)
+    h.activate_user_if_deleted(user_obj)
 
-        user_dict = model_dictize.user_dictize(saml_user, context)
-        # Update the existing CKAN-SAML user only if
-        # SAML user name or SAML user email are changed
-        # in the identity provider
-        if email != user_dict['email'] \
-                or full_name != user_dict['fullname']:
+    return _dictize_user(user_obj) if user_obj else None
+
+
+def _get_user_by_email(email):
+
+    user_obj = model.User.by_email(email)
+    if user_obj:
+        user_obj = user_obj[0]
+
+    h.activate_user_if_deleted(user_obj)
+
+    return _dictize_user(user_obj) if user_obj else None
+
+
+def _update_user(user_dict):
+    context = {
+        u'ignore_auth': True,
+    }
+
+    try:
+        return toolkit.get_action(u'user_update')(context, user_dict)
+    except toolkit.ValidationError as e:
+        error_message = (e.error_summary or e.message or e.error_dict)
+        base.abort(400, error_message)
+
+
+def _create_user(user_dict):
+    context = {
+        u'ignore_auth': True,
+    }
+
+    try:
+        return toolkit.get_action(u'user_create')(context, user_dict)
+    except toolkit.ValidationError as e:
+        error_message = (e.error_summary or e.message or e.error_dict)
+        base.abort(400, error_message)
+
+
+def process_user(email, saml_id, full_name, saml_attributes):
+    u'''
+    Check if a CKAN-SAML user exists for the current SAML login, if not create
+    a new one
+
+    Here are the checks performed in order:
+
+    1. Is there an existing user that matches the provided saml_id (in plugin_extras)?
+    2. Is there an existing user that matches the provided email?
+    3. If no CKAN user found, create a new one with the provided saml id
+
+    Returns the user name
+    '''
+
+    user_dict = _get_user_by_saml_id(saml_id)
+
+    # First we check if there is a SAML-CKAN user
+    if user_dict:
+
+        current_user_dict = copy.deepcopy(user_dict)
+
+        if email != user_dict['email'] or full_name != user_dict['fullname']:
             user_dict['email'] = email
             user_dict['fullname'] = full_name
-            try:
-                user_dict = logic.get_action(u'user_update')(context, user_dict)
-            except logic.ValidationError as e:
-                error_message = (e.error_summary or e.message or e.error_dict)
-                base.abort(400, error_message)
+
+        for plugin in plugins.PluginImplementations(ISaml2Auth):
+            plugin.before_saml2_user_update(user_dict, saml_attributes)
+
+        # Update the existing CKAN-SAML user only if the SAML user name or
+        # email are changed in the IdP, or if another plugin modified the
+        # user dict
+        if current_user_dict != user_dict:
+
+            user_dict = _update_user(user_dict)
+
         return user_dict['name']
 
     # If there is no SAML user but there is a regular CKAN
     # user with the same email as the current login,
     # make that user a SAML-CKAN user and change
-    # it's pass so the user can use only SSO
-    ckan_user = model.User.by_email(email)
-    if ckan_user:
-        # If account exists and is deleted, reactivate it.
-        h.activate_user_if_deleted(ckan_user[0])
+    # its password so the user can use only SSO
 
-        ckan_user_dict = model_dictize.user_dictize(ckan_user[0], context)
-        try:
-            ckan_user_dict[u'password'] = h.generate_password()
-            ckan_user_dict[u'plugin_extras'] = {
-                u'saml2auth': {
-                    # Store the saml username
-                    # in the corresponding CKAN user
-                    u'saml_id': saml_id
-                }
+    user_dict = _get_user_by_email(email)
+
+    if user_dict:
+        user_dict[u'password'] = h.generate_password()
+        user_dict[u'plugin_extras'] = {
+            u'saml2auth': {
+                # Store the saml username
+                # in the corresponding CKAN user
+                u'saml_id': saml_id
             }
-            return logic.get_action(u'user_update')(context, ckan_user_dict)[u'name']
-        except logic.ValidationError as e:
-            error_message = (e.error_summary or e.message or e.error_dict)
-            base.abort(400, error_message)
+        }
 
-    data_dict = {
+        for plugin in plugins.PluginImplementations(ISaml2Auth):
+            plugin.before_saml2_user_update(user_dict, saml_attributes)
+
+        user_dict = _update_user(user_dict)
+
+        return user_dict['name']
+
+    # This is the first time this SAML user has logged in, let's create a CKAN user
+    # for them
+
+    user_dict = {
         u'name': h.ensure_unique_username_from_email(email),
         u'fullname': full_name,
         u'email': email,
@@ -99,11 +167,12 @@ def process_user(email, saml_id, full_name):
             }
         }
     }
-    try:
-        return logic.get_action(u'user_create')(context, data_dict)[u'name']
-    except logic.ValidationError as e:
-        error_message = (e.error_summary or e.message or e.error_dict)
-        base.abort(400, error_message)
+
+    for plugin in plugins.PluginImplementations(ISaml2Auth):
+        plugin.before_saml2_user_create(user_dict, saml_attributes)
+
+    user_dict = _create_user(user_dict)
+    return user_dict[u'name']
 
 
 def acs():
@@ -159,7 +228,7 @@ def acs():
         else:
             full_name = u'{} {}'.format(email.split('@')[0], email.split('@')[1])
 
-    g.user = process_user(email, saml_id, full_name)
+    g.user = process_user(email, saml_id, full_name, auth_response.ava)
 
     # Check if the authenticated user email is in given list of emails
     # and make that user sysadmin and opposite
@@ -175,6 +244,10 @@ def acs():
 
     # log the user in programmatically
     set_repoze_user(g.user, resp)
+
+    for plugin in plugins.PluginImplementations(ISaml2Auth):
+        resp = plugin.after_saml2_login(resp, auth_response.ava)
+
     return resp
 
 
