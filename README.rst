@@ -137,11 +137,11 @@ Optional::
      ckanext.saml2auth.want_response_signed = False
      ckanext.saml2auth.want_assertions_signed = False
      ckanext.saml2auth.want_assertions_or_response_signed = True
-    
+
      # Cert & key files
      ckanext.saml2auth.key_file_path = /path/to/mykey.pem
      ckanext.saml2auth.cert_file_path = /path/to/mycert.pem
-    
+
      # Attribute map directory
      ckanext.saml2auth.attribute_map_dir = /path/to/dir/attributemaps
 
@@ -154,6 +154,20 @@ Optional::
      # Define the comparison value for RequestedAuthnContext
      # Comparison could be one of this: exact, minimum, maximum or better
      ckanext.saml2auth.requested_authn_context_comparison = exact
+
+----------------
+Plugin interface
+----------------
+
+This extension provides the `ISaml2Auth` interface that allows other plugins to hook into the Saml2 authorization flow.
+This allows plugins to integrate custom logic like:
+
+* Include additional attributes returned via the IdP as `plugin_extras` in the CKAN users
+* Assign users to specific organizations with specific roles based on Saml2 attributes
+* Customize the flow response, to eg issue redirects or include custom headers.
+
+For a list of available methods and their parameters check the [`ckanext/saml2auth/interfaces.py`](ckanext/saml2auth/interfaces.py) file, and for a basic example see the [`ExampleISaml2AuthPlugin`](ckanext/saml2auth/tests/test_interface.py) class.
+
 
 ----------------------
 Developer installation
