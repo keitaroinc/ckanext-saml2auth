@@ -20,6 +20,31 @@ extras_folder = os.path.join(here, 'extras')
 responses_folder = os.path.join(here, 'responses')
 
 
+def _b4_encode_string(message):
+    message_bytes = message.encode('ascii')
+    base64_bytes = base64.b64encode(message_bytes)
+    return base64_bytes.decode('ascii')
+
+
+def _prepare_unsigned_response():
+    # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
+    unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
+    unsigned_response = open(unsigned_response_file).read()
+    # parse values
+    context = {
+        'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
+        'destination': 'http://test.ckan.net/acs',
+        'recipient': 'http://test.ckan.net/acs',
+        'issue_instant': datetime.now().isoformat()
+    }
+    t = Template(unsigned_response)
+    final_response = t.render(**context)
+
+    encoded_response = _b4_encode_string(final_response)
+
+    return encoded_response
+
+
 @pytest.mark.usefixtures(u'clean_db', u'clean_index')
 @pytest.mark.ckan_config(u'ckan.plugins', u'saml2auth')
 class TestGetRequest:
@@ -55,11 +80,6 @@ class TestGetRequest:
         assert 400 == response.status_code
         assert u'Bad login request' in response
 
-    def _b4_encode_string(self, message):
-        message_bytes = message.encode('ascii')
-        base64_bytes = base64.b64encode(message_bytes)
-        return base64_bytes.decode('ascii')
-
     @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
@@ -68,20 +88,7 @@ class TestGetRequest:
     @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
     def test_unsigned_request(self, app):
 
-        # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
-        unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
-        unsigned_response = open(unsigned_response_file).read()
-        # parse values
-        context = {
-            'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
-            'destination': 'http://test.ckan.net/acs',
-            'recipient': 'http://test.ckan.net/acs',
-            'issue_instant': datetime.now().isoformat()
-        }
-        t = Template(unsigned_response)
-        final_response = t.render(**context)
-
-        encoded_response = self._b4_encode_string(final_response)
+        encoded_response = _prepare_unsigned_response()
         url = '/acs'
 
         data = {
@@ -272,7 +279,7 @@ class TestGetRequest:
         f = open(os.path.join(extras_folder, 'provider1', 'test-signed-encrypted.xml'), 'w')
         f.write(final_signed_response)
         f.close()
-        encoded_response = self._b4_encode_string(final_signed_response)
+        encoded_response = _b4_encode_string(final_signed_response)
         url = '/acs'
 
         data = {
@@ -331,7 +338,7 @@ class TestGetRequest:
         f = open(os.path.join(extras_folder, 'provider1', 'test-signed.xml'), 'w')
         f.write(final_signed_response)
         f.close()
-        encoded_response = self._b4_encode_string(final_signed_response)
+        encoded_response = _b4_encode_string(final_signed_response)
         url = '/acs'
 
         data = {
@@ -348,20 +355,7 @@ class TestGetRequest:
     @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
     def test_user_fullname_using_first_last_name(self, app):
 
-        # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
-        unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
-        unsigned_response = open(unsigned_response_file).read()
-        # parse values
-        context = {
-            'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
-            'destination': 'http://test.ckan.net/acs',
-            'recipient': 'http://test.ckan.net/acs',
-            'issue_instant': datetime.now().isoformat()
-        }
-        t = Template(unsigned_response)
-        final_response = t.render(**context)
-
-        encoded_response = self._b4_encode_string(final_response)
+        encoded_response = _prepare_unsigned_response()
         url = '/acs'
 
         data = {
@@ -385,20 +379,7 @@ class TestGetRequest:
     @pytest.mark.ckan_config(u'ckanext.saml2auth.user_lastname', None)
     def test_user_fullname_using_fullname(self, app):
 
-        # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
-        unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
-        unsigned_response = open(unsigned_response_file).read()
-        # parse values
-        context = {
-            'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
-            'destination': 'http://test.ckan.net/acs',
-            'recipient': 'http://test.ckan.net/acs',
-            'issue_instant': datetime.now().isoformat()
-        }
-        t = Template(unsigned_response)
-        final_response = t.render(**context)
-
-        encoded_response = self._b4_encode_string(final_response)
+        encoded_response = _prepare_unsigned_response()
         url = '/acs'
 
         data = {
@@ -419,20 +400,7 @@ class TestGetRequest:
     @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
     def test_relay_state_redirects_to_local_page(self, app):
 
-        # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
-        unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
-        unsigned_response = open(unsigned_response_file).read()
-        # parse values
-        context = {
-            'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
-            'destination': 'http://test.ckan.net/acs',
-            'recipient': 'http://test.ckan.net/acs',
-            'issue_instant': datetime.now().isoformat()
-        }
-        t = Template(unsigned_response)
-        final_response = t.render(**context)
-
-        encoded_response = self._b4_encode_string(final_response)
+        encoded_response = _prepare_unsigned_response()
         url = '/acs'
 
         data = {

@@ -84,6 +84,9 @@ setup(
         [ckan.plugins]
         saml2auth=ckanext.saml2auth.plugin:Saml2AuthPlugin
 
+        # Test plugins
+        test_saml2auth=ckanext.saml2auth.tests.test_interface:ExampleISaml2AuthPlugin
+
         [babel.extractors]
         ckan = ckan.lib.extract:extract_ckan
     ''',
