@@ -94,7 +94,7 @@ jobs:
         uses: AndreMiras/coveralls-python-action@develop
         with:
           parallel: true
-          flag-name: Unit Test
+          flag-name: Python ${{ matrix.python-version }} Unit Test
 
   publish:
     needs: test
