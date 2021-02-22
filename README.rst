@@ -4,6 +4,9 @@
 .. image:: https://coveralls.io/repos/github/keitaroinc/ckanext-saml2auth/badge.svg?branch=main
     :target: https://coveralls.io/github/keitaroinc/ckanext-saml2auth?branch=main
 
+.. image:: https://badges.gitter.im/keitaroinc/ckan.svg)
+    :target: https://gitter.im/keitaroinc/ckan?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
+
 .. image:: https://img.shields.io/pypi/v/ckanext-saml2auth
     :target: https://pypi.org/project/ckanext-saml2auth
 
