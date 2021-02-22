@@ -107,9 +107,9 @@ Optional:
     ckanext.saml2auth.entity_id = urn:gov:gsa:SAML:2.0.profiles:sp:sso:gsa:catalog-dev
 
     # Signed responses and assertions
-    ckanext.saml2auth.want_response_signed = False
+    ckanext.saml2auth.want_response_signed = True
     ckanext.saml2auth.want_assertions_signed = False
-    ckanext.saml2auth.want_assertions_or_response_signed = True
+    ckanext.saml2auth.want_assertions_or_response_signed = False
 
     # Cert & key files
     ckanext.saml2auth.key_file_path = /path/to/mykey.pem
