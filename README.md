@@ -57,7 +57,7 @@ Required:
     ckanext.saml2auth.idp_metadata.remote_url = https://kalmar2.org/simplesaml/module.php/aggregator/?id=kalmarcentral2&set=saml2
 
     # Path to a local file accessible on the server the service runs on
-    # Ignore this config if the idp metadata location is set to: local
+    # Ignore this config if the idp metadata location is set to: local and metadata is public
     ckanext.saml2auth.idp_metadata.remote_cert = /opt/metadata/kalmar2.cert
 
     # Corresponding SAML user field for firstname
@@ -107,9 +107,9 @@ Optional:
     ckanext.saml2auth.entity_id = urn:gov:gsa:SAML:2.0.profiles:sp:sso:gsa:catalog-dev
 
     # Signed responses and assertions
-    ckanext.saml2auth.want_response_signed = False
+    ckanext.saml2auth.want_response_signed = True
     ckanext.saml2auth.want_assertions_signed = False
-    ckanext.saml2auth.want_assertions_or_response_signed = True
+    ckanext.saml2auth.want_assertions_or_response_signed = False
 
     # Cert & key files
     ckanext.saml2auth.key_file_path = /path/to/mykey.pem

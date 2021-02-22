@@ -30,8 +30,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             'ckanext.saml2auth.user_email',
         )
         if not config.get('ckanext.saml2auth.idp_metadata.local_path'):
-            config_options += ('ckanext.saml2auth.idp_metadata.remote_url',
-                               'ckanext.saml2auth.idp_metadata.remote_cert')
+            config_options += ('ckanext.saml2auth.idp_metadata.remote_url',)
         for option in config_options:
             if not config.get(option, None):
                 raise RuntimeError(missing_config.format(option))
