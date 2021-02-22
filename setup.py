@@ -20,7 +20,7 @@ setup(
 
     description='''An extension to enable Single Sign On(SSO) for CKAN data portals via SAML2 Authentication.''',
     long_description=long_description,
-    long_description_content_type='text/x-rst',
+    long_description_content_type='text/markdown',
 
     # The project's main homepage.
     url='https://github.com/keitaroinc/'\
