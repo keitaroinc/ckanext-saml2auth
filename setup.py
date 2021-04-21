@@ -78,7 +78,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     namespace_packages=['ckanext'],
 
-    install_requires=['pysaml2>=6.3.0'],
+    install_requires=['pysaml2>=6.5.1'],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these

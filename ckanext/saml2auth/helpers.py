@@ -23,12 +23,14 @@ import random
 import secrets
 from six import text_type
 
-from saml2.client import Saml2Client
+from ckanext.saml2auth.client import Saml2Client
+
 from saml2.config import Config as Saml2Config
 
 import ckan.model as model
 import ckan.authz as authz
 from ckan.common import config, asbool, aslist
+
 
 log = logging.getLogger(__name__)
 

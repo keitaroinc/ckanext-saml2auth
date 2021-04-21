@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # encoding: utf-8
 from saml2.saml import NAME_FORMAT_URI
+from saml2 import entity
 
 from ckan.common import config as ckan_config
 from ckan.common import asbool, aslist
@@ -54,6 +55,10 @@ def get_config():
     cert_file = ckan_config.get(u'ckanext.saml2auth.cert_file_path', None)
     attribute_map_dir = ckan_config.get(u'ckanext.saml2auth.attribute_map_dir', None)
     acs_endpoint = ckan_config.get('ckanext.saml2auth.acs_endpoint', '/acs')
+    logout_requests_signed = \
+        asbool(ckan_config.get(u'ckanext.saml2auth.logout_requests_signed', False))
+    logout_expected_binding = ckan_config.get(u'ckanext.saml2auth.logout_expected_binding',
+                                              entity.BINDING_HTTP_POST)
 
     config = {
         u'entityid': entity_id,
@@ -70,9 +75,11 @@ def get_config():
                 u'name_id_format': name_id_format,
                 u'want_response_signed': response_signed,
                 u'want_assertions_signed': assertion_signed,
-                u'want_assertions_or_response_signed': any_signed
+                u'want_assertions_or_response_signed': any_signed,
+                u'logout_requests_signed': logout_requests_signed
             }
         },
+        u'logout_expected_binding': logout_expected_binding,
         u'metadata': {},
         u'debug': 1 if debug else 0,
         u'name_form': NAME_FORMAT_URI

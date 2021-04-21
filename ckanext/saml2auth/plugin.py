@@ -16,11 +16,23 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 # encoding: utf-8
+import logging
+
+from saml2.client_base import LogoutError
+
+from flask import session
+
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+from ckan.common import g
 
 from ckanext.saml2auth.views.saml2auth import saml2auth
+from ckanext.saml2auth.cache import get_subject_id, get_saml_session_info
+from ckanext.saml2auth.spconfig import get_config as sp_config
 from ckanext.saml2auth import helpers as h
+
+
+log = logging.getLogger(__name__)
 
 
 class Saml2AuthPlugin(plugins.SingletonPlugin):
@@ -28,6 +40,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.IConfigurable)
     plugins.implements(plugins.ITemplateHelpers)
+    plugins.implements(plugins.IAuthenticator)
 
     # ITemplateHelpers
 
@@ -59,9 +72,8 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         full_name = config.get('ckanext.saml2auth.user_fullname')
 
         if not first_and_last_name and not full_name:
-            raise RuntimeError('''
-You need to provide both ckanext.saml2auth.user_firstname +
-ckanext.saml2auth.user_lastname or ckanext.saml2auth.user_fullname'''.strip())
+            raise RuntimeError('''You need to provide both ckanext.saml2auth.user_firstname 
+            + ckanext.saml2auth.user_lastname or ckanext.saml2auth.user_fullname'''.strip())
 
         acs_endpoint = config.get('ckanext.saml2auth.acs_endpoint')
         if acs_endpoint and not acs_endpoint.startswith('/'):
@@ -78,3 +90,43 @@ ckanext.saml2auth.user_lastname or ckanext.saml2auth.user_fullname'''.strip())
         toolkit.add_template_directory(config_, 'templates')
         toolkit.add_public_directory(config_, 'public')
         toolkit.add_resource('fanstatic', 'saml2auth')
+
+    # IAuthenticator
+
+    def identify(self):
+        pass
+
+    def login(self):
+        pass
+
+    def logout(self):
+
+        # We need to logout from IDP as well
+        client = h.saml_client(
+            sp_config()
+        )
+        saml_session_info = get_saml_session_info(session)
+        subject_id = get_subject_id(session)
+        client.users.add_information_about_person(saml_session_info)
+
+        if subject_id is None:
+            log.warning(
+                'The session does not contain the subject id for user %s', g.user)
+
+        try:
+            result = client.global_logout(name_id=subject_id)
+            print(result)
+        except LogoutError as e:
+            log.exception(
+                'Error Handled - SLO not supported by IDP: {}'.format(e))
+            # clear session
+
+        if not result:
+            log.error(
+                "Looks like the user {} is not logged in any IdP/AA".format(subject_id))
+
+        if len(result) > 1:
+            log.error(
+                'Sorry, I do not know how to logout from several sources.'
+                ' I will logout just from the first one')
+

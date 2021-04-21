@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
 import copy
 
-from flask import Blueprint
+from flask import Blueprint, session
 from saml2 import entity
 from saml2.authn_context import requested_authn_context
 
@@ -34,6 +34,7 @@ from ckan.common import config, g, request
 from ckanext.saml2auth.spconfig import get_config as sp_config
 from ckanext.saml2auth import helpers as h
 from ckanext.saml2auth.interfaces import ISaml2Auth
+from ckanext.saml2auth.cache import set_subject_id, set_saml_session_info
 
 
 log = logging.getLogger(__name__)
@@ -229,6 +230,7 @@ def acs():
 
     auth_response.get_identity()
     user_info = auth_response.get_subject()
+    session_info = auth_response.session_info()
 
     # SAML username - unique
     saml_id = user_info.text
@@ -261,6 +263,8 @@ def acs():
 
     # log the user in programmatically
     set_repoze_user(g.user, resp)
+    set_saml_session_info(session, session_info)
+    set_subject_id(session, session_info['name_id'])
 
     for plugin in plugins.PluginImplementations(ISaml2Auth):
         resp = plugin.after_saml2_login(resp, auth_response.ava)
