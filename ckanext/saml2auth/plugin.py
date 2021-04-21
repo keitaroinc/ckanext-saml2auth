@@ -72,7 +72,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         full_name = config.get('ckanext.saml2auth.user_fullname')
 
         if not first_and_last_name and not full_name:
-            raise RuntimeError('''You need to provide both ckanext.saml2auth.user_firstname 
+            raise RuntimeError('''You need to provide both ckanext.saml2auth.user_firstname
             + ckanext.saml2auth.user_lastname or ckanext.saml2auth.user_fullname'''.strip())
 
         acs_endpoint = config.get('ckanext.saml2auth.acs_endpoint')
@@ -129,4 +129,3 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             log.error(
                 'Sorry, I do not know how to logout from several sources.'
                 ' I will logout just from the first one')
-
