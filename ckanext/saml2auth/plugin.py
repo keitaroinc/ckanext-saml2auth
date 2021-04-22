@@ -17,7 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # encoding: utf-8
 import logging
-import requests
 
 from saml2.client_base import LogoutError
 from saml2 import entity
@@ -27,8 +26,6 @@ from flask import session
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckan.common import g
-import ckan.lib.helpers as ch
-import ckan.lib.base as base
 
 from ckanext.saml2auth.views.saml2auth import saml2auth
 from ckanext.saml2auth.cache import get_subject_id, get_saml_session_info
