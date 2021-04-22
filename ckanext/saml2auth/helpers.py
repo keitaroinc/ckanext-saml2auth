@@ -97,3 +97,12 @@ def ensure_unique_username_from_email(email):
             return name
 
     return cleaned_localpart
+
+
+def get_location(http_info):
+    '''Extract the redirect URL from a pysaml2 http_info object'''
+    try:
+        headers = dict(http_info['headers'])
+        return headers['Location']
+    except KeyError:
+        return http_info['url']

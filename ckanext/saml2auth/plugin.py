@@ -17,14 +17,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # encoding: utf-8
 import logging
+import requests
 
 from saml2.client_base import LogoutError
+from saml2 import entity
 
 from flask import session
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckan.common import g
+import ckan.lib.helpers as ch
+import ckan.lib.base as base
 
 from ckanext.saml2auth.views.saml2auth import saml2auth
 from ckanext.saml2auth.cache import get_subject_id, get_saml_session_info
@@ -111,21 +115,37 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
 
         if subject_id is None:
             log.warning(
-                'The session does not contain the subject id for user %s', g.user)
+                'The session does not contain the subject id for user {}'.format(g.user))
 
         try:
             result = client.global_logout(name_id=subject_id)
-            print(result)
         except LogoutError as e:
             log.exception(
-                'Error Handled - SLO not supported by IDP: {}'.format(e))
+                'SLO not supported by IDP: {}'.format(e))
             # clear session
 
         if not result:
             log.error(
-                "Looks like the user {} is not logged in any IdP/AA".format(subject_id))
+                'Looks like the user {} is not logged in any IdP/AA'.format(subject_id))
 
         if len(result) > 1:
             log.error(
                 'Sorry, I do not know how to logout from several sources.'
                 ' I will logout just from the first one')
+
+        for entity_id, logout_info in result.items():
+            if isinstance(logout_info, tuple):
+                binding, http_info = logout_info
+                if binding == entity.BINDING_HTTP_POST:
+                    log.debug(
+                        'Returning form to the IdP to continue the logout process')
+                    body = ''.join(http_info['data'])
+                    print('-------------------------', entity.BINDING_HTTP_POST)
+                    print(body)
+                elif binding == entity.BINDING_HTTP_REDIRECT:
+                    log.debug(
+                        'Redirecting to the IdP to continue the logout process')
+                    print('-------------------------', entity.BINDING_HTTP_REDIRECT)
+                    print(h.get_location(http_info))
+                else:
+                    log.error('Failed to log out from Idp. Unknown binding: {}'.format(binding))
