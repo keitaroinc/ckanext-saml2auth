@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 """
 Copyright (c) 2020 Keitaro AB
 
@@ -15,7 +17,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-# encoding: utf-8
 import os
 import pytest
 from ckanext.saml2auth.views.saml2auth import saml2login
