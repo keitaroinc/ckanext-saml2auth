@@ -73,6 +73,7 @@ Required:
     # Corresponding SAML user field for email
     ckanext.saml2auth.user_email = email
 
+
 Optional:
 
     # URL route of the endpoint where the SAML assertion is sent, also known as Assertion Consumer Service (ACS).
@@ -127,6 +128,13 @@ Optional:
     # Define the comparison value for RequestedAuthnContext
     # Comparison could be one of this: exact, minimum, maximum or better
     ckanext.saml2auth.requested_authn_context_comparison = exact
+
+    # Indicates if this entity will sign the Logout Requests originated from it
+    ckanext.saml2auth.logout_requests_signed = False
+
+    # Saml logout request preferred binding settings variable
+    # Default: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+    ckanext.saml2auth.logout_expected_binding =  urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
 
 ## Plugin interface
 
