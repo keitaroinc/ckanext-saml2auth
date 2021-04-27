@@ -21,11 +21,12 @@ import logging
 from saml2.client_base import LogoutError
 from saml2 import entity
 
-from flask import session
+from flask import session, redirect
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckan.common import g
+import ckan.lib.base as base
 
 from ckanext.saml2auth.views.saml2auth import saml2auth
 from ckanext.saml2auth.cache import get_subject_id, get_saml_session_info
@@ -102,47 +103,51 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
 
     def logout(self):
 
-        # We need to logout from IDP as well
         client = h.saml_client(
             sp_config()
         )
         saml_session_info = get_saml_session_info(session)
         subject_id = get_subject_id(session)
-        client.users.add_information_about_person(saml_session_info)
 
         if subject_id is None:
             log.warning(
                 'The session does not contain the subject id for user {}'.format(g.user))
+        else:
+            try:
+                client.users.add_information_about_person(saml_session_info)
+                result = client.global_logout(name_id=subject_id)
+            except LogoutError as e:
+                log.exception(
+                    'SLO not supported by IDP: {}'.format(e))
+                # clear session
 
-        try:
-            result = client.global_logout(name_id=subject_id)
-        except LogoutError as e:
-            log.exception(
-                'SLO not supported by IDP: {}'.format(e))
-            # clear session
+            if not result:
+                log.error(
+                    'Looks like the user {} is not logged in any IdP/AA'.format(subject_id))
 
-        if not result:
-            log.error(
-                'Looks like the user {} is not logged in any IdP/AA'.format(subject_id))
+            if len(result) > 1:
+                log.error(
+                    'Sorry, I do not know how to logout from several sources.'
+                    ' I will logout just from the first one')
 
-        if len(result) > 1:
-            log.error(
-                'Sorry, I do not know how to logout from several sources.'
-                ' I will logout just from the first one')
-
-        for entity_id, logout_info in result.items():
-            if isinstance(logout_info, tuple):
-                binding, http_info = logout_info
-                if binding == entity.BINDING_HTTP_POST:
-                    log.debug(
-                        'Returning form to the IdP to continue the logout process')
-                    body = ''.join(http_info['data'])
-                    print('-------------------------', entity.BINDING_HTTP_POST)
-                    print(body)
-                elif binding == entity.BINDING_HTTP_REDIRECT:
-                    log.debug(
-                        'Redirecting to the IdP to continue the logout process')
-                    print('-------------------------', entity.BINDING_HTTP_REDIRECT)
-                    print(h.get_location(http_info))
-                else:
-                    log.error('Failed to log out from Idp. Unknown binding: {}'.format(binding))
+            for entity_id, logout_info in result.items():
+                if isinstance(logout_info, tuple):
+                    binding, http_info = logout_info
+                    if binding == entity.BINDING_HTTP_POST:
+                        log.debug(
+                            'Returning form to the IdP to continue the logout process')
+                        body = ''.join(http_info['data'])
+                        print('------------------------- BINDING_HTTP_POST')
+                        print(body)
+                        extra_vars = {
+                            u'body': body
+                        }
+                        return base.render(u'saml2auth/idp_logout.html', extra_vars)
+                    elif binding == entity.BINDING_HTTP_REDIRECT:
+                        log.debug(
+                            'Redirecting to the IdP to continue the logout process')
+                        print('------------------------- BINDING_HTTP_REDIRECT')
+                        print(h.get_location(http_info))
+                        return redirect(h.get_location(http_info), code=302)
+                    else:
+                        log.error('Failed to log out from Idp. Unknown binding: {}'.format(binding))

@@ -315,6 +315,15 @@ def disable_default_login_register():
     return base.render(u'error_document_template.html', extra_vars), 403
 
 
+def slo():
+    u'''View function that handles the IDP logout
+    request response and finish with logging out the user from CKAN
+    '''
+    saml_response = request.form.get(u'SAMLResponse', None)
+    print(saml_response)
+    return toolkit.redirect_to(u'user.logout')
+
+
 acs_endpoint = config.get('ckanext.saml2auth.acs_endpoint', '/acs')
 saml2auth.add_url_rule(acs_endpoint, view_func=acs, methods=[u'GET', u'POST'])
 saml2auth.add_url_rule(u'/user/saml2login', view_func=saml2login)
@@ -323,3 +332,4 @@ if not h.is_default_login_enabled():
         u'/user/login', view_func=disable_default_login_register)
     saml2auth.add_url_rule(
         u'/user/register', view_func=disable_default_login_register)
+saml2auth.add_url_rule(u'/slo', view_func=slo, methods=[u'GET', u'POST'])
