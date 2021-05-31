@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
 import copy
 
-from flask import Blueprint
+from flask import Blueprint, session
 from saml2 import entity
 from saml2.authn_context import requested_authn_context
 
@@ -35,6 +35,7 @@ from ckan.common import config, g, request
 from ckanext.saml2auth.spconfig import get_config as sp_config
 from ckanext.saml2auth import helpers as h
 from ckanext.saml2auth.interfaces import ISaml2Auth
+from ckanext.saml2auth.cache import set_subject_id, set_saml_session_info
 
 
 log = logging.getLogger(__name__)
@@ -230,6 +231,7 @@ def acs():
 
     auth_response.get_identity()
     user_info = auth_response.get_subject()
+    session_info = auth_response.session_info()
 
     # SAML username - unique
     saml_id = user_info.text
@@ -262,6 +264,8 @@ def acs():
 
     # log the user in programmatically
     set_repoze_user(g.user, resp)
+    set_saml_session_info(session, session_info)
+    set_subject_id(session, session_info['name_id'])
 
     for plugin in plugins.PluginImplementations(ISaml2Auth):
         resp = plugin.after_saml2_login(resp, auth_response.ava)
@@ -311,6 +315,13 @@ def disable_default_login_register():
     return base.render(u'error_document_template.html', extra_vars), 403
 
 
+def slo():
+    u'''View function that handles the IDP logout
+    request response and finish with logging out the user from CKAN
+    '''
+    return toolkit.redirect_to(u'user.logout')
+
+
 acs_endpoint = config.get('ckanext.saml2auth.acs_endpoint', '/acs')
 saml2auth.add_url_rule(acs_endpoint, view_func=acs, methods=[u'GET', u'POST'])
 saml2auth.add_url_rule(u'/user/saml2login', view_func=saml2login)
@@ -319,3 +330,4 @@ if not h.is_default_login_enabled():
         u'/user/login', view_func=disable_default_login_register)
     saml2auth.add_url_rule(
         u'/user/register', view_func=disable_default_login_register)
+saml2auth.add_url_rule(u'/slo', view_func=slo, methods=[u'GET', u'POST'])
