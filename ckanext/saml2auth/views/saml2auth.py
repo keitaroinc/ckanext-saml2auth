@@ -319,7 +319,6 @@ def slo():
     u'''View function that handles the IDP logout
     request response and finish with logging out the user from CKAN
     '''
-    saml_response = request.form.get(u'SAMLResponse', None)
     return toolkit.redirect_to(u'user.logout')
 
 
