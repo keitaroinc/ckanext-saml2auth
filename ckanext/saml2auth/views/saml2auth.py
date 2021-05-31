@@ -320,7 +320,6 @@ def slo():
     request response and finish with logging out the user from CKAN
     '''
     saml_response = request.form.get(u'SAMLResponse', None)
-    print(saml_response)
     return toolkit.redirect_to(u'user.logout')
 
 
