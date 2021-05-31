@@ -137,8 +137,6 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
                         log.debug(
                             'Returning form to the IdP to continue the logout process')
                         body = ''.join(http_info['data'])
-                        print('------------------------- BINDING_HTTP_POST')
-                        print(body)
                         extra_vars = {
                             u'body': body
                         }
@@ -146,8 +144,6 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
                     elif binding == entity.BINDING_HTTP_REDIRECT:
                         log.debug(
                             'Redirecting to the IdP to continue the logout process')
-                        print('------------------------- BINDING_HTTP_REDIRECT')
-                        print(h.get_location(http_info))
                         return redirect(h.get_location(http_info), code=302)
                     else:
                         log.error('Failed to log out from Idp. Unknown binding: {}'.format(binding))
