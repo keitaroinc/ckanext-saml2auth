@@ -136,6 +136,11 @@ Optional:
     # Default: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
     ckanext.saml2auth.logout_expected_binding =  urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
 
+    # Default fallback endpoint to redirect to if no RelayState provided in the SAML Response
+    # Default: user.me (ie /dashboard)
+    # e.g. to redirect to the home page
+    ckanext.saml2auth.default_fallback_endpoint = home.index
+
 ## Plugin interface
 
 This extension provides the [ISaml2Auth]{.title-ref} interface that

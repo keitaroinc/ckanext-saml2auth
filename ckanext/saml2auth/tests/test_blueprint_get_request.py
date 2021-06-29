@@ -428,3 +428,40 @@ class TestGetRequest:
         response = app.post(url=url, params=data, follow_redirects=False)
 
         assert response.headers['Location'] == 'http://test.ckan.net/dataset/my-dataset'
+
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
+    def test_no_relay_state_redirects_to_fallback_default(self, app):
+
+        encoded_response = _prepare_unsigned_response()
+        url = '/acs'
+
+        data = {
+            'SAMLResponse': encoded_response,
+        }
+        response = app.post(url=url, params=data, follow_redirects=False)
+
+        assert response.headers['Location'] == 'http://test.ckan.net/user/me'
+
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.default_fallback_endpoint', 'dataset.search')
+    def test_no_relay_state_redirects_to_fallback_config(self, app):
+
+        encoded_response = _prepare_unsigned_response()
+        url = '/acs'
+
+        data = {
+            'SAMLResponse': encoded_response,
+        }
+        response = app.post(url=url, params=data, follow_redirects=False)
+
+        assert response.headers['Location'] == 'http://test.ckan.net/dataset/'
