@@ -59,3 +59,37 @@ class TestBlueprint(object):
 
         response = app.get(url=url, follow_redirects=False)
         assert 'RelayState=%2Fdataset%2Fmy-dataset' in response.headers['Location']
+
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path',
+                             os.path.join(extras_folder, 'provider2', 'idp.xml'))
+    @pytest.mark.usefixtures('with_request_context')
+    def test_cookies_cleared_on_slo(self, app):
+
+        url = url_for('user.logout')
+
+        import datetime
+        from unittest import mock
+        from http.cookies import SimpleCookie
+        from flask import make_response
+        from dateutil.parser import parse as date_parse
+
+        with mock.patch(
+            'ckanext.saml2auth.plugin._perform_slo',
+                return_value=make_response('')):
+            response = app.get(url=url, follow_redirects=False)
+
+        cookie_headers = [
+            h[1] for h in response.headers
+            if h[0].lower() == 'set-cookie']
+
+        assert len(cookie_headers) == 2
+
+        for cookie_header in cookie_headers:
+            cookie = SimpleCookie()
+            cookie.load(cookie_header)
+            cookie_name = [name for name in cookie.keys()][0]
+            assert cookie_name in ['auth_tkt', 'ckan']
+            assert cookie[cookie_name]['domain'] == 'test.ckan.net'
+            cookie_date = date_parse(cookie[cookie_name]['expires'], ignoretz=True)
+            assert cookie_date < datetime.datetime.now()
