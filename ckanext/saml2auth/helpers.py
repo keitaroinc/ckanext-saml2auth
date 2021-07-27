@@ -23,6 +23,7 @@ import re
 import random
 import secrets
 from six import text_type
+from six.moves.urllib.parse import urlparse
 
 from ckanext.saml2auth.client import Saml2Client
 
@@ -30,7 +31,7 @@ from saml2.config import Config as Saml2Config
 
 import ckan.model as model
 import ckan.authz as authz
-from ckan.common import config, asbool, aslist
+from ckan.plugins import toolkit
 
 
 log = logging.getLogger(__name__)
@@ -50,14 +51,14 @@ def generate_password():
 
 
 def is_default_login_enabled():
-    return asbool(
-        config.get('ckanext.saml2auth.enable_ckan_internal_login',
-                   False))
+    return toolkit.asbool(
+        toolkit.config.get('ckanext.saml2auth.enable_ckan_internal_login')
+    )
 
 
 def update_user_sysadmin_status(username, email):
-    sysadmins_list = aslist(
-        config.get('ckanext.saml2auth.sysadmins_list'))
+    sysadmins_list = toolkit.aslist(
+        toolkit.config.get('ckanext.saml2auth.sysadmins_list'))
     user = model.User.by_name(text_type(username))
     sysadmin = authz.is_sysadmin(username)
 
@@ -107,3 +108,16 @@ def get_location(http_info):
         return headers['Location']
     except KeyError:
         return http_info['url']
+
+
+def get_site_domain_for_cookie():
+    '''Return the domain part of the site URL
+
+    When running on localhost (or any single word host), browsers will
+    ignore the `Domain` bit in the Set-Cookie header (and Werkzeug will
+    not allow you to set it), so we return None on this case.
+    '''
+    site_url = toolkit.config.get('ckan.site_url')
+    parsed_url = urlparse(site_url)
+    host = parsed_url.netloc.split(':')[0]
+    return host if '.' in host else None
