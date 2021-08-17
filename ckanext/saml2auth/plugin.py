@@ -21,7 +21,7 @@ import logging
 from saml2.client_base import LogoutError
 from saml2 import entity
 
-from flask import session, redirect
+from flask import session, redirect, make_response
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
@@ -159,7 +159,9 @@ def _perform_slo():
                 extra_vars = {
                     u'body': body
                 }
-                response = base.render(u'saml2auth/idp_logout.html', extra_vars)
+                response = make_response(
+                    base.render(u'saml2auth/idp_logout.html', extra_vars)
+                )
 
             elif binding == entity.BINDING_HTTP_REDIRECT:
                 log.debug(
