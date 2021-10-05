@@ -42,7 +42,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.IConfigurable)
     plugins.implements(plugins.ITemplateHelpers)
-    plugins.implements(plugins.IAuthenticator)
+    plugins.implements(plugins.IAuthenticator, inherit=True)
 
     # ITemplateHelpers
 
@@ -94,12 +94,6 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         toolkit.add_resource('fanstatic', 'saml2auth')
 
     # IAuthenticator
-
-    def identify(self):
-        pass
-
-    def login(self):
-        pass
 
     def logout(self):
 
