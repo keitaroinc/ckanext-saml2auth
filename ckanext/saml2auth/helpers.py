@@ -83,14 +83,15 @@ def ensure_unique_username_from_email(email):
 
     return cleaned_localpart
 
+
 def get_location(http_info):
     '''Extract the redirect URL from a pysaml2 http_info object'''
     try:
         headers = dict(http_info['headers'])
         return headers['Location']
     except KeyError:
+        return http_info['url']
 
-        return http_info['url']    
 
 def get_site_domain_for_cookie():
     '''Return the domain part of the site URL

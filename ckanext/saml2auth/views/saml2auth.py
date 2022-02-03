@@ -198,6 +198,7 @@ def disable_default_login_register():
                                               u' is available at this moment.'}
     return base.render(u'error_document_template.html', extra_vars), 403
 
+
 def slo():
     u'''View function that handles the IDP logout
     request response and finish with logging out the user from CKAN

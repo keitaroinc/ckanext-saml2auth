@@ -16,6 +16,7 @@ import ckan.lib.base as base
 
 log = logging.getLogger(__name__)
 
+
 class Saml2AuthPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
@@ -95,23 +96,19 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
 
         return response
 
-
     def _perform_slo(self):
         response = None
-
         client = h.saml_client(
             sp_config()
         )
         saml_session_info = get_saml_session_info(session)
         subject_id = get_subject_id(session)
-
         if subject_id is None:
             log.warning(
                 'The session does not contain the subject id for user {}'.format(g.user))
             return
-
         client.users.add_information_about_person(saml_session_info)
-        try :
+        try:
             result = client.global_logout(name_id=subject_id)
         except Exception as e:
             log.info(e)
@@ -147,5 +144,4 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
                 else:
                     log.error(
                         'Failed to log out from Idp. Unknown binding: {}'.format(binding))
-
         return response
