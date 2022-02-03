@@ -1,6 +1,6 @@
 # encoding: utf-8
 import logging
-from flask import Blueprint
+from flask import Blueprint, session
 from saml2 import BINDING_HTTP_POST
 from saml2.authn_context import requested_authn_context
 
@@ -14,6 +14,7 @@ from ckan.common import config, g, request
 
 from ckanext.saml2auth.spconfig import get_config as sp_config
 from ckanext.saml2auth import helpers as h
+from ckanext.saml2auth.cache import set_subject_id, set_saml_session_info
 
 
 saml2auth = Blueprint(u'saml2auth', __name__)
@@ -98,6 +99,7 @@ def acs():
     # SAML username - unique
     # TODO use to connect CKAN user and SAML user
     user_info = auth_response.get_subject()
+    session_info = auth_response.session_info()
     saml_id = user_info.text
     log.debug('User info {} SAML id {}'.format(user_info, saml_id))
 
@@ -140,6 +142,9 @@ def acs():
 
     # log the user in programmatically
     set_repoze_user(g.user, resp)
+    set_saml_session_info(session, session_info)
+    set_subject_id(session, session_info['name_id'])
+
     log.debug('User {} OK, redirecting'.format(g.user))
 
     return resp
@@ -193,10 +198,17 @@ def disable_default_login_register():
                                               u' is available at this moment.'}
     return base.render(u'error_document_template.html', extra_vars), 403
 
+def slo():
+    u'''View function that handles the IDP logout
+    request response and finish with logging out the user from CKAN
+    '''
+    return toolkit.redirect_to(u'user.logout')
+
 
 acs_endpoint = config.get('ckanext.saml2auth.acs_endpoint', '/acs')
 saml2auth.add_url_rule(acs_endpoint, view_func=acs, methods=[u'GET', u'POST'])
 saml2auth.add_url_rule(u'/user/saml2login', view_func=saml2login)
+saml2auth.add_url_rule(u'/slo', view_func=slo, methods=[u'GET', u'POST'])
 if not h.is_default_login_enabled():
     saml2auth.add_url_rule(
         u'/user/login', view_func=disable_default_login_register)

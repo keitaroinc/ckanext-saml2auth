@@ -1,5 +1,5 @@
 # last pysaml2 version for python 2
-pysaml2==4.9.0
+pysaml2==5.0.0
 
 # python secrets was implemented in python 3.6
 python2-secrets==1.0.5

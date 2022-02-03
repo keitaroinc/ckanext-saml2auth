@@ -1,16 +1,27 @@
 # encoding: utf-8
+import logging
+from saml2 import entity
+from flask import session, redirect, make_response
+
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
 from ckanext.saml2auth.views.saml2auth import saml2auth
+from ckanext.saml2auth.cache import get_subject_id, get_saml_session_info
+from ckanext.saml2auth.spconfig import get_config as sp_config
 from ckanext.saml2auth import helpers as h
 
+from ckan.common import g
+import ckan.lib.base as base
+
+log = logging.getLogger(__name__)
 
 class Saml2AuthPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.IConfigurable)
     plugins.implements(plugins.ITemplateHelpers)
+    plugins.implements(plugins.IAuthenticator)
 
     # ITemplateHelpers
 
@@ -61,3 +72,80 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         toolkit.add_template_directory(config_, 'templates')
         toolkit.add_public_directory(config_, 'public')
         toolkit.add_resource('fanstatic', 'saml2auth')
+
+    # IAuthenticator
+    def identify(self):
+        pass
+
+    def login(self):
+        pass
+
+    def logout(self):
+
+        response = self._perform_slo()
+
+        if response:
+            domain = h.get_site_domain_for_cookie()
+
+            # Clear auth cookie in the browser
+            response.set_cookie('auth_tkt', domain=domain, expires=0)
+
+            # Clear session cookie in the browser
+            response.set_cookie('ckan', domain=domain, expires=0)
+
+        return response
+
+
+    def _perform_slo(self):
+        response = None
+
+        client = h.saml_client(
+            sp_config()
+        )
+        saml_session_info = get_saml_session_info(session)
+        subject_id = get_subject_id(session)
+
+        if subject_id is None:
+            log.warning(
+                'The session does not contain the subject id for user {}'.format(g.user))
+            return
+
+        client.users.add_information_about_person(saml_session_info)
+        try :
+            result = client.global_logout(name_id=subject_id)
+        except Exception as e:
+            log.info(e)
+
+        if not result:
+            log.error(
+                'Looks like the user {} is not logged in any IdP/AA'.format(subject_id))
+
+        if len(result) > 1:
+            log.error(
+                'Sorry, I do not know how to logout from several sources.'
+                ' I will logout just from the first one')
+
+        for entity_id, logout_info in result.items():
+            if isinstance(logout_info, tuple):
+                binding, http_info = logout_info
+                if binding == entity.BINDING_HTTP_POST:
+                    log.debug(
+                        'Returning form to the IdP to continue the logout process')
+                    body = ''.join(http_info['data'])
+                    extra_vars = {
+                        u'body': body
+                    }
+                    response = make_response(
+                        base.render(u'saml2auth/idp_logout.html', extra_vars)
+                    )
+
+                elif binding == entity.BINDING_HTTP_REDIRECT:
+                    log.debug(
+                        'Redirecting to the IdP to continue the logout process')
+
+                    response = redirect(h.get_location(http_info), code=302)
+                else:
+                    log.error(
+                        'Failed to log out from Idp. Unknown binding: {}'.format(binding))
+
+        return response
