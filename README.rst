@@ -169,6 +169,13 @@ Optional::
     # Comparison could be one of this: exact, minimum, maximum or better
     ckanext.saml2auth.requested_authn_context_comparison = exact
 
+    # Indicates if this entity will sign the Logout Requests originated from it
+    ckanext.saml2auth.logout_requests_signed = False
+
+    # Saml logout request preferred binding settings variable
+    # Default: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+    ckanext.saml2auth.logout_expected_binding =  urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+
 
 ----------------------
 Developer installation
