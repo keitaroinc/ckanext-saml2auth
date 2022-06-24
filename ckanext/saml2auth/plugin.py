@@ -96,19 +96,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
     # IAuthenticator
 
     def logout(self):
-
-        response = _perform_slo()
-
-        if response:
-            domain = h.get_site_domain_for_cookie()
-
-            # Clear auth cookie in the browser
-            response.set_cookie('auth_tkt', domain=domain, expires=0)
-
-            # Clear session cookie in the browser
-            response.set_cookie('ckan', domain=domain, expires=0)
-
-        return response
+        pass
 
 
 def _perform_slo():
