@@ -78,7 +78,8 @@ def _get_user_by_email(email):
 
     user_obj = model.User.by_email(email)
     if user_obj:
-        user_obj = user_obj[0]
+        if isinstance(user_obj, list):
+            user_obj = user_obj[0]
 
     h.activate_user_if_deleted(user_obj)
 
