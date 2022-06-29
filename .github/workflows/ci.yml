@@ -35,8 +35,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.6', '3.7', '3.8' ]
-    name: Python ${{ matrix.python-version }} extension test
+        ckan-version: [ '2.10', 2.9, 2.9-py2 ]
+    name: CKAN ${{ matrix.ckan-version }}
+    runs-on: ubuntu-latest
+    container:
+      image: openknowledge/ckan-dev:${{ matrix.ckan-version }}
 
     services:
       postgresql:

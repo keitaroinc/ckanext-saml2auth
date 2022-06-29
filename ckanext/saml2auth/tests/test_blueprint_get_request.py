@@ -382,7 +382,9 @@ class TestGetRequest:
         response = app.post(url=url, params=data)
         assert 200 == response.status_code
 
-        user = model.User.by_email('test@example.com')[0]
+        user = model.User.by_email('test@example.com')
+        if isinstance(user, list):
+            user = user[0]
 
         assert user.fullname == 'John Smith'
 
@@ -406,7 +408,9 @@ class TestGetRequest:
         response = app.post(url=url, params=data)
         assert 200 == response.status_code
 
-        user = model.User.by_email('test@example.com')[0]
+        user = model.User.by_email('test@example.com')
+        if isinstance(user, list):
+            user = user[0]
 
         assert user.fullname == 'John Smith (Operations)'
 

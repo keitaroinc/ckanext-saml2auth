@@ -110,7 +110,9 @@ class TestInterface(object):
 
             assert plugin.calls["before_saml2_user_create"] == 1, plugin.calls
 
-        user = model.User.by_email('test@example.com')[0]
+        user = model.User.by_email('test@example.com')
+        if isinstance(user, list):
+            user = user[0]
 
         assert user.fullname.endswith('TEST CREATE')
 
@@ -145,7 +147,9 @@ class TestInterface(object):
 
             assert plugin.calls["before_saml2_user_update"] == 1, plugin.calls
 
-        user = model.User.by_email('test@example.com')[0]
+        user = model.User.by_email('test@example.com')
+        if isinstance(user, list):
+            user = user[0]
 
         assert user.fullname.endswith('TEST UPDATE')
 
@@ -172,7 +176,9 @@ class TestInterface(object):
 
             assert plugin.calls["before_saml2_user_update"] == 1, plugin.calls
 
-        user = model.User.by_email('test@example.com')[0]
+        user = model.User.by_email('test@example.com')
+        if isinstance(user, list):
+            user = user[0]
 
         assert user.fullname.endswith('TEST UPDATE')
 
