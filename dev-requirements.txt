@@ -1,2 +1,2 @@
 flake8    # for the CI build
-pysaml2
+pysaml2==6.5.1
