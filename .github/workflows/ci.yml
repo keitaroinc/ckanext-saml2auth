@@ -1,4 +1,4 @@
-name: CI
+name: Tests
 
 on:
   push:
@@ -16,9 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
 
@@ -32,15 +30,14 @@ jobs:
           flake8 . --count --max-complexity=10 --max-line-length=127 --statistics --exclude ckan,ckanext-saml2auth
 
   test:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        ckan-version: [ '2.10', 2.9 ]
+        ckan-version: ['2.10', 2.9]
+
     name: CKAN ${{ matrix.ckan-version }}
     runs-on: ubuntu-latest
     container:
       image: openknowledge/ckan-dev:${{ matrix.ckan-version }}
-
     services:
       solr:
         image: ckan/ckan-solr:${{ matrix.ckan-version }}
@@ -62,10 +59,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+      - name: Install requirements
+        run: |
+          pip install -r dev-requirements.txt
+          # Replace default path to CKAN core config file with the one on the container
+          sed -i -e 's/use = config:.*/use = config:\/srv\/app\/src\/ckan\/test-core.ini/' test.ini
+      - name: Setup extension
+        run: |
+          ckan -c test.ini db init
       - name: Test with pytest
         run: |
-          pytest --ckan-ini=subdir/test.ini --cov=ckanext.saml2auth --disable-warnings ckanext/saml2auth/tests
+          pytest --ckan-ini=test.ini --cov=ckanext.saml2auth --disable-warnings ckanext/saml2auth/tests
 
       - name: Coveralls
         uses: AndreMiras/coveralls-python-action@develop
