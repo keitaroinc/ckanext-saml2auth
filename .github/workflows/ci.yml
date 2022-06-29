@@ -58,7 +58,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install requirements
         run: |
-          sudo apt install xmlsec1 
+          sudo apt-get install -y xmlsec1 
           pip install -r dev-requirements.txt
           pip install -e .
           # Replace default path to CKAN core config file with the one on the container
