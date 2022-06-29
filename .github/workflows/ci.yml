@@ -35,61 +35,33 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ckan-version: [ '2.10', 2.9, 2.9-py2 ]
+        ckan-version: [ '2.10', 2.9 ]
     name: CKAN ${{ matrix.ckan-version }}
     runs-on: ubuntu-latest
     container:
       image: openknowledge/ckan-dev:${{ matrix.ckan-version }}
 
     services:
-      postgresql:
-        image: postgres
+      solr:
+        image: ckan/ckan-solr:${{ matrix.ckan-version }}
+      postgres:
+        image: ckan/ckan-postgres-dev:${{ matrix.ckan-version }}
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
+          POSTGRES_DB: postgres
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
       redis:
-        image: redis
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-
-      ckan-solr:
-        # Workflow level env variables are not addressable on job level, only on steps level
-        # image: ghcr.io/keitaroinc/ckan-solr-dev:{{ env.CKANVERSION }}
-        image: ghcr.io/keitaroinc/ckan-solr-dev:2.9
-        ports:
-          - 8983:8983
+          image: redis:3
+    env:
+      CKAN_SQLALCHEMY_URL: postgresql://ckan_default:pass@postgres/ckan_test
+      CKAN_DATASTORE_WRITE_URL: postgresql://datastore_write:pass@postgres/datastore_test
+      CKAN_DATASTORE_READ_URL: postgresql://datastore_read:pass@postgres/datastore_test
+      CKAN_SOLR_URL: http://solr:8983/solr/ckan
+      CKAN_REDIS_URL: redis://redis:6379/1
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-
-      - name: Install pytest
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest
-
-      - name: Setup CKAN
-        env:
-          PGPASSWORD: postgres
-        run: |
-          bash bin/setup-ckan.bash
 
       - name: Test with pytest
         run: |
@@ -99,7 +71,7 @@ jobs:
         uses: AndreMiras/coveralls-python-action@develop
         with:
           parallel: true
-          flag-name: Python ${{ matrix.python-version }} Unit Test
+          flag-name: Python 3.8 Unit Test
 
   publish:
     needs: test
