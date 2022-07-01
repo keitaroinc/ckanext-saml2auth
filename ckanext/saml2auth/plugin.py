@@ -32,7 +32,7 @@ from ckanext.saml2auth.views.saml2auth import saml2auth
 from ckanext.saml2auth.cache import get_subject_id, get_saml_session_info
 from ckanext.saml2auth.spconfig import get_config as sp_config
 from ckanext.saml2auth import helpers as h
-
+from saml2.s_utils import UnsupportedBinding
 
 log = logging.getLogger(__name__)
 
@@ -129,10 +129,11 @@ def _perform_slo():
     try:
         client.users.add_information_about_person(saml_session_info)
         result = client.global_logout(name_id=subject_id)
-    except LogoutError as e:
+    except (LogoutError, UnsupportedBinding) as e:
         log.exception(
             'SLO not supported by IDP: {}'.format(e))
         # clear session
+        return
 
     if not result:
         log.error(
