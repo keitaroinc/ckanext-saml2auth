@@ -264,7 +264,12 @@ def acs():
     resp = toolkit.redirect_to(redirect_target)
 
     # log the user in programmatically
-    set_repoze_user(g.user, resp)
+    if toolkit.check_ckan_version(min_version="2.9.6"):
+        user_id = "{},1".format(g.userobj.id)
+    else:
+        user_id = g.userobj.name
+    # TODO: This won't work on CKAN 2.10
+    set_repoze_user(user_id, resp)
     set_saml_session_info(session, session_info)
     set_subject_id(session, session_info['name_id'])
 
