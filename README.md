@@ -228,7 +228,7 @@ to PyPI follow these steps:
   [3]: https://gitter.im/keitaroinc/ckan?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
   [Pypi]: https://img.shields.io/pypi/v/ckanext-saml2auth
   [4]: https://pypi.org/project/ckanext-saml2auth
-  [Python]: https://img.shields.io/badge/python-3.7%20%7C%203.8-blue
+  [Python]: https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue
   [5]: https://www.python.org
   [CKAN]: https://img.shields.io/badge/ckan-2.9-red
   [6]: https://www.ckan.org
