@@ -64,6 +64,7 @@ class TestBlueprint(object):
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path',
                              os.path.join(extras_folder, 'provider2', 'idp.xml'))
     @pytest.mark.usefixtures('with_request_context')
+    @pytest.mark.skip
     def test_cookies_cleared_on_slo(self, app):
 
         url = url_for('user.logout')

@@ -387,7 +387,9 @@ class TestGetRequest:
         response = app.post(url=url, params=data)
         assert 200 == response.status_code
 
-        user = model.User.by_email('test@example.com')[0]
+        user = model.User.by_email('test@example.com')
+        if isinstance(user, list):
+            user = user[0]
 
         assert user.fullname == 'John Smith'
 
@@ -411,7 +413,9 @@ class TestGetRequest:
         response = app.post(url=url, params=data)
         assert 200 == response.status_code
 
-        user = model.User.by_email('test@example.com')[0]
+        user = model.User.by_email('test@example.com')
+        if isinstance(user, list):
+            user = user[0]
 
         assert user.fullname == 'John Smith (Operations)'
 
@@ -478,7 +482,9 @@ class TestGetRequest:
     @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
     @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
     def test_repoze_user_id(self, app):
-
+        if not toolkit.check_ckan_version(max_version='2.9.6'):
+            # Remove when dropping support for 2.9.6
+            pytest.skip("set_repoze_user has been deprecated in 2.10")
         encoded_response = _prepare_unsigned_response()
         url = '/acs'
 
@@ -489,7 +495,9 @@ class TestGetRequest:
         with mock.patch("ckanext.saml2auth.views.saml2auth.set_repoze_user") as m:
             app.post(url=url, params=data)
 
-            user = model.User.by_email('test@example.com')[0]
+            user = model.User.by_email('test@example.com')
+            if isinstance(user, list):
+                user = user[0]
 
             assert m.called
             # Check login worked fine by checking the Response object
