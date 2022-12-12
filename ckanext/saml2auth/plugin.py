@@ -101,12 +101,12 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
 
         if response:
             domain = h.get_site_domain_for_cookie()
-
-            # Clear auth cookie in the browser
-            response.set_cookie('auth_tkt', domain=domain, expires=0)
-
             # Clear session cookie in the browser
             response.set_cookie('ckan', domain=domain, expires=0)
+
+            if not toolkit.check_ckan_version(min_version="2.10"):
+                # CKAN <= 2.9.x also sets auth_tkt cookie
+                response.set_cookie('auth_tkt', domain=domain, expires=0)
 
         return response
 
