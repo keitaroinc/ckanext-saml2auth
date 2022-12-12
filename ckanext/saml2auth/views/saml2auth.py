@@ -276,7 +276,7 @@ def acs():
 def _log_user_into_ckan(resp):
     """ Log the user into different CKAN versions.
 
-    CKAN 2.10 introduces flask-login and it changes the login system.
+    CKAN 2.10 introduces flask-login and login_user method.
 
     CKAN 2.9.6 added a security change and identifies the user
     with the internal id plus a serial autoincrement (currently static).
