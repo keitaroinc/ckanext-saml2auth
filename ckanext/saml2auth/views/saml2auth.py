@@ -77,7 +77,7 @@ def _get_user_by_saml_id(saml_id):
 def _get_user_by_email(email):
 
     user = model.User.by_email(email)
-    if isinstance(user, list):
+    if user and isinstance(user, list):
         user = user[0]
 
     h.activate_user_if_deleted(user)
