@@ -273,6 +273,7 @@ def acs():
 
     return resp
 
+
 def _log_user_into_ckan(resp):
     """ Log the user into different CKAN versions.
 
