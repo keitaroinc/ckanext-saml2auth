@@ -76,13 +76,13 @@ def _get_user_by_saml_id(saml_id):
 
 def _get_user_by_email(email):
 
-    user_obj = model.User.by_email(email)
-    if user_obj:
-        user_obj = user_obj[0]
+    user = model.User.by_email(email)
+    if user and isinstance(user, list):
+        user = user[0]
 
-    h.activate_user_if_deleted(user_obj)
+    h.activate_user_if_deleted(user)
 
-    return _dictize_user(user_obj) if user_obj else None
+    return _dictize_user(user) if user else None
 
 
 def _update_user(user_dict):
@@ -263,13 +263,8 @@ def acs():
 
     resp = toolkit.redirect_to(redirect_target)
 
-    # log the user in programmatically
-    if toolkit.check_ckan_version(min_version="2.9.6"):
-        user_id = "{},1".format(g.userobj.id)
-    else:
-        user_id = g.userobj.name
-    # TODO: This won't work on CKAN 2.10
-    set_repoze_user(user_id, resp)
+    _log_user_into_ckan(resp)
+
     set_saml_session_info(session, session_info)
     set_subject_id(session, session_info['name_id'])
 
@@ -277,6 +272,27 @@ def acs():
         resp = plugin.after_saml2_login(resp, auth_response.ava)
 
     return resp
+
+def _log_user_into_ckan(resp):
+    """ Log the user into different CKAN versions.
+
+    CKAN 2.10 introduces flask-login and login_user method.
+
+    CKAN 2.9.6 added a security change and identifies the user
+    with the internal id plus a serial autoincrement (currently static).
+
+    CKAN <= 2.9.5 identifies the user only using the internal id.
+    """
+    if toolkit.check_ckan_version(min_version="2.10"):
+        from ckan.common import login_user
+        login_user(g.userobj)
+        return
+
+    if toolkit.check_ckan_version(min_version="2.9.6"):
+        user_id = "{},1".format(g.userobj.id)
+    else:
+        user_id = g.userobj.name
+    set_repoze_user(user_id, resp)
 
 
 def saml2login():
