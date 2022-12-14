@@ -1,4 +1,4 @@
-[![CI][]][1] [![Coverage][]][2] [![Gitter][]][3] [![Pypi][]][4] [![Python][]][5] [![CKAN][]][6] [![CKAN210][]][7]
+[![CI][]][1] [![Coverage][]][2] [![Gitter][]][3] [![Pypi][]][4] [![Python][]][5] [![CKAN][]][6]
 
 # ckanext-saml2auth
 
@@ -230,7 +230,5 @@ to PyPI follow these steps:
   [4]: https://pypi.org/project/ckanext-saml2auth
   [Python]: https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue
   [5]: https://www.python.org
-  [CKAN]: https://img.shields.io/badge/ckan-2.9-yellow
+  [CKAN]: https://img.shields.io/badge/ckan-2.9%20%7C%202.10-yellow
   [6]: https://www.ckan.org
-  [CKAN210]: https://img.shields.io/badge/ckan-2.10-yellow
-  [7]: https://www.ckan.org
