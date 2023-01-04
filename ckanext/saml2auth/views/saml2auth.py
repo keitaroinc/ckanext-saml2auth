@@ -166,7 +166,11 @@ def saml2login():
     '''
     log.info('Doing SAML2 login...')
     client = h.saml_client(sp_config())
+    log.info('Client: {}'.format(client))
     requested_authn_contexts = get_requested_authn_contexts()
+    log.info('requested_authn_contexts={}'.format(requested_authn_contexts))
+    log.info('toolkit.request={}'.format(toolkit.request))
+    log.info('toolkit.request.args={}'.format(toolkit.request.args))
     relay_state = toolkit.request.args.get('came_from', '')
     log.info('Client configured. Generating contexts...')
 
