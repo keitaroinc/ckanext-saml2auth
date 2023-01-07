@@ -108,6 +108,8 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
                 # CKAN <= 2.9.x also sets auth_tkt cookie
                 response.set_cookie('auth_tkt', domain=domain, expires=0)
 
+        log.info("Logout successful %s" % (g.userobj.name))
+
         return response
 
 
