@@ -295,7 +295,7 @@ def _log_user_into_ckan(resp):
         user_id = g.userobj.name
     set_repoze_user(user_id, resp)
 
-    log.info("Login successful %s<%s>" % (g.userobj.name, g.userobj.email))
+    log.info(u'User {0}<{1}> logged in successfully'.format(g.userobj.name, g.userobj.email))
 
 
 def saml2login():

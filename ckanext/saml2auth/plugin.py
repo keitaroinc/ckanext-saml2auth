@@ -109,9 +109,9 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
                 response.set_cookie('auth_tkt', domain=domain, expires=0)
 
         if g.userobj:
-            log.info("Logout successful %s<%s>" % (g.userobj.name, g.userobj.email))
+            log.info(u'User {0}<{1}> logged out successfully'.format(g.userobj.name, g.userobj.email))
         else:
-            log.info("No user was logged in!")
+            log.info(u'No user was logged in!')
 
         return response
 
