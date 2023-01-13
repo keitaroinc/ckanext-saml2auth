@@ -53,6 +53,31 @@ def create_user(context, email, full_name):
     return user_dict
 
 
+def _get_organization(org_name):
+    try:
+        return toolkit.get_action('organization_show')({
+            'ignore_auth': True,
+        }, {
+            'id': org_name,
+        })
+    except toolkit.ObjectNotFound:
+        return None
+
+
+def _assign_user_to_organization(username, org_name, role='member'):
+    org_dict = _get_organization(org_name)
+    if not org_dict:
+        log.warn('User will not be assigned to any organization because organization {} does not exist'.format(org_name))
+        return
+    toolkit.get_action('organization_member_create')({
+        'ignore_auth': True,
+    }, {
+        'id': org_dict.get('id'),
+        'username': username,
+        'role': role,
+    })
+
+
 def acs():
     u'''The location where the SAML assertion is sent with a HTTP POST.
     This is often referred to as the SAML Assertion Consumer Service (ACS) URL.
@@ -124,6 +149,10 @@ def acs():
         log.info('No such user. Creating new one.')
         user_dict = create_user(context, email, full_name)
         log.info('User created.')
+        if config.get('ckanext.saml2auth.user_default_org'):
+            org_name = config.get('ckanext.saml2auth.user_default_org')
+            role = config.get('ckanext.saml2auth.user_default_role', 'member')
+            _assign_user_to_organization(user_dict.get('id'), org_name, role)
     else:
         # If account exists and is deleted, reactivate it.
         log.info('Activating deactivated user.')
@@ -140,7 +169,7 @@ def acs():
 
     relay_state = request.form.get('RelayState')
     redirect_target = toolkit.url_for(
-        str(relay_state), _external=True) if relay_state else u'user.me'
+        str(relay_state), _external=True) if relay_state else u'home.index'
 
     log.info("Redirecting to: {}".format(redirect_target))
     resp = toolkit.redirect_to(redirect_target)
