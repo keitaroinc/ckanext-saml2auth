@@ -169,6 +169,17 @@ Optional::
     # Comparison could be one of this: exact, minimum, maximum or better
     ckanext.saml2auth.requested_authn_context_comparison = exact
 
+    # If specified, the new users registered on the portal will be put in this organization.
+    # You can specify the organization name here or leave it blank.
+    # When left blank (the default), the new users are not added to any organization.
+    ckanext.saml2auth.user_default_org=
+
+    # The default role for the new users in the specified organization.
+    # This is not activated unless ckanext.saml2auth.user_default_org is set.
+    # The possible values are: member, editor or admin - the role for the user when
+    # added in the organization.
+    # If unset, the user would get a role of 'member' in the organization.
+    ckanext.saml2auth.user_default_role=
 
 ----------------------
 Developer installation
