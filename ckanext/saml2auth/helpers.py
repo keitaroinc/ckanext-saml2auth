@@ -50,6 +50,12 @@ def generate_password():
     return password
 
 
+def is_create_user_via_saml_enabled():
+    return toolkit.asbool(
+        toolkit.config.get('ckanext.saml2auth.create_user_via_saml', True)
+    )
+
+
 def is_default_login_enabled():
     return toolkit.asbool(
         toolkit.config.get('ckanext.saml2auth.enable_ckan_internal_login')
