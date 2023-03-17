@@ -85,7 +85,8 @@ Optional:
     ckanext.saml2auth.enable_ckan_internal_login = True
 
     # Indicates if CKAN should auto create a user for a new SAML login
-    # Note that if set False, a new user must be manually created in CKAN before they can log in using SAML
+    # If set False, a new user must be manually created in CKAN before they can log in using SAML
+    # If set False, existing user must be in active state to able to log in.
     # Default: True
     ckanext.saml2auth.create_user_via_saml = True
 

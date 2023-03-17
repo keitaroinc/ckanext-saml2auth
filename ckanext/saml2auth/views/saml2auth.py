@@ -69,6 +69,11 @@ def _get_user_by_saml_id(saml_id):
         .filter(model.User.plugin_extras[(u'saml2auth', u'saml_id')].astext == saml_id) \
         .first()
 
+    if user_obj and user_obj.is_deleted():
+        if not h.is_create_user_via_saml_enabled():
+            log.info(u'User {} is in the deleted state.'.format(user_obj.name))
+            return None
+
     h.activate_user_if_deleted(user_obj)
 
     return _dictize_user(user_obj) if user_obj else None
@@ -79,6 +84,11 @@ def _get_user_by_email(email):
     user = model.User.by_email(email)
     if user and isinstance(user, list):
         user = user[0]
+
+    if user and user.is_deleted():
+        if not h.is_create_user_via_saml_enabled():
+            log.info(u'User {} is in the deleted state.'.format(user.name))
+            return None
 
     h.activate_user_if_deleted(user)
 
@@ -256,7 +266,7 @@ def acs():
         if h.is_create_user_via_saml_enabled():
             g.user = process_new_user(email, saml_id, full_name, auth_response.ava)
         else:
-            error = "Cannot create new user via saml login"
+            error = "SAML login failed. The user does not exist or is not active."
             log.error(error)
             extra_vars = {u'code': [400], u'content': error}
             return base.render(u'error_document_template.html', extra_vars), 400
