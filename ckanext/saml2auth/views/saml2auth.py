@@ -109,16 +109,14 @@ def _create_user(user_dict):
         base.abort(400, error_message)
 
 
-def process_user(email, saml_id, full_name, saml_attributes):
+def process_existing_user(email, saml_id, full_name, saml_attributes):
     u'''
-    Check if a CKAN-SAML user exists for the current SAML login, if not create
-    a new one
+    Check if a CKAN-SAML user exists for the current SAML login
 
     Here are the checks performed in order:
 
     1. Is there an existing user that matches the provided saml_id (in plugin_extras)?
     2. Is there an existing user that matches the provided email?
-    3. If no CKAN user found, create a new one with the provided saml id
 
     Returns the user name
     '''
@@ -170,8 +168,13 @@ def process_user(email, saml_id, full_name, saml_attributes):
 
         return user_dict['name']
 
-    # This is the first time this SAML user has logged in, let's create a CKAN user
-    # for them
+
+def process_new_user(email, saml_id, full_name, saml_attributes):
+    u'''
+    Create a new user with the provided saml id
+
+    Returns the user name
+    '''
 
     user_dict = {
         u'name': h.ensure_unique_username_from_email(email),
@@ -248,7 +251,15 @@ def acs():
         else:
             full_name = u'{} {}'.format(email.split('@')[0], email.split('@')[1])
 
-    g.user = process_user(email, saml_id, full_name, auth_response.ava)
+    g.user = process_existing_user(email, saml_id, full_name, auth_response.ava)
+    if not g.user:
+        if h.is_create_user_via_saml_enabled():
+            g.user = process_new_user(email, saml_id, full_name, auth_response.ava)
+        else:
+            error = "Cannot create new user via saml login"
+            log.error(error)
+            extra_vars = {u'code': [400], u'content': error}
+            return base.render(u'error_document_template.html', extra_vars), 400
 
     # Check if the authenticated user email is in given list of emails
     # and make that user sysadmin and opposite

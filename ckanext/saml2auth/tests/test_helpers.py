@@ -42,6 +42,15 @@ def test_default_login_enabled():
     assert h.is_default_login_enabled()
 
 
+def test_create_user_via_saml_disabled_by_default():
+    assert not h.is_create_user_via_saml_enabled()
+
+
+@pytest.mark.ckan_config(u'ckanext.saml2auth.create_user_via_saml', True)
+def test_create_user_via_saml_enabled():
+    assert h.is_create_user_via_saml_enabled()
+
+
 @pytest.mark.usefixtures(u'clean_db', u'clean_index')
 @pytest.mark.ckan_config(u'ckanext.saml2auth.sysadmins_list', '')
 def test_00_update_user_sysadmin_status_continue_as_regular():
