@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from saml2.saml import NAME_FORMAT_URI
 from saml2 import entity
-from saml2.metadata import entity_descriptor, metadata_tostring_fix,sign_entity_descriptor
+from saml2.metadata import entity_descriptor, metadata_tostring_fix, sign_entity_descriptor
 from saml2.sigver import security_context
 from saml2.validate import valid_instance
 from saml2.config import Config
@@ -27,6 +27,7 @@ from saml2.config import Config
 from ckan.common import config as ckan_config
 from ckan.common import asbool, aslist
 from flask import Response
+
 
 def get_config():
     """ Get the config
@@ -101,7 +102,7 @@ def get_config():
         config[u'key_file'] = None
         config[u'cert_file'] = None
         config[u'encryption_keypairs'] = None
-        
+
     if attribute_map_dir is not None:
         config[u'attribute_map_dir'] = attribute_map_dir
 
@@ -116,25 +117,24 @@ def get_config():
 
     return config
 
-def get_metadata(folder=None):
-    if folder is None:
-        folder="/srv/app/"
-    metadata_file_path = folder+"metadata.xml" 
-    
-    nspair = {"xs": "http://www.w3.org/2001/XMLSchema"}
-    paths = [".", "/opt/local/bin"]
-    
-    config=Config().load(get_config())
 
-    eid=entity_descriptor(config)
+def get_metadata(metadata_file_path=None):
+    if metadata_file_path is None:
+        metadata_file_path = "/srv/app/metadata.xml"
+
+    nspair = {"xs": "http://www.w3.org/2001/XMLSchema"}
+
+    config = Config().load(get_config())
+
+    eid = entity_descriptor(config)
     conf = Config()
     conf.debug = 1
     # conf.xmlsec_binary = args.xmlsec
     secc = security_context(conf)
     valid_instance(eid)
-    
+
     key_file = ckan_config.get(u'ckanext.saml2auth.key_file_path', None)
-    cert_file = ckan_config.get(u'ckanext.saml2auth.cert_file_path', None)   
+    cert_file = ckan_config.get(u'ckanext.saml2auth.cert_file_path', None)
     if key_file is not None and cert_file is not None:
         assert conf.key_file
         assert conf.cert_file
@@ -142,12 +142,10 @@ def get_metadata(folder=None):
     else:
         xmldoc = None
     xmldoc = metadata_tostring_fix(eid, nspair, xmldoc)
-    
-    with open(metadata_file_path, "w") as f:
-        f.write(xmldoc.decode("utf-8"))
-    print(xmldoc.decode("utf-8"))
+    try:
+        with open(metadata_file_path, "w") as f:
+            f.write(xmldoc.decode("utf-8"))
+    except:
+        pass
 
-    
     return Response(xmldoc, content_type='application/xml')
-
-
