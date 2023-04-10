@@ -127,21 +127,9 @@ def get_metadata(metadata_file_path=None):
     config = Config().load(get_config())
 
     eid = entity_descriptor(config)
-    conf = Config()
-    conf.debug = 1
-    # conf.xmlsec_binary = args.xmlsec
-    secc = security_context(conf)
     valid_instance(eid)
-
-    key_file = ckan_config.get(u'ckanext.saml2auth.key_file_path', None)
-    cert_file = ckan_config.get(u'ckanext.saml2auth.cert_file_path', None)
-    if key_file is not None and cert_file is not None:
-        assert conf.key_file
-        assert conf.cert_file
-        eid, xmldoc = sign_entity_descriptor(eid, args.id, secc)
-    else:
-        xmldoc = None
-    xmldoc = metadata_tostring_fix(eid, nspair, xmldoc)
+    # xmldoc = None
+    xmldoc = metadata_tostring_fix(eid, nspair)
     try:
         with open(metadata_file_path, "w") as f:
             f.write(xmldoc.decode("utf-8"))
