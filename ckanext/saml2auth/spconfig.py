@@ -19,10 +19,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from saml2.saml import NAME_FORMAT_URI
 from saml2 import entity
+from saml2.metadata import entity_descriptor, metadata_tostring_fix,sign_entity_descriptor
+from saml2.sigver import security_context
+from saml2.validate import valid_instance
+from saml2.config import Config
 
 from ckan.common import config as ckan_config
 from ckan.common import asbool, aslist
-
+from flask import Response
 
 def get_config():
     """ Get the config
@@ -84,7 +88,7 @@ def get_config():
         u'metadata': {},
         u'debug': 1 if debug else 0,
         u'name_form': NAME_FORMAT_URI
-        }
+    }
 
     if name_id_policy_format:
         config[u'service'][u'sp'][u'name_id_policy_format'] = name_id_policy_format
@@ -93,7 +97,11 @@ def get_config():
         config[u'key_file'] = key_file
         config[u'cert_file'] = cert_file
         config[u'encryption_keypairs'] = [{u'key_file': key_file, u'cert_file': cert_file}]
-
+    else:
+        config[u'key_file'] = None
+        config[u'cert_file'] = None
+        config[u'encryption_keypairs'] = None
+        
     if attribute_map_dir is not None:
         config[u'attribute_map_dir'] = attribute_map_dir
 
@@ -101,9 +109,45 @@ def get_config():
         config[u'metadata'][u'local'] = [local_path]
     elif location == u'remote':
         remote = [{
-                u'url': remote_url,
-                u'cert': remote_cert
-            }]
+            u'url': remote_url,
+            u'cert': remote_cert
+        }]
         config[u'metadata'][u'remote'] = remote
 
     return config
+
+def get_metadata(folder=None):
+    if folder is None:
+        folder="/srv/app/"
+    metadata_file_path = folder+"metadata.xml" 
+    
+    nspair = {"xs": "http://www.w3.org/2001/XMLSchema"}
+    paths = [".", "/opt/local/bin"]
+    
+    config=Config().load(get_config())
+
+    eid=entity_descriptor(config)
+    conf = Config()
+    conf.debug = 1
+    # conf.xmlsec_binary = args.xmlsec
+    secc = security_context(conf)
+    valid_instance(eid)
+    
+    key_file = ckan_config.get(u'ckanext.saml2auth.key_file_path', None)
+    cert_file = ckan_config.get(u'ckanext.saml2auth.cert_file_path', None)   
+    if key_file is not None and cert_file is not None:
+        assert conf.key_file
+        assert conf.cert_file
+        eid, xmldoc = sign_entity_descriptor(eid, args.id, secc)
+    else:
+        xmldoc = None
+    xmldoc = metadata_tostring_fix(eid, nspair, xmldoc)
+    
+    with open(metadata_file_path, "w") as f:
+        f.write(xmldoc.decode("utf-8"))
+    print(xmldoc.decode("utf-8"))
+
+    
+    return Response(xmldoc, content_type='application/xml')
+
+
