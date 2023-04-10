@@ -19,8 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from saml2.saml import NAME_FORMAT_URI
 from saml2 import entity
-from saml2.metadata import entity_descriptor, metadata_tostring_fix, sign_entity_descriptor
-from saml2.sigver import security_context
+from saml2.metadata import entity_descriptor, metadata_tostring_fix
 from saml2.validate import valid_instance
 from saml2.config import Config
 
