@@ -96,11 +96,15 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
     # IAuthenticator
 
     def identify(self):
-            if current_user.is_authenticated and current_user.is_active and not session.get('last_active'):
-                log.info('User {0}<{1}> logged in successfully{2}.'.format(
-                    current_user.name, current_user.email,
-                    ' via saml' if session.get('_saml_session_info') else ''
-                ))
+        if (
+            current_user.is_authenticated and
+            current_user.is_active and
+            not session.get('last_active')
+        ):
+            log.info('User {0}<{1}> logged in successfully{2}.'.format(
+                current_user.name, current_user.email,
+                ' via saml' if session.get('_saml_session_info') else ''
+            ))
 
     def logout(self):
 
