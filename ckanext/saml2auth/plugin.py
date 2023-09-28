@@ -25,7 +25,7 @@ from flask import session, redirect, make_response
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
-from ckan.common import g, current_user
+from ckan.common import g
 import ckan.lib.base as base
 
 from ckanext.saml2auth.views.saml2auth import saml2auth
@@ -96,15 +96,14 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
     # IAuthenticator
 
     def identify(self):
-        if (
-            current_user.is_authenticated and
-            current_user.is_active and
-            not session.get('last_active')
-        ):
-            log.info('User {0}<{1}> logged in successfully{2}.'.format(
-                current_user.name, current_user.email,
-                ' via saml' if session.get('_saml_session_info') else ''
-            ))
+        try:
+            if g.userobj and not session.get('last_active'):
+                log.info('User {0}<{1}> logged in successfully{2}.'.format(
+                    g.userobj.name, g.userobj.email,
+                    ' via saml' if session.get('_saml_session_info') else ''
+                ))
+        except AttributeError:
+            log.info(u'No user defined!')
 
     def logout(self):
 
