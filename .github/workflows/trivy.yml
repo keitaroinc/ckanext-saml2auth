@@ -1,0 +1,41 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+
+name: trivy
+
+on:
+  push:
+    branches: [ "main", "ckan-2.8" ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ "main", "ckan-2.8" ]
+  schedule:
+    - cron: '28 3 * * 5'
+
+permissions:
+  contents: read
+
+jobs:
+  repo_scan:
+    name: repo_scan
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'sarif'
+          output: 'trivy-results-repo.sarif'
+          severity: 'CRITICAL'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results-repo.sarif'
