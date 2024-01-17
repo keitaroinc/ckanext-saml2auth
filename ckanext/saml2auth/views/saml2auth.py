@@ -20,7 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
 import copy
 
-from flask import Blueprint, session
+from flask import Blueprint, session, request
+from urllib.parse import urlparse
 from saml2 import entity
 from saml2.authn_context import requested_authn_context
 
@@ -295,8 +296,6 @@ def _log_user_into_ckan(resp):
         user_id = g.userobj.name
     set_repoze_user(user_id, resp)
 
-    log.info(u'User {0}<{1}> logged in successfully'.format(g.userobj.name, g.userobj.email))
-
 
 def saml2login():
     u'''Redirects the user to the
@@ -305,6 +304,9 @@ def saml2login():
     client = h.saml_client(sp_config())
     requested_authn_contexts = _get_requested_authn_contexts()
     relay_state = toolkit.request.args.get('came_from', '')
+   
+    if relay_state == '' and request and request.referrer:
+        relay_state = urlparse(request.referrer).path
 
     if len(requested_authn_contexts) > 0:
         comparison = config.get('ckanext.saml2auth.requested_authn_context_comparison',
