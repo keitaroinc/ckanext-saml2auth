@@ -209,10 +209,8 @@ def acs():
         config.get(u'ckanext.saml2auth.user_fullname')
     saml_user_email = \
         config.get(u'ckanext.saml2auth.user_email')
-
     client = h.saml_client(sp_config())
     saml_response = request.form.get(u'SAMLResponse', None)
-
     error = None
     try:
         auth_response = client.parse_authn_request_response(

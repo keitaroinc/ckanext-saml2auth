@@ -38,10 +38,15 @@ log = logging.getLogger(__name__)
 
 
 def saml_client(config):
-    sp_config = Saml2Config()
-    sp_config.load(config)
-    client = Saml2Client(config=sp_config)
-    return client
+    try:
+        sp_config = Saml2Config()
+        sp_config.load(config)
+        client = Saml2Client(config=sp_config)
+        return client
+    except Exception as e:
+        log.exception(e)
+        log.error('Failed to created SAML client: {}'.format(e))
+        raise e
 
 
 def generate_password():
