@@ -108,6 +108,30 @@ def _create_user(user_dict):
         error_message = (e.error_summary or e.message or e.error_dict)
         base.abort(400, error_message)
 
+def _get_organization(org_name):
+    try:
+        return toolkit.get_action('organization_show')({
+            'ignore_auth': True,
+        }, {
+            'id': org_name,
+        })
+    except toolkit.ObjectNotFound:
+        return None
+
+
+def _assign_user_to_organization(username, org_name, role='member'):
+    org_dict = _get_organization(org_name)
+    if not org_dict:
+        log.warn('User will not be assigned to any organization because organization {} does not exist'.format(org_name))
+        return
+    toolkit.get_action('organization_member_create')({
+        'ignore_auth': True,
+    }, {
+        'id': org_dict.get('id'),
+        'username': username,
+        'role': role,
+    })
+
 
 def process_user(email, saml_id, full_name, saml_attributes):
     u'''
@@ -191,6 +215,10 @@ def process_user(email, saml_id, full_name, saml_attributes):
         plugin.before_saml2_user_create(user_dict, saml_attributes)
 
     user_dict = _create_user(user_dict)
+    if config.get('ckanext.saml2auth.user_default_org'):
+        org_name = config.get('ckanext.saml2auth.user_default_org')
+        role = config.get('ckanext.saml2auth.user_default_role', 'member')
+        _assign_user_to_organization(user_dict.get('id'), org_name, role)
     return user_dict[u'name']
 
 
@@ -257,7 +285,7 @@ def acs():
     relay_state = request.form.get('RelayState')
     redirect_target = toolkit.url_for(
         relay_state, _external=True) if relay_state else config.get(
-            'ckanext.saml2auth.default_fallback_endpoint', 'user.me')
+            'ckanext.saml2auth.default_fallback_endpoint', 'home.index')
 
     resp = toolkit.redirect_to(redirect_target)
 
@@ -347,10 +375,10 @@ def slo():
 
 acs_endpoint = config.get('ckanext.saml2auth.acs_endpoint', '/acs')
 saml2auth.add_url_rule(acs_endpoint, view_func=acs, methods=[u'GET', u'POST'])
-saml2auth.add_url_rule(u'/user/saml2login', view_func=saml2login)
+saml2auth.add_url_rule(u'/user/saml2login', view_func=saml2login, methods=[u'GET', u'POST'])
 if not h.is_default_login_enabled():
     saml2auth.add_url_rule(
-        u'/user/login', view_func=disable_default_login_register)
+        u'/user/login', view_func=disable_default_login_register, methods=[u'GET', u'POST'])
     saml2auth.add_url_rule(
-        u'/user/register', view_func=disable_default_login_register)
+        u'/user/register', view_func=disable_default_login_register, methods=[u'GET', u'POST'])
 saml2auth.add_url_rule(u'/slo', view_func=slo, methods=[u'GET', u'POST'])
