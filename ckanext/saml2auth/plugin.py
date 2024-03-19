@@ -113,7 +113,7 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         else:
             log.info(u'No user was logged in!')
 
-        return response
+        return None
 
 
 def _perform_slo():
