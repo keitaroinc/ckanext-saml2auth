@@ -60,6 +60,7 @@ def get_config():
         asbool(ckan_config.get(u'ckanext.saml2auth.logout_requests_signed', False))
     logout_expected_binding = ckan_config.get(u'ckanext.saml2auth.logout_expected_binding',
                                               entity.BINDING_HTTP_POST)
+    authn_requests_signed = bool(key_file)
 
     config = {
         u'entityid': entity_id,
@@ -77,7 +78,8 @@ def get_config():
                 u'want_response_signed': response_signed,
                 u'want_assertions_signed': assertion_signed,
                 u'want_assertions_or_response_signed': any_signed,
-                u'logout_requests_signed': logout_requests_signed
+                u'logout_requests_signed': logout_requests_signed,
+                u'authn_requests_signed': authn_requests_signed
             }
         },
         u'logout_expected_binding': logout_expected_binding,
