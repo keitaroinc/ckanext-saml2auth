@@ -97,7 +97,11 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
 
     def logout(self):
 
-        response = _perform_slo()
+        config = sp_config()
+        if config.get('logout_expected_binding') == 'skip-external-logout':
+            response = None
+        else:
+            response = _perform_slo()
 
         if response:
             domain = h.get_site_domain_for_cookie()

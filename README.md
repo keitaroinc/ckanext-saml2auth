@@ -135,6 +135,8 @@ Optional:
     # Saml logout request preferred binding settings variable
     # Default: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
     ckanext.saml2auth.logout_expected_binding =  urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+    # If you don't want to logout from external source you can use
+    ckanext.saml2auth.logout_expected_binding = skip-external-logout
 
     # Default fallback endpoint to redirect to if no RelayState provided in the SAML Response
     # Default: user.me (ie /dashboard)
