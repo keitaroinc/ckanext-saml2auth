@@ -120,9 +120,12 @@ def _perform_slo():
 
     response = None
 
-    client = h.saml_client(
-        sp_config()
-    )
+    config = sp_config()
+    if config.get('logout_expected_binding') == 'skip-external-logout':
+        log.debug('Skipping external logout')
+        return
+
+    client = h.saml_client(config)
     saml_session_info = get_saml_session_info(session)
     subject_id = get_subject_id(session)
 
