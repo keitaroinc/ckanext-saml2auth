@@ -28,7 +28,7 @@ import ckan.plugins.toolkit as toolkit
 import ckan.model as model
 import ckan.plugins as plugins
 import ckan.lib.dictization.model_dictize as model_dictize
-from ckan.lib import base
+from ckan.lib import base, signals
 from ckan.views.user import set_repoze_user
 from ckan.common import config, g, request
 
@@ -227,6 +227,8 @@ def acs():
     if error is not None:
         log.error(error)
         extra_vars = {u'code': [400], u'content': error}
+        # Trigger the CKAN failed login signal
+        signals.failed_login.send('Unknown_SAML2_user')
         return base.render(u'error_document_template.html', extra_vars), 400
 
     auth_response.get_identity()
