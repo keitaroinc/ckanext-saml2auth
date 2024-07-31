@@ -34,7 +34,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='1.2.2',
+    version='1.3.0',
 
     description='''An extension to enable Single Sign On(SSO) for CKAN data portals via SAML2 Authentication.''',
     long_description=long_description,
@@ -79,7 +79,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     namespace_packages=['ckanext'],
 
-    install_requires=['pysaml2>=6.5.1'],
+    install_requires=['pysaml2>=6.5.1,<7.4'],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these

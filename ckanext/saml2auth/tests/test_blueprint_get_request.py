@@ -22,8 +22,13 @@ from datetime import datetime
 from jinja2 import Template
 import os
 import pytest
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 from ckan import model
+from ckan.plugins import toolkit
 
 from saml2.xmldsig import SIG_RSA_SHA256
 from saml2.xmldsig import DIGEST_SHA256
@@ -382,7 +387,9 @@ class TestGetRequest:
         response = app.post(url=url, params=data)
         assert 200 == response.status_code
 
-        user = model.User.by_email('test@example.com')[0]
+        user = model.User.by_email('test@example.com')
+        if isinstance(user, list):
+            user = user[0]
 
         assert user.fullname == 'John Smith'
 
@@ -406,7 +413,9 @@ class TestGetRequest:
         response = app.post(url=url, params=data)
         assert 200 == response.status_code
 
-        user = model.User.by_email('test@example.com')[0]
+        user = model.User.by_email('test@example.com')
+        if isinstance(user, list):
+            user = user[0]
 
         assert user.fullname == 'John Smith (Operations)'
 
@@ -465,3 +474,36 @@ class TestGetRequest:
         response = app.post(url=url, params=data, follow_redirects=False)
 
         assert response.headers['Location'] == 'http://test.ckan.net/dataset/'
+
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
+    def test_repoze_user_id(self, app):
+        if not toolkit.check_ckan_version(max_version='2.9.6'):
+            # Remove when dropping support for 2.9.6
+            pytest.skip("set_repoze_user has been deprecated in 2.10")
+        encoded_response = _prepare_unsigned_response()
+        url = '/acs'
+
+        data = {
+            'SAMLResponse': encoded_response
+        }
+
+        with mock.patch("ckanext.saml2auth.views.saml2auth.set_repoze_user") as m:
+            app.post(url=url, params=data)
+
+            user = model.User.by_email('test@example.com')
+            if isinstance(user, list):
+                user = user[0]
+
+            assert m.called
+            # Check login worked fine by checking the Response object
+            assert m.call_args[0][1].headers["Location"].endswith("/user/me")
+
+            if toolkit.check_ckan_version(min_version="2.9.6"):
+                assert m.call_args[0][0] == user.id + ",1"
+            else:
+                assert m.call_args[0][0] == user.name
