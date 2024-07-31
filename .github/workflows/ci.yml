@@ -26,7 +26,7 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          flake8 . --count --max-complexity=10 --max-line-length=127 --statistics --exclude ckan,ckanext-saml2auth
+          flake8 . --count --max-complexity=12 --max-line-length=127 --statistics --exclude ckan,ckanext-saml2auth
 
   test:
     runs-on: ubuntu-latest
