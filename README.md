@@ -1,5 +1,9 @@
 [![CI][]][1] [![Coverage][]][2] [![Gitter][]][3] [![Pypi][]][4] [![Python][]][5] [![CKAN][]][6]
 
+# Temporary fork
+
+**This is a temporary fork from OKFN** to work with CKAN 2.10 waiting for upstream repo at https://github.com/keitaroinc/ckanext-saml2auth to be updated.  
+
 # ckanext-saml2auth
 
 A [CKAN](https://ckan.org) extension to enable Single Sign-On (SSO) for CKAN data portals via SAML2 Authentication.
