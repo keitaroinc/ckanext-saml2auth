@@ -112,10 +112,10 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             log.info(u'User {0}<{1}> logged out successfully'.format(g.userobj.name, g.userobj.email))
         else:
             log.info(u'No user was logged in!')
-        
+
         if toolkit.check_ckan_version(min_version="2.10"):
             session.clear()
-        
+
         return response
 
 
