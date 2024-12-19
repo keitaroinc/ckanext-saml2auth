@@ -113,6 +113,9 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
         else:
             log.info(u'No user was logged in!')
 
+        if toolkit.check_ckan_version(min_version="2.10"):
+            session.clear()
+
         return response
 
 

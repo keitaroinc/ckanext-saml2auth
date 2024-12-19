@@ -41,8 +41,7 @@ setup(
     long_description_content_type='text/markdown',
 
     # The project's main homepage.
-    url='https://github.com/keitaroinc/'\
-            'ckanext-saml2auth',
+    url='https://github.com/keitaroinc/ckanext-saml2auth',
 
     # Author details
     author='''Keitaro Inc''',
