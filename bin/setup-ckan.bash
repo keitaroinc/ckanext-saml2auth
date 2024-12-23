@@ -32,6 +32,12 @@ then
     pip install setuptools==39.0.1
 fi
 
+if [ $CKANVERSION == '2.9' ]
+then
+    echo "Installing setuptools"
+    pip install setuptools==44.1.0
+fi
+
 python setup.py develop
 pip install -r requirements.txt
 pip install -r dev-requirements.txt
