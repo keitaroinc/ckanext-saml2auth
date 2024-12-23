@@ -34,8 +34,7 @@ fi
 
 if [ $CKANVERSION == '2.9' ]
 then
-    echo "Installing setuptools"
-    pip install setuptools==46.0.0
+    pip install zope.interface==5.4.0
 fi
 
 python setup.py develop
