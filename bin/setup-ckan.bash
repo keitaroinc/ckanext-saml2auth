@@ -35,7 +35,7 @@ fi
 if [ $CKANVERSION == '2.9' ]
 then
     echo "Installing setuptools"
-    pip install setuptools==44.1.0
+    pip install setuptools==46.0.0
 fi
 
 python setup.py develop
