@@ -32,14 +32,11 @@ then
     pip install setuptools==39.0.1
 fi
 
-if [ $CKANVERSION == '2.9' ]
-then
-    pip install zope.interface==5.4.0
-fi
-
 python setup.py develop
 pip install -r requirements.txt
 pip install -r dev-requirements.txt
+
+pip install typing_extensions==4.7.1 --upgrade
 cd -
 
 echo "Creating the PostgreSQL user and database..."
