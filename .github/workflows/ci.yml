@@ -85,8 +85,6 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: |
-        if: ${{ matrix.ckan-version == 2.9 }}
-            pip install "setuptools>=44.1.0,<71"
           export CKANVERSION=${{matrix.ckan-version}}
           bash bin/setup-ckan.bash
 
@@ -114,6 +112,10 @@ jobs:
       - name: Install setup requirements
         run: |
           python -m pip install --upgrade setuptools wheel twine
+      
+      - name: Pin setuptools for ckan 2.9 only
+        if: ${{ matrix.ckan-version == 2.9 }}
+        run: pip install "setuptools>=44.1.0,<71"
 
       - name: Build and package
         run: |
