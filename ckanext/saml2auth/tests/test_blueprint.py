@@ -121,11 +121,17 @@ class TestBlueprint(object):
         cookie_headers = [
             h[1] for h in response.headers
             if h[0].lower() == 'set-cookie']
+        # Sample for CKAN 2.11
+        # ['ckan=; Domain=test.ckan.net; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/']
 
         # Starting 2.10, CKAN's SessionMiddleware will append a
         # new Set-cookie header on every first response from the server.
         # This includes test requests.
-        assert len(cookie_headers) == 2
+        # For CKAN 2.11, we only get the session cookie is named 'ckan'
+        if toolkit.check_ckan_version(min_version='2.11'):
+            assert len(cookie_headers) == 1
+        else:
+            assert len(cookie_headers) == 2
 
         first_cookie = cookie_headers[0]
 

@@ -24,7 +24,10 @@ log = logging.getLogger(__name__)
 
 
 def set_subject_id(session, subject_id):
-    session['_saml2_subject_id'] = code(subject_id)
+    if isinstance(subject_id, str):
+        session['_saml2_subject_id'] = subject_id
+    else:
+        session['_saml2_subject_id'] = code(subject_id)
 
 
 def get_subject_id(session):
