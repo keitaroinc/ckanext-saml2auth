@@ -243,7 +243,14 @@ def acs():
     # SAML username - unique
     saml_id = user_info.text
     # Required user attributes for user creation
-    email = auth_response.ava[saml_user_email][0]
+    try:
+        email = auth_response.ava[saml_user_email][0]
+    except KeyError:
+        error = 'User email not found in the SAML response'
+        error_internal = f'{error}: {auth_response.ava}'
+        log.critical(error_internal)
+        extra_vars = {u'code': [400], u'content': error}
+        return base.render(u'error_document_template.html', extra_vars),
 
     if saml_user_firstname and saml_user_lastname:
         first_name = auth_response.ava.get(saml_user_firstname, [email.split('@')[0]])[0]
