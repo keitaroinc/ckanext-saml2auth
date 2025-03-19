@@ -30,7 +30,7 @@ import ckan.plugins as plugins
 import ckan.lib.dictization.model_dictize as model_dictize
 from ckan.lib import base, signals
 from ckan.views.user import set_repoze_user
-from ckan.common import config, g, request
+from ckan.common import config, g, request, _
 
 from ckanext.saml2auth.spconfig import get_config as sp_config
 from ckanext.saml2auth import helpers as h
@@ -239,6 +239,12 @@ def acs():
     auth_response.get_identity()
     user_info = auth_response.get_subject()
     session_info = auth_response.session_info()
+
+    # If enabled, check if the user has the required role
+    if config.get('ckanext.saml2auth.required_role'):
+        required_role = config.get('ckanext.saml2auth.required_role')
+        if required_role not in auth_response.ava.get('Role', []):
+            return base.abort(403, _('User does not have the required role: {}').format(required_role))
 
     # SAML username - unique
     saml_id = user_info.text

@@ -49,9 +49,10 @@ def _b4_encode_string(message):
     return base64_bytes.decode('ascii')
 
 
-def _prepare_unsigned_response():
+def _prepare_unsigned_response(with_role = False):
     # read about saml2 responses: https://www.samltool.com/generic_sso_res.php
-    unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
+    response_tpl = 'unsigned0.xml' if not with_role else 'unsigned0_with_role.xml'
+    unsigned_response_file = os.path.join(responses_folder, response_tpl)
     unsigned_response = open(unsigned_response_file).read()
     # parse values
     context = {
@@ -135,6 +136,44 @@ class TestGetRequest:
             # Can&#39;t use response, too old (now=2024-07-31T17:42:38Z + slack=0 &gt; not_on_or_after=2024-01-18T06:21:48Z
 
         assert 200 == response.status_code
+
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.required_role', u'ckan-access')
+    def test_unsigned_request_with_required_role(self, app):
+
+        encoded_response = _prepare_unsigned_response(with_role=True)
+        url = '/acs'
+
+        data = {
+            'SAMLResponse': encoded_response
+        }
+        response = app.post(url=url, params=data)
+        assert 200 == response.status_code
+
+
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.want_assertions_or_response_signed', u'False')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.required_role', u'ckan-access')
+    def test_unsigned_request_without_required_role(self, app):
+
+        encoded_response = _prepare_unsigned_response(with_role=False)
+        url = '/acs'
+
+        data = {
+            'SAMLResponse': encoded_response
+        }
+        response = app.post(url=url, params=data)
+        assert 403 == response.status_code
+
 
     def render_file(self, path, context, save_as=None):
         """ open file and render contect values """
