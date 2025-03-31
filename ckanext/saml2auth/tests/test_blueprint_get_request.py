@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 from jinja2 import Template
 import os
 import pytest
@@ -58,7 +58,8 @@ def _prepare_unsigned_response():
         'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
         'destination': 'http://test.ckan.net/acs',
         'recipient': 'http://test.ckan.net/acs',
-        'issue_instant': datetime.now().isoformat()
+        'issue_instant': datetime.now().isoformat(),
+        'not_on_or_after': (datetime.now() + timedelta(weeks=1)).isoformat(),
     }
     t = Template(unsigned_response)
     final_response = t.render(**context)
