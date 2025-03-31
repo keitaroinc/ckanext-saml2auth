@@ -38,7 +38,7 @@ class ExampleISaml2AuthPlugin(plugins.SingletonPlugin):
     plugins.implements(ISaml2Auth, inherit=True)
 
     def __init__(self, *args, **kwargs):
-
+        self.name = 'test_saml2auth'
         self.calls = defaultdict(int)
         super().__init__(*args, **kwargs)
 
