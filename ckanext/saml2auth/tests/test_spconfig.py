@@ -96,6 +96,13 @@ def test_read_acs_endpoint():
     acs_endpoint = get_config()[u'service'][u'sp'][u'endpoints'][u'assertion_consumer_service'][0]
     assert acs_endpoint.endswith('/my/acs/endpoint')
 
+@pytest.mark.ckan_config(u'ckanext.saml2auth.acs_endpoint', u'/my/acs/endpoint')
+@pytest.mark.ckan_config(u'ckan.root_path', u'/customrootpath')
+def test_read_acs_endpoint_with_root_path():
+
+    acs_endpoint = get_config()[u'service'][u'sp'][u'endpoints'][u'assertion_consumer_service'][0]
+    assert acs_endpoint.endswith('/customrootpath/my/acs/endpoint')
+
 
 @pytest.mark.ckan_config(u'ckanext.saml2auth.requested_authn_context', u'req1')
 def test_one_requested_authn_context():
