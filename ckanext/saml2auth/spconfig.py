@@ -29,7 +29,9 @@ def get_config():
         Read: https://pysaml2.readthedocs.io/en/latest/howto/config.html
         """
 
-    base = ckan_config.get('ckan.site_url')
+    # include the root_path in url construction
+    base = ckan_config.get('ckan.site_url') + (ckan_config.get('ckan.root_path') or '')
+
     debug = asbool(ckan_config.get('debug'))
     allow_unknown_attributes = \
         ckan_config.get(u'ckanext.saml2auth.allow_unknown_attributes', True)
