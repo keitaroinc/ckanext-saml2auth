@@ -25,6 +25,7 @@ from flask import session, redirect, make_response
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+from ckan.lib.plugins import DefaultTranslation
 from ckan.common import g
 import ckan.lib.base as base
 
@@ -37,7 +38,8 @@ from saml2.s_utils import UnsupportedBinding
 log = logging.getLogger(__name__)
 
 
-class Saml2AuthPlugin(plugins.SingletonPlugin):
+class Saml2AuthPlugin(plugins.SingletonPlugin, DefaultTranslation):
+    plugins.implements(plugins.ITranslation)
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.IConfigurable)
