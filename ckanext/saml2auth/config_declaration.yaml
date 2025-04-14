@@ -29,19 +29,19 @@ groups:
         description: |
             Path to a local file accessible on the server the service runs on
             Ignore this config if the idp metadata location is set to: local and metadata is public
-        required: true
+        required: false
       - key: ckanext.saml2auth.user_firstname
         example: name
         default: firstname
         description: |
             Corresponding SAML user field for firstname
-        required: true
+        required: false
       - key: ckanext.saml2auth.user_lastname
         example: surname
         default: lastname
         description: |
             Corresponding SAML user field for lastname
-        required: true
+        required: false
       - key: ckanext.saml2auth.user_email
         example: emailadress
         default: email
