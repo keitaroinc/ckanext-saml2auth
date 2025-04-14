@@ -1,0 +1,177 @@
+version: 1
+groups:
+  - annotation: ckanext-saml2auth settings
+    options:
+      - key: ckanext.saml2auth.idp_metadata.location
+        example: local
+        default: remote
+        description: |
+            Specifies the metadata location type.
+            Options: local or remote
+        required: true
+      - key: ckanext.saml2auth.idp_metadata.local_path 
+        example: /opt/metadata/idp.xml
+        default:
+        description: |
+            Path to a local file accessible on the server the service runs on.
+            Ignore this config if the idp metadata location is set to: remote
+        required: false
+      - key: ckanext.saml2auth.idp_metadata.remote_url
+        example: https://kalmar2.org/simplesaml/module.php/aggregator/?id=kalmarcentral2&set=saml2
+        default:
+        description: |
+            A remote URL serving aggregate metadata
+            Ignore this config if the idp metadata location is set to: local
+        required: false
+      - key: ckanext.saml2auth.idp_metadata.remote_cert
+        example: /opt/metadata/kalmar2.cert
+        default:
+        description: |
+            Path to a local file accessible on the server the service runs on
+            Ignore this config if the idp metadata location is set to: local and metadata is public
+        required: true
+      - key: ckanext.saml2auth.user_firstname
+        example: name
+        default: firstname
+        description: |
+            Corresponding SAML user field for firstname
+        required: true
+      - key: ckanext.saml2auth.user_lastname
+        example: surname
+        default: lastname
+        description: |
+            Corresponding SAML user field for lastname
+        required: true
+      - key: ckanext.saml2auth.user_email
+        example: emailadress
+        default: email
+        description: |
+            Corresponding SAML user field for email
+        required: true
+      - key: ckanext.saml2auth.user_fullname
+        example: fullname
+        default: fullname
+        description: |
+            Corresponding SAML user field for fullname
+            (Optional: Can be used as an alternative to firstname + lastname)
+        required: false
+      - key: ckanext.saml2auth.acs_endpoint
+        example: /sso/post
+        default: /sso/post
+        description: |
+            URL route of the endpoint where the SAML assertion is sent, also known as Assertion Consumer Service (ACS).
+        required: false
+      - key: ckanext.saml2auth.enable_ckan_internal_login
+        example: True
+        default: False
+        description: |
+            Configuration setting that enables CKAN's internal register/login functionality as well
+        required: false
+        type: bool
+      - key: ckanext.saml2auth.sysadmins_list
+        example: mail@domain.com mail2@domain.com mail3@domain.com
+        default:
+        description: |
+            List of email addresses from users that should be created as sysadmins (system administrators)
+            Note that this means that CKAN sysadmins will _only_ be managed based on this config option and will override existing user permissions in the CKAN database
+            If not set then it is ignored and CKAN sysadmins are managed through normal means
+        required: false
+      - key: ckanext.saml2auth.allow_unknown_attributes
+        example: False
+        default: True
+        description: |
+            Indicates that attributes that are not recognized (they are not configured in attribute-mapping),
+            will not be discarded.
+        required: false
+        type: bool
+      - key: ckanext.saml2auth.sp.name_id_format
+        example: urn:oasis:names:tc:SAML:2.0:nameid-format:transient
+        default: urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+        description: |
+            A list of string values that will be used to set the <NameIDFormat> element of the metadata of an entity.
+        required: false
+      - key: ckanext.saml2auth.sp.name_id_policy_format
+        example: urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+        default:
+        description: |
+            A string value that will be used to set the Format attribute of the <NameIDPolicy> element of the metadata of an entity.
+        required: false
+      - key: ckanext.saml2auth.entity_id
+        example: urn:gov:gsa:SAML:2.0.profiles:sp:sso:gsa:catalog-dev
+        default: urn:mace:umu.se:saml:ckan:sp
+        description: |
+              Entity ID (also know as Issuer)
+              Define the entity ID.
+        required: false
+      - key: ckanext.saml2auth.want_response_signed
+        example: False
+        default: True
+        description: |
+            Indicates if SAML responses must be signed.
+        required: false
+        type: bool
+      - key: ckanext.saml2auth.want_assertions_signed
+        example: True
+        default: False
+        description: |
+            Indicates if SAML assertions must be signed.
+        required: false
+        type: bool
+      - key: ckanext.saml2auth.want_assertions_or_response_signed
+        example: True
+        default: False
+        description: |
+            If set to true, either the SAML response or the assertion must be signed.
+        required: false
+        type: bool
+      - key: ckanext.saml2auth.key_file_path
+        example: /path/to/mykey.pem
+        default:
+        description: |
+            Path to the private key file used to sign SAML requests or decrypt assertions.
+        required: false
+      - key: ckanext.saml2auth.cert_file_path
+        example: /path/to/mycert.pem
+        default:
+        description: |
+            Path to the public certificate file used to verify signatures or encrypt assertions.
+        required: false
+      - key: ckanext.saml2auth.attribute_map_dir
+        example: /path/to/dir/attributemaps
+        default:
+        description: |
+            Directory path containing SAML attribute mapping configuration files.
+        required: false
+      - key: ckanext.saml2auth.requested_authn_context
+        example: http://idmanagement.gov/ns/assurance/aal/3?hspd12=true
+        default:
+        description: |
+            Specifies authentication context class references requested during login.
+            You can provide multiple values separated by spaces.
+        required: false
+      - key: ckanext.saml2auth.requested_authn_context_comparison
+        example: exact
+        default: exact
+        description: |
+            Comparison method for RequestedAuthnContext.
+            Options: exact, minimum, maximum, better
+        required: false
+      - key: ckanext.saml2auth.logout_requests_signed
+        example: True
+        default: False
+        description: |
+            Indicates whether this service provider will sign logout requests.
+        required: false
+        type: bool
+      - key: ckanext.saml2auth.logout_expected_binding
+        example: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+        default: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+        description: |
+            The expected SAML binding method for logout requests.
+        required: false
+      - key: ckanext.saml2auth.default_fallback_endpoint
+        example: home.index
+        default: user.me
+        description: |
+            The default endpoint to redirect to if no RelayState is provided in the SAML response.
+        required: false
