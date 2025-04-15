@@ -5,7 +5,7 @@ echo "This is setup-ckan.bash..."
 
 echo "Installing the packages that CKAN requires..."
 sudo apt-get update -qq
-sudo apt-get install xmlsec1 libxmlsec1-dev
+sudo apt-get install xmlsec1 libxmlsec1-dev postgresql-client -y
 
 echo "Installing CKAN and its Python dependencies..."
 git clone https://github.com/ckan/ckan
@@ -26,15 +26,18 @@ then
     pip install -r requirement-setuptools.txt
 fi
 
-if [ $CKANVERSION == '2.7' ]
+if [ $CKANVERSION == '2.10' ]
 then
     echo "Installing setuptools"
-    pip install setuptools==39.0.1
+    
+    pip install setuptools==61.0
 fi
 
 python setup.py develop
 pip install -r requirements.txt
 pip install -r dev-requirements.txt
+
+pip install typing_extensions==4.7.1 --upgrade
 cd -
 
 echo "Creating the PostgreSQL user and database..."
