@@ -30,7 +30,7 @@ from ckanext.saml2auth import helpers as h
 def test_generate_password():
     password = h.generate_password()
     assert len(password) == 8
-    assert type(password) is str
+    assert isinstance(password, str)
 
 
 def test_default_login_disabled_by_default():
