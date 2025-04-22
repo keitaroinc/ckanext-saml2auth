@@ -16,8 +16,11 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from ckan.plugins import toolkit
 
-pytest_plugins = [
-    u'ckan.tests.pytest_ckan.ckan_setup',
-    u'ckan.tests.pytest_ckan.fixtures',
-]
+if toolkit.check_ckan_version(max_version='2.10.99'):
+
+    pytest_plugins = [
+        u'ckan.tests.pytest_ckan.ckan_setup',
+        u'ckan.tests.pytest_ckan.fixtures',
+    ]
