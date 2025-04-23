@@ -48,8 +48,9 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
 
     def get_helpers(self):
         return {
-            'is_default_login_enabled':
-                h.is_default_login_enabled
+            'is_default_login_enabled': h.is_default_login_enabled,
+            'get_saml2auth_login_button_text': 
+                h.get_saml2auth_login_button_text,
         }
 
     # IConfigurable

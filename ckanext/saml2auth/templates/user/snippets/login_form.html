@@ -17,6 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 {% ckan_extends %}
 {% block login_button %}
-  <button class="btn btn-primary" type="submit">{{ _('Login') }}</button>
-  <a class="btn btn-default" href="{{ h.url_for('saml2auth.saml2login') }}">{{ _('SSO') }}</a>
+<button class="btn btn-primary" type="submit">{{ _('Login') }}</button>
+<a class="btn btn-default" href="{{ h.url_for('saml2auth.saml2login') }}">{{ h.get_saml2auth_login_button_text() }}</a>
 {% endblock %}

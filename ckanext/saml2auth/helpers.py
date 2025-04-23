@@ -121,3 +121,12 @@ def get_site_domain_for_cookie():
     parsed_url = urlparse(site_url)
     host = parsed_url.netloc.split(':')[0]
     return host if '.' in host else None
+
+
+def get_saml2auth_login_button_text():
+    """
+    Returns the configured text for the SAML2 login button.
+    Defaults to 'SSO' if not configured.
+    """
+    text = toolkit.config.get('ckanext.saml2auth.login_button_text', 'SSO')
+    return text
