@@ -117,7 +117,23 @@ class TestGetRequest:
         data = {
             'SAMLResponse': encoded_response
         }
-        response = app.post(url=url, params=data)
+        
+        try:
+            response = app.post(url=url, params=data)
+        except Exception as e:
+            # decode the response
+            import base64
+            decoded = base64.b64decode(encoded_response)
+            raise Exception(
+                f'Error test_unsigned_request: {e}\n'
+                f'encoded_response: {decoded}\n'
+                f'url: {url}\n'
+            )
+
+        if response.status_code != 200:
+            assert False, f'Failed test_unsigned_request: {response.body}'
+            # Can&#39;t use response, too old (now=2024-07-31T17:42:38Z + slack=0 &gt; not_on_or_after=2024-01-18T06:21:48Z
+        
         assert 200 == response.status_code
 
     def render_file(self, path, context, save_as=None):

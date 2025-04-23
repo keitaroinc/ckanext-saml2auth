@@ -33,9 +33,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.7', '3.8', '3.9']
-        ckan-version: ["2.9", "2.10"]
-    name: Python ${{ matrix.python-version }} extension test
+        python-version: ['3.9', '3.10']  # TODO '3.11'
+        ckan-version: ["2.10", "2.11"]
+    name: Python ${{ matrix.python-version }} CKAN ${{ matrix.ckan-version }} extension test
 
     services:
       postgresql:
