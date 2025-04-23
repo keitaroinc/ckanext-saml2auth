@@ -58,7 +58,7 @@ def _prepare_unsigned_response():
         'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
         'destination': 'http://test.ckan.net/acs',
         'recipient': 'http://test.ckan.net/acs',
-        'issue_instant': datetime.now().isoformat()
+        'issue_instant': datetime.now().isoformat(),
     }
     t = Template(unsigned_response)
     final_response = t.render(**context)
