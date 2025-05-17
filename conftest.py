@@ -23,6 +23,6 @@ from ckan.plugins import toolkit
 if toolkit.check_ckan_version(max_version='2.10.99'):
 
     pytest_plugins = [
-        u'ckan.tests.pytest_ckan.ckan_setup',
-        u'ckan.tests.pytest_ckan.fixtures',
+        # u'ckan.tests.pytest_ckan.ckan_setup',
+        # u'ckan.tests.pytest_ckan.fixtures',
     ]
