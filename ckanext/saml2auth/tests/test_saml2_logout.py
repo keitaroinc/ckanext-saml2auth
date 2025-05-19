@@ -23,7 +23,7 @@ def test_perform_slo_no_subject_id():
     with mock.patch('ckanext.saml2auth.plugin.session', {}), \
          mock.patch('ckanext.saml2auth.plugin.g', mock.Mock(user='test_user')), \
          mock.patch('ckanext.saml2auth.plugin.get_subject_id', return_value=None):
-        
+
         response = _perform_slo()
 
         assert response is None
