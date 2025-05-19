@@ -65,46 +65,8 @@ class TestBlueprint(object):
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path',
                              os.path.join(extras_folder, 'provider2', 'idp.xml'))
     @pytest.mark.usefixtures('with_request_context')
-    def test_cookies_cleared_on_slo(self, app):
-        if toolkit.check_ckan_version(min_version='2.10'):
-            # Remove when dropping support for 2.9
-            pytest.skip("auth_tkt cookie has been deprecated in 2.10")
-        url = url_for('user.logout')
-
-        import datetime
-        from unittest import mock
-        from http.cookies import SimpleCookie
-        from flask import make_response
-        from dateutil.parser import parse as date_parse
-
-        with mock.patch(
-            'ckanext.saml2auth.plugin._perform_slo',
-                return_value=make_response('')):
-            response = app.get(url=url, follow_redirects=False)
-
-        cookie_headers = [
-            h[1] for h in response.headers
-            if h[0].lower() == 'set-cookie']
-
-        assert len(cookie_headers) == 2
-
-        for cookie_header in cookie_headers:
-            cookie = SimpleCookie()
-            cookie.load(cookie_header)
-            cookie_name = [name for name in cookie.keys()][0]
-            assert cookie_name in ['auth_tkt', 'ckan']
-            assert cookie[cookie_name]['domain'] == 'test.ckan.net'
-            cookie_date = date_parse(cookie[cookie_name]['expires'], ignoretz=True)
-            assert cookie_date < datetime.datetime.now()
-
-    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
-    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path',
-                             os.path.join(extras_folder, 'provider2', 'idp.xml'))
-    @pytest.mark.usefixtures('with_request_context')
     def test_ckan_cookie_cleared_on_slo(self, app):
-        if not toolkit.check_ckan_version(min_version='2.10'):
-            # Remove when dropping support for 2.9
-            pytest.skip("This test logic introduced in CKAN 2.10")
+
         url = url_for('user.logout')
 
         import datetime
