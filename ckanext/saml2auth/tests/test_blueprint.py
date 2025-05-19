@@ -96,3 +96,49 @@ class TestBlueprint(object):
             assert cookie[cookie_name]['domain'] == 'test.ckan.net'
             cookie_date = date_parse(cookie[cookie_name]['expires'], ignoretz=True)
             assert cookie_date < datetime.datetime.now()
+
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
+    @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path',
+                             os.path.join(extras_folder, 'provider2', 'idp.xml'))
+    @pytest.mark.usefixtures('with_request_context')
+    def test_ckan_cookie_cleared_on_slo(self, app):
+        if not toolkit.check_ckan_version(min_version='2.10'):
+            # Remove when dropping support for 2.9
+            pytest.skip("This test logic introduced in CKAN 2.10")
+        url = url_for('user.logout')
+
+        import datetime
+        from unittest import mock
+        from http.cookies import SimpleCookie
+        from flask import make_response
+        from dateutil.parser import parse as date_parse
+
+        with mock.patch(
+            'ckanext.saml2auth.plugin._perform_slo',
+                return_value=make_response('')):
+            response = app.get(url=url, follow_redirects=False)
+
+        cookie_headers = [
+            h[1] for h in response.headers
+            if h[0].lower() == 'set-cookie']
+        # Sample for CKAN 2.11
+        # ['ckan=; Domain=test.ckan.net; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/']
+
+        # Starting 2.10, CKAN's SessionMiddleware will append a
+        # new Set-cookie header on every first response from the server.
+        # This includes test requests.
+        # For CKAN 2.11, we only get the session cookie is named 'ckan'
+        if toolkit.check_ckan_version(min_version='2.11'):
+            assert len(cookie_headers) == 1
+        else:
+            assert len(cookie_headers) == 2
+
+        first_cookie = cookie_headers[0]
+
+        cookie = SimpleCookie()
+        cookie.load(first_cookie)
+        cookie_name = [name for name in cookie.keys()][0]
+        assert cookie_name == 'ckan'
+        assert cookie[cookie_name]['domain'] == 'test.ckan.net'
+        cookie_date = date_parse(cookie[cookie_name]['expires'], ignoretz=True)
+        assert cookie_date < datetime.datetime.now()
