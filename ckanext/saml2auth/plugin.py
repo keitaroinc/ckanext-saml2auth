@@ -37,6 +37,7 @@ from saml2.s_utils import UnsupportedBinding
 log = logging.getLogger(__name__)
 
 
+@toolkit.blanket.config_declarations
 class Saml2AuthPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
