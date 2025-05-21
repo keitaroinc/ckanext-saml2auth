@@ -23,12 +23,12 @@ import copy
 from flask import Blueprint, session
 from saml2 import entity
 from saml2.authn_context import requested_authn_context
-
+from sqlalchemy.sql import func
 import ckan.plugins.toolkit as toolkit
 import ckan.model as model
 import ckan.plugins as plugins
 import ckan.lib.dictization.model_dictize as model_dictize
-from ckan.lib import base
+from ckan.lib import base, signals
 from ckan.views.user import set_repoze_user
 from ckan.common import config, g, request
 
@@ -76,13 +76,18 @@ def _get_user_by_saml_id(saml_id):
 
 def _get_user_by_email(email):
 
-    user = model.User.by_email(email)
-    if user and isinstance(user, list):
-        user = user[0]
+    users = model.Session.query(model.User).filter(
+        func.lower(model.User.email) == func.lower(email)
+    ).all()
 
+    if len(users) == 0:
+        return None
+    if len(users) > 1:
+        raise toolkit.ValidationError(f'Multiple users with the same email found {email}')
+
+    user = users[0]
     h.activate_user_if_deleted(user)
-
-    return _dictize_user(user) if user else None
+    return _dictize_user(user)
 
 
 def _update_user(user_dict):
@@ -227,6 +232,8 @@ def acs():
     if error is not None:
         log.error(error)
         extra_vars = {u'code': [400], u'content': error}
+        # Trigger the CKAN failed login signal
+        signals.failed_login.send('Unknown_SAML2_user')
         return base.render(u'error_document_template.html', extra_vars), 400
 
     auth_response.get_identity()
@@ -236,7 +243,14 @@ def acs():
     # SAML username - unique
     saml_id = user_info.text
     # Required user attributes for user creation
-    email = auth_response.ava[saml_user_email][0]
+    try:
+        email = auth_response.ava[saml_user_email][0]
+    except KeyError as e:
+        error = 'User email not found in the SAML response'
+        error_internal = f'{error}: {e}. Data:{auth_response.ava}'
+        log.critical(error_internal)
+        extra_vars = {u'code': [400], u'content': error}
+        return base.render(u'error_document_template.html', extra_vars), 400
 
     if saml_user_firstname and saml_user_lastname:
         first_name = auth_response.ava.get(saml_user_firstname, [email.split('@')[0]])[0]

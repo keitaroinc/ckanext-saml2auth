@@ -46,9 +46,10 @@ cd ckan
 ckan -c test-core.ini db init
 cd -
 
-echo "Installing ckanext-saml2auth and its requirements..."
-python setup.py develop
+echo "Installing saml2 requirements..."
 pip install -r dev-requirements.txt
+echo "Installing ckanext-saml2auth..."
+pip install -e .
 
 echo "Moving test.ini into a subdir..."
 mkdir subdir

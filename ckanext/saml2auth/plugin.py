@@ -48,8 +48,8 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
 
     def get_helpers(self):
         return {
-            'is_default_login_enabled':
-                h.is_default_login_enabled
+            'is_default_login_enabled': h.is_default_login_enabled,
+            'get_saml2auth_login_button_text': h.get_saml2auth_login_button_text,
         }
 
     # IConfigurable
@@ -120,9 +120,12 @@ def _perform_slo():
 
     response = None
 
-    client = h.saml_client(
-        sp_config()
-    )
+    config = sp_config()
+    if config.get('logout_expected_binding') == 'skip-external-logout':
+        log.debug('Skipping external logout')
+        return
+
+    client = h.saml_client(config)
     saml_session_info = get_saml_session_info(session)
     subject_id = get_subject_id(session)
 
