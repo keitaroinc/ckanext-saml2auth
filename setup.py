@@ -44,7 +44,7 @@ setup(
     url='https://github.com/keitaroinc/ckanext-saml2auth',
 
     # Author details
-    author='''Keitaro Inc + OKFN''',
+    author='''Keitaro Inc''',
     author_email='''info@keitaro.com''',
 
     # Choose your license
