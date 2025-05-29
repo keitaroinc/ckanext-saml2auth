@@ -33,17 +33,29 @@ from ckanext.saml2auth.cache import get_subject_id, get_saml_session_info
 from ckanext.saml2auth.spconfig import get_config as sp_config
 from ckanext.saml2auth import helpers as h
 from saml2.s_utils import UnsupportedBinding
+from ckan.config.declaration import Declaration, Key
 
 log = logging.getLogger(__name__)
 
 
-@toolkit.blanket.config_declarations
 class Saml2AuthPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.IConfigurable)
     plugins.implements(plugins.ITemplateHelpers)
     plugins.implements(plugins.IAuthenticator, inherit=True)
+    plugins.implements(plugins.IConfigDeclaration)
+
+    def declare_config_options(self, declaration: Declaration, key: Key):
+
+        declaration.annotate("Corresponding SAML user field for firstname")
+        declaration.declare(key.ckanext.saml2auth.user_firstname, "firstname")
+
+        declaration.annotate("Corresponding SAML user field for lastname")
+        declaration.declare(key.ckanext.saml2auth.user_lastname, "lastname")
+
+        declaration.annotate("Corresponding SAML user field for fullname")
+        declaration.declare(key.ckanext.saml2auth.user_fullname, "fullname")
 
     # ITemplateHelpers
 
