@@ -27,6 +27,8 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckan.common import g
 import ckan.lib.base as base
+import yaml
+from pathlib import Path
 
 from ckanext.saml2auth.views.saml2auth import saml2auth
 from ckanext.saml2auth.cache import get_subject_id, get_saml_session_info
@@ -47,15 +49,9 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigDeclaration)
 
     def declare_config_options(self, declaration: Declaration, key: Key):
-
-        declaration.annotate("Corresponding SAML user field for firstname")
-        declaration.declare(key.ckanext.saml2auth.user_firstname, "firstname")
-
-        declaration.annotate("Corresponding SAML user field for lastname")
-        declaration.declare(key.ckanext.saml2auth.user_lastname, "lastname")
-
-        declaration.annotate("Corresponding SAML user field for fullname")
-        declaration.declare(key.ckanext.saml2auth.user_fullname, "fullname")
+        p = Path(__file__).with_name('config_declaration.yaml')
+        conf = yaml.safe_load(p.read_text())
+        declaration.load_dict(conf)
 
     # ITemplateHelpers
 

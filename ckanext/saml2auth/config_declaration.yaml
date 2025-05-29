@@ -55,12 +55,6 @@ groups:
             Corresponding SAML user field for fullname
             (Optional: Can be used as an alternative to firstname + lastname)
         required: false
-      - key: ckanext.saml2auth.acs_endpoint
-        example: /sso/post
-        default: /sso/post
-        description: |
-            URL route of the endpoint where the SAML assertion is sent, also known as Assertion Consumer Service (ACS).
-        required: false
       - key: ckanext.saml2auth.enable_ckan_internal_login
         example: True
         default: False
