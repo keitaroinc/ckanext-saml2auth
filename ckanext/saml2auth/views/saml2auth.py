@@ -262,6 +262,15 @@ def acs():
         else:
             full_name = u'{} {}'.format(email.split('@')[0], email.split('@')[1])
 
+    # Before creating or updating the CKAN user, we allow plugins to
+    # validate the user. Sometimes CKAN wants to block a valid external user
+    for plugin in plugins.PluginImplementations(ISaml2Auth):
+        block, code, error = plugin.before_saml2_login(email=email, saml_attributes=auth_response.ava)
+        if block:
+            log.error(f'Plugin {plugin} rejects the SAML2 login for user {email}. Error: {error}')
+            extra_vars = {'code': [code], 'name': 'Login rejected', 'content': error}
+            return base.render(u'error_document_template.html', extra_vars), 403
+
     g.user = process_user(email, saml_id, full_name, auth_response.ava)
 
     # Check if the authenticated user email is in given list of emails

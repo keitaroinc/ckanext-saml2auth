@@ -22,6 +22,25 @@ class ISaml2Auth(Interface):
     u'''
     This interface allows plugins to hook into the Saml2 authorization flow
     '''
+    def before_saml2_login(self, email, saml_attributes):
+        u'''
+        Called just before logging in a user programatically.
+        This is also befoire the users is created or updated in CKAN.
+
+        :param email: User email address that will be used to log in the user.
+        :param saml_attributes: A dict containing extra SAML attributes returned
+            as part of the SAML Response
+
+        Returns (block, code, error)
+        :returns: A tuple containing:
+            - block: If set to True, the login will be blocked and the user
+              will not be logged in. If set to False, the login will proceed.
+            - code: http status code to return. Use 403 as default for errors.
+            - error: A string containing an error message to be displayed to the user
+        :rtype: tuple(bool, int, str)
+        '''
+        return (False, 200, None)
+
     def before_saml2_user_update(self, user_dict, saml_attributes):
         u'''
         Called just before updating an existing user
