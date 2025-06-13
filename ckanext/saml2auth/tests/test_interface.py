@@ -60,6 +60,14 @@ class ExampleISaml2AuthPlugin(plugins.SingletonPlugin):
         user_dict['plugin_extras']['my_plugin'] = {}
         user_dict['plugin_extras']['my_plugin']['key2'] = 'value2'
 
+    def before_saml2_login(self, resp, saml_attributes):
+
+        self.calls['before_saml2_login'] += 1
+
+        resp.headers['X-Custom-header-before'] = 'test-before'
+
+        return resp
+
     def after_saml2_login(self, resp, saml_attributes):
 
         self.calls['after_saml2_login'] += 1
@@ -91,10 +99,22 @@ class TestInterface(object):
         with plugins.use_plugin("test_saml2auth") as plugin:
             response = app.post(url=url, params=data, follow_redirects=False)
             assert 302 == response.status_code
-
             assert plugin.calls["after_saml2_login"] == 1, plugin.calls
-
             assert response.headers['X-Custom-header'] == 'test'
+
+    def test_before_login_is_called(self, app):
+        encoded_response = _prepare_unsigned_response()
+        url = '/acs'
+
+        data = {
+            'SAMLResponse': encoded_response
+        }
+
+        with plugins.use_plugin("test_saml2auth") as plugin:
+            response = app.post(url=url, params=data, follow_redirects=False)
+            assert 302 == response.status_code
+            assert plugin.calls["before_saml2_login"] == 1, plugin.calls
+            assert response.headers['X-Custom-header-before'] == 'test-before'
 
     def test_before_create_is_called(self, app):
 
