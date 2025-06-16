@@ -76,8 +76,7 @@ class ExampleISaml2AuthPlugin(plugins.SingletonPlugin):
         return resp
 
 
-@pytest.mark.usefixtures(u'clean_db', u'with_plugins')
-@pytest.mark.ckan_config(u'ckan.plugins', u'saml2auth')
+@pytest.mark.usefixtures(u'clean_db')
 @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
 @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
 @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.local_path', os.path.join(extras_folder, 'provider0', 'idp.xml'))
