@@ -269,7 +269,7 @@ def acs():
         if block:
             log.error(f'Plugin {plugin} rejects the SAML2 login for user {email}. Error: {error}')
             extra_vars = {'code': [code], 'name': 'Login rejected', 'content': error}
-            return base.render(u'error_document_template.html', extra_vars), 403
+            return base.render(u'error_document_template.html', extra_vars), code
 
     g.user = process_user(email, saml_id, full_name, auth_response.ava)
 
