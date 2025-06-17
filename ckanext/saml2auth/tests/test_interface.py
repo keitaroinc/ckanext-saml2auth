@@ -95,11 +95,11 @@ class TestInterface(object):
             'SAMLResponse': encoded_response
         }
 
-        with plugins.get_plugin("test_saml2auth") as plugin:
-            response = app.post(url=url, params=data, follow_redirects=False)
-            assert 302 == response.status_code
-            assert plugin.calls["after_saml2_login"] == 1, plugin.calls
-            assert response.headers['X-Custom-header'] == 'test'
+        plugin = plugins.get_plugin("test_saml2auth")
+        response = app.post(url=url, params=data, follow_redirects=False)
+        assert 302 == response.status_code
+        assert plugin.calls["after_saml2_login"] == 1, plugin.calls
+        assert response.headers['X-Custom-header'] == 'test'
 
     def test_before_login_is_called(self, app):
         encoded_response = _prepare_unsigned_response()
@@ -109,10 +109,10 @@ class TestInterface(object):
             'SAMLResponse': encoded_response
         }
 
-        with plugins.get_plugin("test_saml2auth") as plugin:
-            response = app.post(url=url, params=data, follow_redirects=False)
-            assert 302 == response.status_code
-            assert plugin.calls["before_saml2_login"] == 1, plugin.calls
+        plugin = plugins.get_plugin("test_saml2auth")
+        response = app.post(url=url, params=data, follow_redirects=False)
+        assert 302 == response.status_code
+        assert plugin.calls["before_saml2_login"] == 1, plugin.calls
 
     def test_before_create_is_called(self, app):
 
@@ -123,11 +123,10 @@ class TestInterface(object):
             'SAMLResponse': encoded_response
         }
 
-        with plugins.get_plugin("test_saml2auth") as plugin:
-            response = app.post(url=url, params=data, follow_redirects=False)
-            assert 302 == response.status_code
-
-            assert plugin.calls["before_saml2_user_create"] == 1, plugin.calls
+        plugin = plugins.get_plugin("test_saml2auth")
+        response = app.post(url=url, params=data, follow_redirects=False)
+        assert 302 == response.status_code
+        assert plugin.calls["before_saml2_user_create"] == 1, plugin.calls
 
         user = model.User.by_email('test@example.com')
         if isinstance(user, list):
@@ -160,11 +159,10 @@ class TestInterface(object):
             'SAMLResponse': encoded_response
         }
 
-        with plugins.get_plugin("test_saml2auth") as plugin:
-            response = app.post(url=url, params=data, follow_redirects=False)
-            assert 302 == response.status_code
-
-            assert plugin.calls["before_saml2_user_update"] == 1, plugin.calls
+        plugin = plugins.get_plugin("test_saml2auth")
+        response = app.post(url=url, params=data, follow_redirects=False)
+        assert 302 == response.status_code
+        assert plugin.calls["before_saml2_user_update"] == 1, plugin.calls
 
         user = model.User.by_email('test@example.com')
         if isinstance(user, list):
@@ -189,11 +187,10 @@ class TestInterface(object):
             'SAMLResponse': encoded_response
         }
 
-        with plugins.get_plugin("test_saml2auth") as plugin:
-            response = app.post(url=url, params=data, follow_redirects=False)
-            assert 302 == response.status_code
-
-            assert plugin.calls["before_saml2_user_update"] == 1, plugin.calls
+        plugin = plugins.get_plugin("test_saml2auth")
+        response = app.post(url=url, params=data, follow_redirects=False)
+        assert 302 == response.status_code
+        assert plugin.calls["before_saml2_user_update"] == 1, plugin.calls
 
         user = model.User.by_email('test@example.com')
         if isinstance(user, list):
