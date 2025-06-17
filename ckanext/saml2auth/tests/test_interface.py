@@ -40,7 +40,8 @@ class ExampleISaml2AuthPlugin(plugins.SingletonPlugin):
     def __init__(self, *args, **kwargs):
 
         self.calls = defaultdict(int)
-        super().__init__(*args, **kwargs)
+        self.name = 'ExampleISaml2AuthPlugin'
+        # super().__init__(*args, **kwargs)
 
     def before_saml2_user_update(self, user_dict, saml_attributes):
 
