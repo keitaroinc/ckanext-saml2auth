@@ -26,10 +26,9 @@ then
     pip install -r requirement-setuptools.txt
 fi
 
-if [ $CKANVERSION == '2.7' ]
+if [ $CKANVERSION == '2.9' ]
 then
-    echo "Installing setuptools"
-    pip install setuptools==39.0.1
+    sed -i 's/zope.interface==4.3.2/zope.interface>5.0.0/g' requirements.txt
 fi
 
 python setup.py develop

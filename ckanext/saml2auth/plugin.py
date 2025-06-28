@@ -96,6 +96,16 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
 
     # IAuthenticator
 
+    def identify(self):
+        try:
+            if g.userobj and not session.get('last_active'):
+                log.info('User {0}<{1}> logged in successfully{2}.'.format(
+                    g.userobj.name, g.userobj.email,
+                    ' via saml' if session.get('_saml_session_info') else ''
+                ))
+        except AttributeError:
+            log.info(u'No user defined!')
+
     def logout(self):
 
         response = _perform_slo()
