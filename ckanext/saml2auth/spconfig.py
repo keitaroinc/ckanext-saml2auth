@@ -22,6 +22,7 @@ from saml2 import entity
 
 from ckan.common import config as ckan_config
 from ckan.common import asbool, aslist
+from ckan.lib.helpers import _local_url
 
 
 def get_config():
@@ -70,7 +71,7 @@ def get_config():
             u'sp': {
                 u'name': u'CKAN SP',
                 u'endpoints': {
-                    u'assertion_consumer_service': [base + acs_endpoint]
+                    u'assertion_consumer_service': [_local_url(base + acs_endpoint, qualified=True)]
                 },
                 u'allow_unsolicited': True,
                 u'name_id_format': name_id_format,
