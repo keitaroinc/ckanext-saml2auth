@@ -17,17 +17,17 @@
       <saml:NameID SPNameQualifier="{{ entity_id }}" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">_ce3d2948b4cf20146dee0a0b3dd6f69b6cf86f62d7</saml:NameID>
       <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
         <saml:SubjectConfirmationData 
-          NotOnOrAfter="2026-01-18T06:21:48Z" 
+          NotOnOrAfter="{{ not_on_or_after }}"
           Recipient="{{ recipient }}" 
           InResponseTo="ONELOGIN_4fee3b046395c4e751011e97f8900b5273d56685"/>
       </saml:SubjectConfirmation>
     </saml:Subject>
-    <saml:Conditions NotBefore="2021-01-08T01:01:18Z" NotOnOrAfter="2031-01-18T06:21:48Z">
+    <saml:Conditions NotBefore="2021-01-08T01:01:18Z" NotOnOrAfter="{{ not_on_or_after }}">
       <saml:AudienceRestriction>
         <saml:Audience>{{ entity_id }}</saml:Audience>
       </saml:AudienceRestriction>
     </saml:Conditions>
-    <saml:AuthnStatement AuthnInstant="{{ issue_instant }}" SessionNotOnOrAfter="2031-01-18T09:01:48Z" SessionIndex="_be9967abd904ddcae3c0eb4189adbe3f71e327cf93">
+    <saml:AuthnStatement AuthnInstant="{{ issue_instant }}" SessionNotOnOrAfter="{{ not_on_or_after }}" SessionIndex="_be9967abd904ddcae3c0eb4189adbe3f71e327cf93">
       <saml:AuthnContext>
         <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
       </saml:AuthnContext>

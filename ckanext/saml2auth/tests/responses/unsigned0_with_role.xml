@@ -1,0 +1,60 @@
+<samlp:Response
+        xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+        xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+        ID="_8e8dc5f69a98cc4c1ff3427e5ce34606fd672f91e6"
+        Version="2.0"
+        IssueInstant="{{ issue_instant }}"
+        Destination="{{ destination }}"
+        InResponseTo="ONELOGIN_4fee3b046395c4e751011e97f8900b5273d56685">
+
+    <saml:Issuer>http://idp.example.com/metadata.php</saml:Issuer>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </samlp:Status>
+    <saml:Assertion xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" ID="_d71a3a8e9fcc45c9e9d248ef7049393fc8f04e5f75" Version="2.0" IssueInstant="{{ issue_instant }}">
+        <saml:Issuer>http://idp.example.com/metadata.php</saml:Issuer>
+        <saml:Subject>
+            <saml:NameID SPNameQualifier="{{ entity_id }}" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">_ce3d2948b4cf20146dee0a0b3dd6f69b6cf86f62d7</saml:NameID>
+            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                <saml:SubjectConfirmationData
+                        NotOnOrAfter="{{ not_on_or_after }}"
+                        Recipient="{{ recipient }}"
+                        InResponseTo="ONELOGIN_4fee3b046395c4e751011e97f8900b5273d56685"/>
+            </saml:SubjectConfirmation>
+        </saml:Subject>
+        <saml:Conditions NotBefore="2021-01-08T01:01:18Z" NotOnOrAfter="{{ not_on_or_after }}">
+            <saml:AudienceRestriction>
+                <saml:Audience>{{ entity_id }}</saml:Audience>
+            </saml:AudienceRestriction>
+        </saml:Conditions>
+        <saml:AuthnStatement AuthnInstant="{{ issue_instant }}" SessionNotOnOrAfter="{{ not_on_or_after }}" SessionIndex="_be9967abd904ddcae3c0eb4189adbe3f71e327cf93">
+            <saml:AuthnContext>
+                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
+            </saml:AuthnContext>
+        </saml:AuthnStatement>
+        <saml:AttributeStatement>
+            <saml:Attribute Name="uid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+                <saml:AttributeValue xsi:type="xs:string">test</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="email" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+                <saml:AttributeValue xsi:type="xs:string">test@example.com</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="firstname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+                <saml:AttributeValue>John</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="lastname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+                <saml:AttributeValue>Smith</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="fullname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+                <saml:AttributeValue>John Smith (Operations)</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="eduPersonAffiliation" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+                <saml:AttributeValue xsi:type="xs:string">users</saml:AttributeValue>
+                <saml:AttributeValue xsi:type="xs:string">examplerole1</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="Role" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+                <saml:AttributeValue xsi:type="xs:string">ckan-access</saml:AttributeValue>
+            </saml:Attribute>
+        </saml:AttributeStatement>
+    </saml:Assertion>
+</samlp:Response>
