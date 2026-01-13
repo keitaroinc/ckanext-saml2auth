@@ -1,0 +1,51 @@
+version: "3"
+
+services:
+  postgres:
+    image: ckan/ckan-postgres-dev:2.11
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  solr:
+    image: ckan/ckan-solr:2.11-solr9
+    ports:
+      - "8983:8983"
+
+  redis:
+    image: redis:3
+    ports:
+      - "6379:6379"
+
+  ckan-dev:
+    image: ckan/ckan-dev:2.11-py3.10
+    user: root
+    depends_on:
+      postgres:
+        condition: service_healthy
+      solr:
+        condition: service_started
+      redis:
+        condition: service_started
+    environment:
+      CKAN_SQLALCHEMY_URL: postgresql://ckan_default:pass@postgres/ckan_test
+      CKAN_DATASTORE_WRITE_URL: postgresql://datastore_write:pass@postgres/datastore_test
+      CKAN_DATASTORE_READ_URL: postgresql://datastore_read:pass@postgres/datastore_test
+      CKAN_SOLR_URL: http://solr:8983/solr/ckan
+      CKAN_REDIS_URL: redis://redis:6379/1
+    volumes:
+      - .:/srv/app/src/ckanext-saml2auth
+      - ckan-storage:/var/lib/ckan
+    working_dir: /srv/app/src/ckanext-saml2auth
+    command: tail -f /dev/null
+
+volumes:
+  ckan-storage:

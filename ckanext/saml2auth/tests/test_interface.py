@@ -37,6 +37,9 @@ class ExampleISaml2AuthPlugin(plugins.SingletonPlugin):
 
     plugins.implements(ISaml2Auth, inherit=True)
 
+    # CKAN 2.11 requires plugins to have a name attribute
+    name = 'test_saml2auth'
+
     def __init__(self, *args, **kwargs):
 
         self.calls = defaultdict(int)
@@ -69,6 +72,7 @@ class ExampleISaml2AuthPlugin(plugins.SingletonPlugin):
 
 
 @pytest.mark.usefixtures(u'clean_db', u'with_plugins')
+@pytest.mark.ckan_config(u'ckan.site_url', u'http://test.ckan.net')
 @pytest.mark.ckan_config(u'ckan.plugins', u'saml2auth')
 @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
 @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')

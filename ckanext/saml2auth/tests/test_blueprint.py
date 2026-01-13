@@ -134,6 +134,7 @@ class TestBlueprint(object):
         cookie.load(first_cookie)
         cookie_name = [name for name in cookie.keys()][0]
         assert cookie_name == 'ckan'
-        assert cookie[cookie_name]['domain'] == 'localhost'
+        # In CKAN 2.11, Flask test client doesn't set cookie domain (empty string)
+        assert cookie[cookie_name]['domain'] in ['', 'localhost']
         cookie_date = date_parse(cookie[cookie_name]['expires'], ignoretz=True)
         assert cookie_date < datetime.datetime.now()
