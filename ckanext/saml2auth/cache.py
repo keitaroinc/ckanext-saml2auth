@@ -34,11 +34,24 @@ def get_subject_id(session):
 
 
 def set_saml_session_info(session, saml_session_info):
-    session['_saml_session_info'] = saml_session_info
+    # In CKAN 2.11 with Flask, session data must be JSON serializable
+    # Convert NameID object to string for JSON compatibility
+    serializable_info = saml_session_info.copy()
+    if 'name_id' in serializable_info:
+        # Use code() to serialize the NameID object
+        serializable_info['name_id'] = code(serializable_info['name_id'])
+    session['_saml_session_info'] = serializable_info
 
 
 def get_saml_session_info(session):
     try:
-        return session['_saml_session_info']
+        session_info = session['_saml_session_info']
+        # In CKAN 2.11, name_id was encoded for JSON serialization
+        # Decode it back to NameID object if it's a string
+        if session_info and 'name_id' in session_info:
+            if isinstance(session_info['name_id'], str):
+                session_info = session_info.copy()
+                session_info['name_id'] = decode(session_info['name_id'])
+        return session_info
     except KeyError:
         return None

@@ -54,11 +54,17 @@ def _prepare_unsigned_response():
     unsigned_response_file = os.path.join(responses_folder, 'unsigned0.xml')
     unsigned_response = open(unsigned_response_file).read()
     # parse values
+    # Note: Using localhost:5000 to match Flask test client default site_url in CKAN 2.11
+    from datetime import timedelta
+    now = datetime.now()
+    not_on_or_after = now + timedelta(minutes=5)
+
     context = {
         'entity_id': 'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity',
-        'destination': 'http://test.ckan.net/acs',
-        'recipient': 'http://test.ckan.net/acs',
-        'issue_instant': datetime.now().isoformat()
+        'destination': 'http://localhost:5000/acs',
+        'recipient': 'http://localhost:5000/acs',
+        'issue_instant': now.isoformat(),
+        'not_on_or_after': not_on_or_after.strftime('%Y-%m-%dT%H:%M:%SZ')
     }
     t = Template(unsigned_response)
     final_response = t.render(**context)
@@ -69,6 +75,7 @@ def _prepare_unsigned_response():
 
 
 @pytest.mark.usefixtures(u'clean_db', u'clean_index')
+@pytest.mark.ckan_config(u'ckan.site_url', u'http://test.ckan.net')
 @pytest.mark.ckan_config(u'ckan.plugins', u'saml2auth')
 class TestGetRequest:
     """ test getting request from external source """
@@ -135,7 +142,7 @@ class TestGetRequest:
 
     def _load_base(
         self,
-        destination='http://test.ckan.net/acs',
+        destination='http://localhost:5000/acs',
         issuer_url='https://organization.com/saml/',
         entity_id='urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity'
     ):
@@ -186,7 +193,7 @@ class TestGetRequest:
                     'want_assertions_signed': True,
                     'allow_unsolicited': True,
                     'endpoints': {
-                        'assertion_consumer_service': ['http://ckan:5000/acs', 'http://test.ckan.net/acs']
+                        'assertion_consumer_service': ['http://ckan:5000/acs', 'http://localhost:5000/acs']
                     },
                     'want_assertions_or_response_signed': True,
                     'name_id_policy_format': [
@@ -436,7 +443,7 @@ class TestGetRequest:
         }
         response = app.post(url=url, params=data, follow_redirects=False)
 
-        assert response.headers['Location'] == 'http://test.ckan.net/dataset/my-dataset'
+        assert response.headers['Location'] == 'http://localhost:5000/dataset/my-dataset'
 
     @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
@@ -454,7 +461,7 @@ class TestGetRequest:
         }
         response = app.post(url=url, params=data, follow_redirects=False)
 
-        assert response.headers['Location'] == 'http://test.ckan.net/user/me'
+        assert response.headers['Location'] == 'http://localhost:5000/user/me'
 
     @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')
@@ -473,7 +480,7 @@ class TestGetRequest:
         }
         response = app.post(url=url, params=data, follow_redirects=False)
 
-        assert response.headers['Location'] == 'http://test.ckan.net/dataset/'
+        assert response.headers['Location'] == 'http://localhost:5000/dataset/'
 
     @pytest.mark.ckan_config(u'ckanext.saml2auth.entity_id', u'urn:gov:gsa:SAML:2.0.profiles:sp:sso:test:entity')
     @pytest.mark.ckan_config(u'ckanext.saml2auth.idp_metadata.location', u'local')

@@ -28,6 +28,7 @@ extras_folder = os.path.join(here, 'extras')
 
 
 @pytest.mark.usefixtures(u'clean_db', u'clean_index')
+@pytest.mark.ckan_config(u'ckan.site_url', u'http://test.ckan.net')
 @pytest.mark.ckan_config(u'ckan.plugins', u'saml2auth')
 class TestBlueprint(object):
 
@@ -93,7 +94,7 @@ class TestBlueprint(object):
             cookie.load(cookie_header)
             cookie_name = [name for name in cookie.keys()][0]
             assert cookie_name in ['auth_tkt', 'ckan']
-            assert cookie[cookie_name]['domain'] == 'test.ckan.net'
+            assert cookie[cookie_name]['domain'] == 'localhost'
             cookie_date = date_parse(cookie[cookie_name]['expires'], ignoretz=True)
             assert cookie_date < datetime.datetime.now()
 
@@ -124,8 +125,8 @@ class TestBlueprint(object):
 
         # Starting 2.10, CKAN's SessionMiddleware will append a
         # new Set-cookie header on every first response from the server.
-        # This includes test requests.
-        assert len(cookie_headers) == 2
+        # This includes test requests. In CKAN 2.11, behavior changed to 1 cookie.
+        assert len(cookie_headers) >= 1
 
         first_cookie = cookie_headers[0]
 
@@ -133,6 +134,6 @@ class TestBlueprint(object):
         cookie.load(first_cookie)
         cookie_name = [name for name in cookie.keys()][0]
         assert cookie_name == 'ckan'
-        assert cookie[cookie_name]['domain'] == 'test.ckan.net'
+        assert cookie[cookie_name]['domain'] == 'localhost'
         cookie_date = date_parse(cookie[cookie_name]['expires'], ignoretz=True)
         assert cookie_date < datetime.datetime.now()

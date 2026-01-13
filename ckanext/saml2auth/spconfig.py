@@ -20,8 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from saml2.saml import NAME_FORMAT_URI
 from saml2 import entity
 
-from ckan.common import config as ckan_config
-from ckan.common import asbool, aslist
+import ckan.plugins.toolkit as toolkit
 
 
 def get_config():
@@ -29,37 +28,39 @@ def get_config():
         Read: https://pysaml2.readthedocs.io/en/latest/howto/config.html
         """
 
-    base = ckan_config.get('ckan.site_url')
-    debug = asbool(ckan_config.get('debug'))
+    base = toolkit.config.get('ckan.site_url')
+    debug = toolkit.asbool(toolkit.config.get('debug'))
     allow_unknown_attributes = \
-        ckan_config.get(u'ckanext.saml2auth.allow_unknown_attributes', True)
+        toolkit.config.get(u'ckanext.saml2auth.allow_unknown_attributes', True)
     name_id_format = \
-        aslist(ckan_config.get(u'ckanext.saml2auth.sp.name_id_format',
+        toolkit.aslist(toolkit.config.get(u'ckanext.saml2auth.sp.name_id_format',
                                "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"))
-    name_id_policy_format = ckan_config.get(u'ckanext.saml2auth.sp.name_id_policy_format')
+    name_id_policy_format = toolkit.config.get(u'ckanext.saml2auth.sp.name_id_policy_format')
 
     location = \
-        ckan_config.get(u'ckanext.saml2auth.idp_metadata.location')
+        toolkit.config.get(u'ckanext.saml2auth.idp_metadata.location')
     local_path = \
-        ckan_config.get(u'ckanext.saml2auth.idp_metadata.local_path')
+        toolkit.config.get(u'ckanext.saml2auth.idp_metadata.local_path')
     remote_url = \
-        ckan_config.get(u'ckanext.saml2auth.idp_metadata.remote_url')
+        toolkit.config.get(u'ckanext.saml2auth.idp_metadata.remote_url')
     # Consider different name
     remote_cert = \
-        ckan_config.get(u'ckanext.saml2auth.idp_metadata.remote_cert')
+        toolkit.config.get(u'ckanext.saml2auth.idp_metadata.remote_cert')
 
-    entity_id = ckan_config.get(u'ckanext.saml2auth.entity_id', u'urn:mace:umu.se:saml:ckan:sp')
-    response_signed = asbool(ckan_config.get(u'ckanext.saml2auth.want_response_signed', True))
-    assertion_signed = asbool(ckan_config.get(u'ckanext.saml2auth.want_assertions_signed', False))
-    any_signed = asbool(ckan_config.get(u'ckanext.saml2auth.want_assertions_or_response_signed', False))
-    key_file = ckan_config.get(u'ckanext.saml2auth.key_file_path', None)
-    cert_file = ckan_config.get(u'ckanext.saml2auth.cert_file_path', None)
-    attribute_map_dir = ckan_config.get(u'ckanext.saml2auth.attribute_map_dir', None)
-    acs_endpoint = ckan_config.get('ckanext.saml2auth.acs_endpoint', '/acs')
+    entity_id = toolkit.config.get(u'ckanext.saml2auth.entity_id', u'urn:mace:umu.se:saml:ckan:sp')
+    response_signed = toolkit.asbool(toolkit.config.get(u'ckanext.saml2auth.want_response_signed', True))
+    assertion_signed = toolkit.asbool(toolkit.config.get(u'ckanext.saml2auth.want_assertions_signed', False))
+    any_signed = toolkit.asbool(toolkit.config.get(u'ckanext.saml2auth.want_assertions_or_response_signed', False))
+    key_file = toolkit.config.get(u'ckanext.saml2auth.key_file_path', None)
+    cert_file = toolkit.config.get(u'ckanext.saml2auth.cert_file_path', None)
+    attribute_map_dir = toolkit.config.get(u'ckanext.saml2auth.attribute_map_dir', None)
+    acs_endpoint = toolkit.config.get('ckanext.saml2auth.acs_endpoint', '/acs')
     logout_requests_signed = \
-        asbool(ckan_config.get(u'ckanext.saml2auth.logout_requests_signed', False))
-    logout_expected_binding = ckan_config.get(u'ckanext.saml2auth.logout_expected_binding',
+        toolkit.asbool(toolkit.config.get(u'ckanext.saml2auth.logout_requests_signed', False))
+    logout_expected_binding = toolkit.config.get(u'ckanext.saml2auth.logout_expected_binding',
                                               entity.BINDING_HTTP_POST)
+
+    acs_url = base + acs_endpoint
 
     config = {
         u'entityid': entity_id,
@@ -70,7 +71,7 @@ def get_config():
             u'sp': {
                 u'name': u'CKAN SP',
                 u'endpoints': {
-                    u'assertion_consumer_service': [base + acs_endpoint]
+                    u'assertion_consumer_service': [acs_url]
                 },
                 u'allow_unsolicited': True,
                 u'name_id_format': name_id_format,
