@@ -63,6 +63,10 @@ def get_saml_session_info(session):
     except KeyError:
         return None
 
+    # Copy before decoding so we don't mutate the dict stored in the session.
+    # Decoding turns name_id back into a NameID object, which is not JSON
+    # serializable; leaving it in the session breaks the logout cookie save.
+    session_info = dict(session_info)
     if isinstance(session_info['name_id'], str):
         session_info['name_id'] = decode(session_info['name_id'])
 

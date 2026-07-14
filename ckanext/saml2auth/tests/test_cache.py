@@ -84,3 +84,20 @@ def test_get_saml_session_info_missing():
     session = {}
     result = get_saml_session_info(session)
     assert result is None
+
+
+def test_get_saml_session_info_does_not_mutate_session():
+    # Regression: decoding name_id in place left a non-JSON-serializable
+    # NameID object in the session, breaking the logout cookie save (500).
+    encoded_nameid = code(nameid)
+    session = {
+        '_saml_session_info': {
+            'name_id': encoded_nameid,
+            'other_data': 'example'
+        }
+    }
+
+    get_saml_session_info(session)
+
+    # The stored session must still hold the serializable string form.
+    assert session['_saml_session_info']['name_id'] == encoded_nameid
