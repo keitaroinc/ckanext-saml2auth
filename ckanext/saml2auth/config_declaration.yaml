@@ -150,6 +150,16 @@ groups:
             Comparison method for RequestedAuthnContext.
             Options: exact, minimum, maximum, better
         required: false
+      - key: ckanext.saml2auth.authn_requests_signed
+        example: True
+        description: |
+            Indicates whether this service provider will sign authentication
+            requests sent to the IdP. Defaults to True when
+            ckanext.saml2auth.key_file_path is configured, and False otherwise.
+            Set this explicitly to False for IdPs that do not expect signed
+            authentication requests.
+        required: false
+        type: bool
       - key: ckanext.saml2auth.logout_requests_signed
         example: True
         default: False

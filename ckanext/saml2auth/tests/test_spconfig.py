@@ -117,3 +117,39 @@ def test_empty_requested_authn_context():
 
     contexts = _get_requested_authn_contexts()
     assert contexts == []
+
+
+def _authn_requests_signed():
+    return get_config()[u'service'][u'sp'][u'authn_requests_signed']
+
+
+def test_authn_requests_not_signed_without_key_file():
+    u'''Without a signing key there is nothing to sign with, so requests
+    are not signed.'''
+
+    assert _authn_requests_signed() is False
+
+
+@pytest.mark.ckan_config(u'ckanext.saml2auth.key_file_path', u'/path/to/mykey.pem')
+@pytest.mark.ckan_config(u'ckanext.saml2auth.cert_file_path', u'/path/to/mycert.pem')
+def test_authn_requests_signed_with_key_file():
+    u'''With a signing key configured, requests are signed by default.'''
+
+    assert _authn_requests_signed() is True
+
+
+@pytest.mark.ckan_config(u'ckanext.saml2auth.key_file_path', u'/path/to/mykey.pem')
+@pytest.mark.ckan_config(u'ckanext.saml2auth.cert_file_path', u'/path/to/mycert.pem')
+@pytest.mark.ckan_config(u'ckanext.saml2auth.authn_requests_signed', u'False')
+def test_authn_requests_signing_can_be_disabled():
+    u'''The default can be overridden for IdPs that reject signed requests
+    they are not configured to expect.'''
+
+    assert _authn_requests_signed() is False
+
+
+@pytest.mark.ckan_config(u'ckanext.saml2auth.authn_requests_signed', u'True')
+def test_authn_requests_signing_can_be_forced():
+    u'''The option is honoured even without a key file configured.'''
+
+    assert _authn_requests_signed() is True
