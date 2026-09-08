@@ -7,8 +7,10 @@ A [CKAN](https://ckan.org) extension to enable Single Sign-On (SSO) for CKAN dat
 
 ## Requirements
 
-This extension works with CKAN 2.10+
-Note: For CKAN 2.9 or older use v1.3.0 or older versions.
+This extension works with CKAN 2.11+
+Note:
+- For CKAN 2.9 or older use v1.3.0 or older versions.
+- For CKAN 2.10 or older use v1.3.8 or older versions.
 
 ## Installation
 

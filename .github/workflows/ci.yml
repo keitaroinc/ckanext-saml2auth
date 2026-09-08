@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.10', '3.11']
-        ckan-version: ["2.10", "2.11"]
+        ckan-version: ["2.11", "2.12"]
     name: Python ${{ matrix.python-version }} CKAN ${{ matrix.ckan-version }} extension test
 
     services:
@@ -55,7 +55,7 @@ jobs:
           - 6379:6379
 
       ckan-solr:
-        image: ckan/ckan-solr:2.10
+        image: ckan/ckan-solr:2.12-solr9
         ports:
           - 8983:8983
 

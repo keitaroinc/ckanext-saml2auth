@@ -105,10 +105,6 @@ class Saml2AuthPlugin(plugins.SingletonPlugin):
             # Clear session cookie in the browser
             response.set_cookie('ckan', domain=domain, expires=0)
 
-            if not toolkit.check_ckan_version(min_version="2.10"):
-                # CKAN <= 2.9.x also sets auth_tkt cookie
-                response.set_cookie('auth_tkt', domain=domain, expires=0)
-
         if g.userobj:
             log.info(u'User {0}<{1}> logged out successfully'.format(g.userobj.name, g.userobj.email))
         else:
