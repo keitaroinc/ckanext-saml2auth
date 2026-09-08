@@ -29,7 +29,11 @@ import ckan.model as model
 import ckan.plugins as plugins
 import ckan.lib.dictization.model_dictize as model_dictize
 from ckan.lib import base, signals
-from ckan.views.user import set_repoze_user
+try:
+    # Only needed for CKAN < 2.10, removed in CKAN 2.12
+    from ckan.views.user import set_repoze_user
+except ImportError:
+    set_repoze_user = None
 from ckan.common import config, g, request
 
 from ckanext.saml2auth.spconfig import get_config as sp_config
